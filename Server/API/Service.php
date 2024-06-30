@@ -27,7 +27,7 @@
         $arr = json_decode($datas, true);
         $apiParameter = $arr['type'];
         if (strpos($apiParameter, 'pending') !== false) {
-        $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE EventProgress = 'Pending' AND Type != 'Seminar'");
+        $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE Type != 'Seminar'");
             echo json_encode(array("Status"=>"Success", "Pending"=>$Display_Pending));
           }else{
             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));

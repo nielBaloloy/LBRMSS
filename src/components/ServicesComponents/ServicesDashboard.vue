@@ -1,5 +1,5 @@
 <template>
-    <div class="q-mt-5 Services">
+    <div class="q-mt-5 Clients">
         <!-- tabs -->
         <q-card flat bordered class="bg-white">
         <q-tabs
@@ -11,8 +11,8 @@
           narrow-indicator
         >
           <q-tab name="Pending" label="Pending" />
-          <q-tab name="Schedule" label="Scheduled" />
-          <q-tab name="Completed" label="Done" />
+          <q-tab name="Schedule" label="Scheduled" @click="GetScheduledData"/>
+          <q-tab name="Completed" label="Done" @click = "GetDoneData"/>
         </q-tabs>
 
         <q-separator />
@@ -22,64 +22,143 @@
             <!-- Pending -->
                 <q-table
                   flat 
-              
-                  :rows="rows"
+                  :rows="PendingData"
                   :columns="columns"
-                  row-key="name"
+                  row-key="EID"
                 >
           <template v-slot:body="props">
             <q-tr :props="props" @click="onRowClick(props.row)">
               <q-td key="name" :props="props">
-                {{ props.row.name }}
+                {{ props.row.Client }}
               </q-td>
-              <q-td key="calories" :props="props">
+              <q-td key="Service" :props="props">
                 <q-badge color="green">
-                  {{ props.row.calories }}
+                  {{ props.row.Service }}
                 </q-badge>
               </q-td>
-              <q-td key="fat" :props="props">
+              <q-td key="Type" :props="props">
                 <q-badge color="purple">
-                  {{ props.row.fat }}
+                  {{ props.row.Type }}
                 </q-badge>
               </q-td>
-              <q-td key="carbs" :props="props">
+              <q-td key="Date" :props="props">
                 <q-badge color="orange">
-                  {{ props.row.carbs }}
+                  {{ props.row.Date }}
                 </q-badge>
               </q-td>
-              <q-td key="protein" :props="props">
+              <q-td key="Venue" :props="props">
                 <q-badge color="primary">
-                  {{ props.row.protein }}
+                  {{ props.row.Venue }}
                 </q-badge>
               </q-td>
-              <q-td key="sodium" :props="props">
+              <q-td key="Assigned Priest" :props="props">
                 <q-badge color="teal">
-                  {{ props.row.sodium }}
+                  {{ props.row.Assigned_Priest }}
                 </q-badge>
               </q-td>
-              <q-td key="calcium" :props="props">
-                <q-badge color="accent">
-                  {{ props.row.calcium }}
-                </q-badge>
+              <q-td key="Action" :props="props" class="q-gutter-sm">
+                <q-btn unelevated color="primary" label="Modify" />
+                <q-btn unelevated color="secondary" label="Cancel" text-color="red" />
               </q-td>
-              <q-td key="iron" :props="props">
-                <q-badge color="amber">
-                  {{ props.row.iron }}
-                </q-badge>
-              </q-td>
+              
             </q-tr>
           </template>
                 </q-table>
           </q-tab-panel>
 
           <q-tab-panel name="Schedule">
-            <div class="text-h6">Alarms</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-table
+                  flat 
+                  :rows="ScheduledData"
+                  :columns="columns"
+                  row-key="EID"
+                >
+          <template v-slot:body="props">
+            <q-tr :props="props" @click="onRowClick(props.row)">
+              <q-td key="name" :props="props">
+                {{ props.row.Client }}
+              </q-td>
+              <q-td key="Service" :props="props">
+                <q-badge color="green">
+                  {{ props.row.Service }}
+                </q-badge>
+              </q-td>
+              <q-td key="Type" :props="props">
+                <q-badge color="purple">
+                  {{ props.row.Type }}
+                </q-badge>
+              </q-td>
+              <q-td key="Date" :props="props">
+                <q-badge color="orange">
+                  {{ props.row.Date }}
+                </q-badge>
+              </q-td>
+              <q-td key="Venue" :props="props">
+                <q-badge color="primary">
+                  {{ props.row.Venue }}
+                </q-badge>
+              </q-td>
+              <q-td key="Assigned Priest" :props="props">
+                <q-badge color="teal">
+                  {{ props.row.Assigned_Priest }}
+                </q-badge>
+              </q-td>
+              <q-td key="Action" :props="props" class="q-gutter-md">
+                <q-btn unelevated color="primary" label="Edit" />
+                <q-btn unelevated color="secondary" label="Delete" text-color="red" />
+              </q-td>
+              
+            </q-tr>
+          </template>
+                </q-table>
           </q-tab-panel>
 
           <q-tab-panel name="Completed">
-            <div class="text-h6">Movies</div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          
+            <q-table
+                  flat 
+                  :rows="DoneData"
+                  :columns="columns"
+                  row-key="EID"
+                >
+          <template v-slot:body="props">
+            <q-tr :props="props" @click="onRowClick(props.row)">
+              <q-td key="name" :props="props">
+                {{ props.row.Client }}
+              </q-td>
+              <q-td key="Service" :props="props">
+                <q-badge color="green">
+                  {{ props.row.Service }}
+                </q-badge>
+              </q-td>
+              <q-td key="Type" :props="props">
+                <q-badge color="purple">
+                  {{ props.row.Type }}
+                </q-badge>
+              </q-td>
+              <q-td key="Date" :props="props">
+                <q-badge color="orange">
+                  {{ props.row.Date }}
+                </q-badge>
+              </q-td>
+              <q-td key="Venue" :props="props">
+                <q-badge color="primary">
+                  {{ props.row.Venue }}
+                </q-badge>
+              </q-td>
+              <q-td key="Assigned Priest" :props="props">
+                <q-badge color="teal">
+                  {{ props.row.Assigned_Priest }}
+                </q-badge>
+              </q-td>
+              <q-td key="Action" :props="props" class="q-gutter-md">
+                <q-btn unelevated color="primary" label="Edit" />
+                <q-btn unelevated color="secondary" label="Delete" text-color="red" />
+              </q-td>
+              
+            </q-tr>
+          </template>
+                </q-table>
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
@@ -88,142 +167,52 @@
   
   <script>
   import { ref ,defineComponent,onMounted} from 'vue'
-  import { getpendingSerivce} from '../../composables/SeviceData.js'
+  import { getSerivce,PendingData,ScheduledData,DoneData} from '../../composables/SeviceData.js'
   export default defineComponent({
       
-    name : 'ServicesDashboard',
+    name : 'ClientsDashboard',
     setup () {
-      const columns = [
+  const columns = [
   {
     name: 'name',
     required: true,
-    label: 'Dessert (100g serving)',
+    label: 'Client',
     align: 'left',
     field: row => row.name,
     format: val => `${val}`,
     sortable: true
   },
-  { name: 'calories', align: 'center', label: 'Calories', field: 'calories', sortable: true },
-  { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-  { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
-  { name: 'protein', label: 'Protein (g)', field: 'protein' },
-  { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
-  { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-  { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
-]
-
-const rows = [
-  {
-    name: 'Frozen Yogurt',
-    calories: 159,
-    fat: 6.0,
-    carbs: 24,
-    protein: 4.0,
-    sodium: 87,
-    calcium: '14%',
-    iron: '1%'
-  },
-  {
-    name: 'Ice cream sandwich',
-    calories: 237,
-    fat: 9.0,
-    carbs: 37,
-    protein: 4.3,
-    sodium: 129,
-    calcium: '8%',
-    iron: '1%'
-  },
-  {
-    name: 'Eclair',
-    calories: 262,
-    fat: 16.0,
-    carbs: 23,
-    protein: 6.0,
-    sodium: 337,
-    calcium: '6%',
-    iron: '7%'
-  },
-  {
-    name: 'Cupcake',
-    calories: 305,
-    fat: 3.7,
-    carbs: 67,
-    protein: 4.3,
-    sodium: 413,
-    calcium: '3%',
-    iron: '8%'
-  },
-  {
-    name: 'Gingerbread',
-    calories: 356,
-    fat: 16.0,
-    carbs: 49,
-    protein: 3.9,
-    sodium: 327,
-    calcium: '7%',
-    iron: '16%'
-  },
-  {
-    name: 'Jelly bean',
-    calories: 375,
-    fat: 0.0,
-    carbs: 94,
-    protein: 0.0,
-    sodium: 50,
-    calcium: '0%',
-    iron: '0%'
-  },
-  {
-    name: 'Lollipop',
-    calories: 392,
-    fat: 0.2,
-    carbs: 98,
-    protein: 0,
-    sodium: 38,
-    calcium: '0%',
-    iron: '2%'
-  },
-  {
-    name: 'Honeycomb',
-    calories: 408,
-    fat: 3.2,
-    carbs: 87,
-    protein: 6.5,
-    sodium: 562,
-    calcium: '0%',
-    iron: '45%'
-  },
-  {
-    name: 'Donut',
-    calories: 452,
-    fat: 25.0,
-    carbs: 51,
-    protein: 4.9,
-    sodium: 326,
-    calcium: '2%',
-    iron: '22%'
-  },
-  {
-    name: 'KitKat',
-    calories: 518,
-    fat: 26.0,
-    carbs: 65,
-    protein: 7,
-    sodium: 54,
-    calcium: '12%',
-    iron: '6%'
-  }
+  { name: 'Service', align: 'center', label: 'Service', field: 'Service', sortable: true },
+  { name: 'Type', label: 'Type ', field: 'Type', sortable: true,align: 'center', },
+  { name: 'Date', label: 'Date ', field: 'Date',align: 'center', },
+  { name: 'Venue', label: 'Venue ', field: 'Venue',align: 'center', },
+  { name: 'Assigned Priest', label: 'Assigned Priest ', field: 'Assigned Priest', align: 'center'},
+  { name: 'Action', label: 'Action', field: 'Action', align: 'center', },
+ 
 ]
       onMounted(()=>{
-        getpendingSerivce()
+        let loads = "pending";
+        getSerivce(loads)
         })
+      let GetScheduledData =()=>{
+        let loads = "Scheduled";
+        getSerivce(loads)
+      }
+      let GetDoneData =()=>{
+        let loads = "Done";
+        getSerivce(loads)
+      }
+
+
       return {
+        GetScheduledData,GetDoneData,
         onRowClick: (row) => alert(`${row.name} clicked`),
-      columns,
-      rows,
+        columns,
+        PendingData,ScheduledData,DoneData,
         tab: ref('Pending'),
       }
     }
+    
   })
   </script>
   <style scoped>

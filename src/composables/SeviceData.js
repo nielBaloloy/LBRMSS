@@ -11,13 +11,29 @@ import { api } from "../boot/axios";
 
 // declarations
 let PendingData =ref([]);
-
+let ScheduledData =ref([]);
+let DoneData =ref([]);
 // this promise will get all the pending service from all table 
-const getpendingSerivce = () => {
-
+const getSerivce = (load) => {
+  console.log(load);
   return new Promise((resolve, reject) => {
     api.get("Service.php",{ params: { type: "pending" } })
       .then((response) => {
+        let wrapper = response.data.Pending;
+      
+        // filter for pending service
+        if(load = "Pending"){
+          PendingData.value = wrapper.filter(res => res.EventProgress == "Pending");
+          console.log(PendingData.value )
+        }
+        if(load = "Scheduled"){
+          ScheduledData.value = wrapper.filter(res => res.EventProgress == "Scheduled");
+          console.log(ScheduledData.value )
+        }
+        if(load = "Done"){
+          DoneData.value = wrapper.filter(res => res.EventProgress == "Done");
+          console.log(DoneData.value )
+        }
        
       })
       .catch((error) => {
@@ -28,4 +44,4 @@ const getpendingSerivce = () => {
   });
 };
 
-export {getpendingSerivce,};
+export {getSerivce,PendingData,ScheduledData,DoneData};
