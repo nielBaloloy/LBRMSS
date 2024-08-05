@@ -33,8 +33,8 @@
          
         // ===============Special TYpe Baptism====================//
         $Event =$arr['eventData'];//Event Data
-        $BaptismData =$arr['BaptismData']; // Baptism data
-
+        $ConfirmationData =$arr['ConfirmationData']; // Baptism data
+        
         //to insert eventData
         $eventData = Array(
             "E_ID" => null,
@@ -54,8 +54,8 @@
             "Assigned_Priest" => $Event['Assigned_Priest'],
             "Contact_Number" => $Event['Contact_Number'],
             "CertificateFor" => $Event['CertificateFor'],
-            "EventProgress" =>$BaptismData['EventProgress'],
-            "RequirementStatus"=>$BaptismData['Status'],
+            "EventProgress" =>$ConfirmationData['EventProgress'],
+            "RequirementStatus"=>$ConfirmationData['Status'],
             "Description"=>$Event['Description']
     
             );
@@ -63,54 +63,54 @@
             $insert_EventInfo =$this->db->insert('eventstable', $eventData);
 
 
-            // Baptism Personal Details
-            $baptismData = array(
-                "BID" => null,
-                "First_Name" => $BaptismData['First_Name'],
-                "Middle_Name" => $BaptismData['Middle_Name'],
-                "Last_Name" => $BaptismData['Last_Name'],
-                "Suffix" => $BaptismData['Suffix'],
-                "Gender" => $BaptismData['Gender'],
-                "Birth_Date" => $BaptismData['Birth_Date'],
-                "Birth_Place" => $BaptismData['Birth_Place'],
-                "Legitamacy" => $BaptismData['Legitamacy'],
-                "Father_Name" => $BaptismData['Father_Name'],
-                "Mother_Name" => $BaptismData['Mother_Name'],
-                "EventProgress" => $BaptismData['EventProgress'],
-                "Status" => $BaptismData['Status'],
-                "ContactNumber" => $BaptismData['ContactNumber'],
-                "Contact_Person" => $BaptismData['Contact_Person'],
-                "EventScheduleID" => $BaptismData['EventScheduleID'],
-                
-                "Region" => $BaptismData['Region'],
-                "Province" => $BaptismData['Province'],
-                "City" => $BaptismData['City'],
-                "Barangay" => $BaptismData['Barangay'],
+            // Confirmation Personal Details
+            $ConfirmationDatas = array(
+                "CID" => null,
+                "First_Name" => $ConfirmationData['First_Name'],
+                "Middle_Name" => $ConfirmationData['Middle_Name'],
+                "Last_Name" => $ConfirmationData['Last_Name'],
+                "Suffix" => $ConfirmationData['Suffix'],
+                "Gender" => $ConfirmationData['Gender'],
+                "Birth_Date" => $ConfirmationData['Birth_Date'],
+                "Birth_Place" => $ConfirmationData['Birth_Place'],
+                "Legitimacy" => $ConfirmationData['Legitamacy'],
+                "Nationality" => $ConfirmationData['Nationality'],
+                "Father_Name" => $ConfirmationData['Father_Name'],
+                "Mother_Name" => $ConfirmationData['Mother_Name'],
+                "EventProgress" => $ConfirmationData['EventProgress'],
+                "Status" => $ConfirmationData['Status'],
+                "ContactNumber" => $ConfirmationData['ContactNumber'],
+                "Contact_Person" => $ConfirmationData['Contact_Person'],
+                "EventScheduleID" => $ConfirmationData['EventScheduleID'],
+                "Region" => $ConfirmationData['Region'],
+                "Province" => $ConfirmationData['Province'],
+                "City" => $ConfirmationData['City'],
+                "Barangay" => $ConfirmationData['Barangay'],
             );
-            $insert_BaptismData = $this->db->insert('baptism', $baptismData);
+            $insert_BaptismData = $this->db->insert('confirmation', $ConfirmationDatas);
 
 
              //Witness/Sponsor Section
-            $witnessLen = count($BaptismData["BaptismWitness"]);
+             $witnessLen = count($ConfirmationData['Witness']);
             for ($x = 0; $x<$witnessLen; $x++){
                 $sponsorData = array(
                 "ID" =>null,
                 "ServiceID" => $Event['EventServiceID'],
-                "Ninong" => $BaptismData['BaptismWitness'][$x]['Ninong'],
-                "Ninong_Address" => $BaptismData['BaptismWitness'][$x]['Ninong_Address'],
-                "Ninang" => $BaptismData['BaptismWitness'][$x]['Ninang_Testium'],
-                "Ninang_Address" => $BaptismData['BaptismWitness'][$x]['Ninang_Address'],
+                "Ninong" => $ConfirmationData['Witness'][$x]['Ninong'],
+                "Ninong_Address" => $ConfirmationData['Witness'][$x]['Ninong_Address'],
+                "Ninang" => $ConfirmationData['Witness'][$x]['Ninang_Testium'],
+                "Ninang_Address" => $ConfirmationData['Witness'][$x]['Ninang_Address'],
             );
             // =======================================================//
             $insertWitness = $this->db->insert('witness_testium_tbl',$sponsorData);
             }
-            //requirement
+            // requirement
             $requirementData = array(
                 "ID" => null,
                 "ServiceID"=> $Event['EventServiceID'],
-                "Marriage_License" => $BaptismData['Requirement']['Marriage_License'],
-                "Confirmation" => $BaptismData['Requirement']['Confirmation'],
-                "LiveBirthCert" => $BaptismData['Requirement']['LiveBirthCert'],
+                "Marriage_License" => $ConfirmationData['Requirement']['Marriage_License'],
+                "Confirmation" => $ConfirmationData['Requirement']['Confirmation'],
+                "LiveBirthCert" => $ConfirmationData['Requirement']['LiveBirthCert'],
                 "Cenomar" => 'no',
                 "Baptismal" => 'no',
                 "Interogation" => 'no',
@@ -120,34 +120,34 @@
             );
                 $insertRequirement = $this->db->insert('requirements_tbl',$requirementData);
              // Seminar Section
-                $SeminarLength = count($BaptismData["SeminarDetails"]);
+                $SeminarLength = count($ConfirmationData["SeminarDetails"]);
                 for ($s = 0; $s<$SeminarLength; $s++){
                     $seminarData = array(
                     "E_ID" => null,
                     "EventServiceID" => $Event['EventServiceID'],
                     "Client" => $Event['Client'],
-                    "Service" => $BaptismData['SeminarDetails'][$s]['SeminarTitle'],
+                    "Service" => $ConfirmationData['SeminarDetails'][$s]['SeminarTitle'],
                     "Others" => null,
                     "TypeofMass" => null,
                     "Type" => "Seminar",
-                    "TimeTo" => $BaptismData['SeminarDetails'][$s]['timeStart'],
-                    "TimeFrom" => $BaptismData['SeminarDetails'][$s]['timeEnd'],
-                    "Date" => $BaptismData['SeminarDetails'][$s]['Date'], 
-                    "Venue" => $BaptismData['SeminarDetails'][$s]['SeminarVenue'], 
-                    "Duration" => $BaptismData['SeminarDetails'][$s]['duration'],
-                    "Days" => $BaptismData['SeminarDetails'][$s]['days'],
+                    "TimeTo" => $ConfirmationData['SeminarDetails'][$s]['timeStart'],
+                    "TimeFrom" => $ConfirmationData['SeminarDetails'][$s]['timeEnd'],
+                    "Date" => $ConfirmationData['SeminarDetails'][$s]['Date'], 
+                    "Venue" => $ConfirmationData['SeminarDetails'][$s]['SeminarVenue'], 
+                    "Duration" => $ConfirmationData['SeminarDetails'][$s]['duration'],
+                    "Days" => $ConfirmationData['SeminarDetails'][$s]['days'],
                     "Venue_type" => "Church",
                     "Assigned_Priest" => null,
                     "Contact_Number" => null,
                     "CertificateFor" =>null,
-                    "EventProgress" =>$BaptismData['EventProgress'],
-                    "RequirementStatus"=>$BaptismData['Status']
+                    "EventProgress" =>$ConfirmationData['EventProgress'],
+                    "RequirementStatus"=>$ConfirmationData['Status']
                 );
                 // insert Seminar Details here (Query)
                 $insertSeminar = $this->db->insert('eventstable',$seminarData);
                 }
 
-                if($insert_EventInfo == true && $insert_BaptismData == true &&
+                if($insert_EventInfo == true && $ConfirmationDatas == true &&
                 $insertWitness == true && $insertRequirement ==true){
                   // fetch the marriage data to be displayed on peending table
                   $Display_Pending = $this->db->where('EventProgress', "Pending")

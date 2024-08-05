@@ -16,7 +16,7 @@
   {
       public function __construct()
       {
-       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmssdb');
+       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
        
       }
 
@@ -31,8 +31,7 @@
       
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
-
-        //  segregate data(Event data and Marriage Data)
+        // segregate data(Event data and Marriage Data)
         $Event =$arr['eventData'];//Event Data
         $MarriageData =$arr['MarriageData']; // Marriage data
         // event array
@@ -55,7 +54,8 @@
         "Contact_Number" => $Event['Contact_Number'],
         "CertificateFor" => $Event['CertificateFor'],
         "EventProgress" =>$MarriageData['EventProgress'],
-        "RequirementStatus"=>$MarriageData['Status']
+        "RequirementStatus"=>$MarriageData['Status'],
+        "Description"=>$Event['Description']
 
         );
         $insert_EventInfo =$this->db->insert('eventstable', $eventData);

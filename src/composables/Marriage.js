@@ -1,6 +1,6 @@
 import { ref, readonly } from "vue";
 import { api } from "../boot/axios";
-
+import {getSerivce} from "./SeviceData"
 
 /**
  * This function accepts parameters of an array then
@@ -20,14 +20,13 @@ const sendMarriageData = ( event_Payload,ServicePayload) => {
     api.post("MarriageAPI.php", {eventData:event_Payload,MarriageData:ServicePayload})
     .then((response) => {
       if(response.data.Status == "Success"){
-        Marriage_PendingData.value = response.data.Pending;
         msg.value = "Application Submitteds"
-          msgColor.value = "green-5"
+        msgColor.value = "green-5"
       }else{
-         msg.value = "It's not you , its me"
+         msg.value = "It's not you, its me"
          msgColor.value = "red-5"
       }
-
+      getSerivce("pending");
      console.log(Marriage_PendingData.value,msgColor.value)
     })
     .catch((error) => {
@@ -37,8 +36,7 @@ const sendMarriageData = ( event_Payload,ServicePayload) => {
     });
    }
    if(event_Payload.Service === "Baptism"){
-    console.log("Event",event_Payload);
-    console.log("Data",ServicePayload);
+   
     api.post("BaptismApi.php", {eventData:event_Payload,BaptismData:ServicePayload})
     .then((response) => {
       if(response.data.Status == "Success"){

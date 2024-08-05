@@ -16,7 +16,7 @@
   {
       public function __construct()
       {
-       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmssdb');
+       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
        
       }
 
@@ -31,8 +31,12 @@
       
         $data = json_encode($payload);
         $AccountInfo = json_decode($data, true);
+        
 
-        echo var_dump($AccountInfo);
+        $tableName = 'users';
+
+        $dataKeys = ['first_name', 'last_name', 'email'];
+
          
     }
  

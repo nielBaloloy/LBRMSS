@@ -23,15 +23,7 @@
 
       public function httpGet($payload)
       {
-        $datas = json_encode($payload);
-        $arr = json_decode($datas, true);
-        $apiParameter = $arr['type'];
-        if (strpos($apiParameter, 'pending') !== false) {
-        $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE Type != 'Seminar'");
-            echo json_encode(array("Status"=>"Success", "Pending"=>$Display_Pending));
-          }else{
-            echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-          }
+       
       }
       public function httpPost($payload)
       {
@@ -40,6 +32,7 @@
         $arr = json_decode($datas, true);
         
         $Event =$arr['eventData'];//Event Data
+        if(isset($Event['Event_Region'])){
         $eventData = Array(
           "E_ID" => null,
           "EventServiceID" => $Event['EventServiceID'],
@@ -66,7 +59,32 @@
           "RequirementStatus"=>'NA',
           "Description"=>$Event['Description']
           );
+        }else{
 
+            $eventData = Array(
+                "E_ID" => null,
+                "EventServiceID" => $Event['EventServiceID'],
+                "Client" => $Event['Client'],
+                "Service" => $Event['Service'],
+                "Others" => $Event['Others'],
+                "TypeofMass" => $Event['TypeofMass'],
+                "Type" => 'Special',
+                "TimeTo" => $Event['TimeTo'],
+                "TimeFrom" => $Event['TimeFrom'],
+                "Date" => $Event['Date'],  
+                "Venue" =>   $Event['Venue'],
+                "Duration" => $Event['Duration'],
+                "Days" => $Event['Days'],
+                "Venue_type" => $Event['Venue_type'],
+                "Assigned_Priest" => $Event['Assigned_Priest'],
+                "Contact_Number" => $Event['Contact_Number'],
+                "CertificateFor" =>'NA',
+                "EventProgress" =>'Pending',
+                "RequirementStatus"=>'NA',
+                "Description"=>$Event['Description']
+                );
+
+        }
           $insert_EventInfo =$this->db->insert('eventstable', $eventData);
           if($insert_EventInfo){
             echo json_encode(array("Status"=>"Success"));

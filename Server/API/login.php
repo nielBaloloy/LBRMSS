@@ -16,7 +16,7 @@
   {
       public function __construct()
       {
-       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmssdb');
+       $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
        
       }
 
