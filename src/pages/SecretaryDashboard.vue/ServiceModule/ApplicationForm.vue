@@ -127,7 +127,12 @@
           </div>
         </q-banner>
         <div class="tab q-pa-md">
-          <ServicesDashboard />
+          <!-- <ServicesDashboard /> -->
+          <SSR_datatable
+            title="PENDING"
+            :columns="columns"
+            :rowsData="PendingData"
+          />
         </div>
       </div>
     </q-page-container>
@@ -153,74 +158,82 @@
 }
 </style>
 <script>
-import { ref, defineComponent, onMounted } from "vue";
+import { ref, defineComponent, nextTick, onMounted, watchEffect } from "vue";
 import { useQuasar, SessionStorage } from "quasar";
-import { useRouter, useRoute } from "vue-router";
-import ServicesDashboard from "../../../components/ServicesComponents/ServicesDashboard.vue";
+import { useRouter } from "vue-router";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
+import SSR_datatable from "src/components/ServicesComponents/SSR_table_component.vue";
 import StepperForm from "src/components/ServicesComponents/StepperForm.vue";
 import { menuData } from "src/data/menuData";
+import { getSerivce, PendingData } from "src/composables/SeviceData.js";
+
+// ✅ Async function defined before setup()
+
 export default defineComponent({
-  components: { ServicesDashboard, StepperForm, SidebarMenu },
+  components: { StepperForm, SidebarMenu, SSR_datatable },
+
   setup() {
+    const dataLoaded = ref(false); // ✅ Track data loading state
+    onMounted(async () => {
+      await nextTick();
+      await getSerivce("pending"); // Ensure fetch completes before proceeding
+      dataLoaded.value = true; // ✅ Mark as loaded
+    });
+
+    // ✅ Re-fetch table data when PendingData updates
+
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
     const router = useRouter();
 
     let myObject = ref();
     let sessionkey = SessionStorage.getItem("log");
-    if (sessionkey === null || "") {
+    if (!sessionkey) {
       router.push({ path: "/" });
     } else {
       myObject.value = JSON.parse(sessionkey);
       console.log(myObject.value);
     }
 
-    let active = ref(false);
-    let activeclick = () => {
-      active.value = true;
-    };
-    //logout
+    // Table columns
+    const columns = [
+      { name: "name", label: "Client", field: "Client", sortable: true },
+      { name: "Service", label: "Service", field: "Service", sortable: true },
+      { name: "Type", label: "Type", field: "Type", sortable: true },
+      { name: "Date", label: "Date", field: "Date", sortable: true },
+      { name: "Venue", label: "Venue", field: "Venue", sortable: true },
+      {
+        name: "Assigned Priest",
+        label: "Assigned Priest",
+        field: "Assigned_Priest",
+        sortable: true,
+      },
+      { name: "Action", label: "Action", field: "Action", sortable: false },
+    ];
+
+    // Logout function
     const Logout = () => {
       $q.dialog({
         title: "Logout",
         message: "Are you sure you want to logout?",
         cancel: true,
         persistent: true,
-      })
-        .onOk(() => {
-          SessionStorage.clear();
-          router.push({ path: "/" });
-        })
-        .onOk(() => {
-          // console.log('>>>> second OK catcher')
-        })
-        .onCancel(() => {
-          // console.log('>>>> Cancel')
-        })
-        .onDismiss(() => {
-          // console.log('I am triggered on both OK and Cancel')
-        });
-    };
-    //dialog
-    let dialog2 = ref(false);
-    let showModal = (params) => {
-      dialog2.value = true;
+      }).onOk(() => {
+        SessionStorage.clear();
+        router.push({ path: "/" });
+      });
     };
 
     return {
-      showModal,
+      PendingData,
+      columns,
+
       menuData,
-      dialog2,
+      dialog2: ref(false),
       Logout,
       myObject,
-      activeclick,
-      menu: ref(false),
-      active,
+      active: ref(false),
       leftDrawerOpen,
-      dialog: ref(false),
-      firstItemEnabled: ref(false),
-      cancelEnabled: ref(false),
       tab: ref("events"),
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;

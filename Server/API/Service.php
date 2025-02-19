@@ -63,8 +63,8 @@
           "Event_Brgy"=>$Event['Event_Barangay'],
           "CertificateFor" =>'NA',
           "EventProgress" =>'Pending',
-          "RequirementStatus"=>'NA',
-          "Description"=>$Event['Description']
+          "RequirementStatus"=>'NA'
+          // "Description"=>$Event['Description']
           );
 
           $insert_EventInfo =$this->db->insert('eventstable', $eventData);
