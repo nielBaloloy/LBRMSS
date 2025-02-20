@@ -27,6 +27,33 @@
           </template>
         </q-input>
       </template>
+
+      <!-- Custom slot for Action column -->
+      <template v-slot:body-cell-Action="{ row }">
+        <q-td>
+          <q-btn
+            color="primary"
+            dense
+            flat
+            icon="edit"
+            @click="editRow(row)"
+            size="sm"
+          >
+            <q-tooltip>Edit</q-tooltip>
+          </q-btn>
+
+          <q-btn
+            color="negative"
+            dense
+            flat
+            icon="delete"
+            @click="deleteRow(row)"
+            size="sm"
+          >
+            <q-tooltip>Delete</q-tooltip>
+          </q-btn>
+        </q-td>
+      </template>
     </q-table>
   </div>
 </template>
@@ -51,7 +78,22 @@ export default {
       rowsPerPage: 5,
       rowsNumber: props.rowsData.length, // Set initially
     });
+    function editRow(row) {
+      console.log("Edit row:", row);
+      // Add logic to edit the row (e.g., open a dialog with a form)
+    }
 
+    function deleteRow(row) {
+      // $q.dialog({
+      //   title: "Confirm",
+      //   message: "Are you sure you want to delete this row?",
+      //   cancel: true,
+      //   persistent: true,
+      // }).onOk(() => {
+      console.log("Deleted row:", row);
+      // Add logic to remove the row from your data
+      // });
+    }
     // ✅ Computed property to filter and sort data
     const filteredRows = computed(() => {
       return props.rowsData
@@ -90,7 +132,16 @@ export default {
 
     watch(filter, onRequest);
 
-    return { tableRef, filter, loading, pagination, paginatedRows, onRequest };
+    return {
+      editRow,
+      deleteRow,
+      tableRef,
+      filter,
+      loading,
+      pagination,
+      paginatedRows,
+      onRequest,
+    };
   },
 };
 </script>

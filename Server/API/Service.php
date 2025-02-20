@@ -28,7 +28,31 @@
         $apiParameter = $arr['type'];
         if (strpos($apiParameter, 'pending') !== false) {
         $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE Type != 'Seminar'");
-            echo json_encode(array("Status"=>"Success", "Pending"=>$Display_Pending));
+        foreach ($Display_Pending as $event) {
+          $pendingEvents[] = [
+            "E_ID" => $event['E_ID'],
+            "EventServiceID" => $event['EventServiceID'],
+            "Service" => $event['Service'],
+            "Client" => $event['Client'],
+            "Others" => $event['Others'],
+            "TypeofMass" => $event['TypeofMass'],
+            "Type" => $event['Type'],
+            "TimeTo" => $event['TimeTo'],
+            "TimeFrom" => $event['TimeFrom'],
+            "Date" => $event['Date'],
+            "Venue" => $event['Venue'], 
+            "Duration" => $event['Duration'],
+            "Days" => $event['Days'],
+            "Venue_type" => $event['Venue_type'],
+            "Assigned_Priest" => $event['Assigned_Priest'],
+            "Contact_Number" => $event['Contact_Number'],
+            "CertificateFor" => $event['CertificateFor'],
+            "EventProgress" => $event['EventProgress'],
+            "RequirementStatus" => $event['RequirementStatus']
+              ];
+        
+        }
+            echo json_encode(array("Status"=>"Success", "Pending"=>$pendingEvents));
           }else{
             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
           }

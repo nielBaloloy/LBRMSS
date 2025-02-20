@@ -180,8 +180,6 @@ export default defineComponent({
       dataLoaded.value = true; // ✅ Mark as loaded
     });
 
-    // ✅ Re-fetch table data when PendingData updates
-
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
     const router = useRouter();
