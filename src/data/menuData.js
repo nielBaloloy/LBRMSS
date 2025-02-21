@@ -5,11 +5,11 @@ export const menuData = [
     icon: "home",
   },
   {
-    label: "Application",
+    label: "Services",
     icon: "event",
     children: [
-      { to: "/Services", label: "Add New Application" },
-      { to: "/Dashboard", label: "List" },
+      { to: "/Services", label: "Ceremonial Services" },
+      { to: "/Dashboard", label: "Certification Request" },
     ],
   },
   {

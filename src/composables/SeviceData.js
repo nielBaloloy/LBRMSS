@@ -9,9 +9,8 @@ import {} from "./Marriage";
  */
 
 // declarations
-let PendingData = ref([]);
-let ScheduledData = ref([]);
-let DoneData = ref([]);
+let Data = ref([]);
+
 // this promise will get all the pending service from all table
 const getSerivce = (load) => {
   console.log(load);
@@ -19,34 +18,16 @@ const getSerivce = (load) => {
     api
       .get("Service.php", { params: { type: load } })
       .then((response) => {
-        let wrapper = response.data.Pending;
-
-        // filter for pending service
-        if (load == 0) {
-          PendingData.value = wrapper
-            .filter((res) => res.EventProgress == "Pending")
-            .reverse();
-          console.log(PendingData.value);
-        }
-        if ((load = "Scheduled")) {
-          ScheduledData.value = wrapper
-            .filter((res) => res.EventProgress == "Scheduled")
-            .reverse();
-          console.log(ScheduledData.value);
-        }
-        if ((load = "Done")) {
-          DoneData.value = wrapper
-            .filter((res) => res.EventProgress == "Done")
-            .reverse();
-          console.log(DoneData.value);
+        if (response.data.Status == "Success") {
+          Data.value = response.data.data;
+        } else {
+          Data.value = response.data.data;
         }
       })
       .catch((error) => {
-        msg.value = "an error occured";
-        msgColor.value = "red-5";
         reject(error);
       });
   });
 };
 
-export { getSerivce, PendingData, ScheduledData, DoneData };
+export { getSerivce, Data };

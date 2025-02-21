@@ -25,39 +25,51 @@
       {
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
-        $apiParameter = $arr['type'];
+        $apiParameter = ($arr['type'] == '0') ? '0' :(($arr['type'] == '1') ? '1' : '2');
        
-        if (strpos($apiParameter, 'pending') !== false) {
-        $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE Type != 'Seminar'");
+        
+        $Display_Pending = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
+                                                LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_position d ON d.pos_id = c.position WHERE a.remark = '1' AND event_progress = '$apiParameter' ORDER BY a.created_at  ");
+
+      if(count($Display_Pending) > 0){
+
         foreach ($Display_Pending as $event) {
+          if ($event['event_progress'] == '0') {
+            $icon = "hourglass_empty"; // ⏳ Pending
+            $color = "-yellow-8"; 
+        } elseif ($event['event_progress'] == '1') {
+            $icon = "event"; // 📅 Scheduled
+            $color = "blue";
+        } else {
+            $icon = "check_circle"; // ✅ Done
+            $color = "green";
+        }
           $pendingEvents[] = [
             "all" => $event,
-            "E_ID" => $event['E_ID'],
-            "EventServiceID" => $event['EventServiceID'],
-            "Service" => $event['Service'],
-            "Client" => $event['Client'],
-            "Others" => $event['Others'],
-            "TypeofMass" => $event['TypeofMass'],
-            "Type" => $event['Type'],
-            "TimeTo" => $event['TimeTo'],
-            "TimeFrom" => $event['TimeFrom'],
-            "Date" => $event['Date'],
-            "Venue" => $event['Venue'], 
-            "Duration" => $event['Duration'],
-            "Days" => $event['Days'],
-            "Venue_type" => $event['Venue_type'],
-            "Assigned_Priest" => $event['Assigned_Priest'],
-            "Contact_Number" => $event['Contact_Number'],
-            "CertificateFor" => $event['CertificateFor'],
-            "EventProgress" => $event['EventProgress'],
-            "RequirementStatus" => $event['RequirementStatus']
+            "E_ID" => $event['event_id'],
+            "EventServiceID" => $event['service_id'],
+            "Service" => $event['event_name'],
+            "Client" => $event['client'],
+            "Type" => ($event['type'] == '1') ? "Mass" : "Special",
+            "Date" => $event['date'],
+            "Venue" => $event['venue_name'], 
+            'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
+            "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
+            "EventProgress" => ($event['event_progress'] == '0') ? "Pending" :(($event['event_progress'] == '1') ? "Scheduled" :"Done"),
+            "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
+            "icon" =>$icon,
+            "color" =>$color,
               ];
         
         }
-            echo json_encode(array("Status"=>"Success", "Pending"=>$pendingEvents));
-          }else{
-            echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-          }
+        echo json_encode(array("Status"=>"Success", "data"=>$pendingEvents));
+      }else{
+          echo json_encode(array("Status"=>"Failed", "data"=>[]));
+        }
+            
+        
       }
       public function httpPost($payload)
       {

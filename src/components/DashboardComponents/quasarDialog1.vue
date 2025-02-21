@@ -4,39 +4,44 @@
       :label="buttonLabel"
       :color="buttonColor"
       :icon="icon"
-      @click="showDialog"
+      @click="openDialog"
     />
+    <q-dialog v-model="showDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">{{ title }}</div>
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-section style="max-height: 50vh" class="scroll">
+        </q-card-section>
+
+        <q-separator />
+
+        <q-card-actions align="right">
+          <q-btn flat label="Decline" color="primary" v-close-popup />
+          <q-btn flat label="Accept" color="primary" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script setup>
-import { useQuasar } from "quasar";
-import { defineProps } from "vue";
+import { ref, defineProps } from "vue";
 
-const $q = useQuasar();
-
-const props = defineProps({
+defineProps({
   title: String,
-  message: String, // ✅ Accepts HTML
   buttonLabel: String,
   buttonColor: String,
   icon: String,
+  save: Function,
 });
 
-const showDialog = () => {
-  $q.dialog({
-    title: props.title,
-    message: props.message,
-    html: true,
-  })
-    .onOk(() => {
-      console.log("OK clicked");
-    })
-    .onCancel(() => {
-      console.log("Cancel clicked");
-    })
-    .onDismiss(() => {
-      console.log("Dialog dismissed");
-    });
+let showDialog = ref(false);
+
+const openDialog = () => {
+  showDialog.value = true;
 };
 </script>

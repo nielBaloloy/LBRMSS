@@ -2653,12 +2653,7 @@ import {
   msgs,
   msgColors,
 } from "../../composables/Confirmation.js";
-import {
-  getSerivce,
-  PendingData,
-  ScheduledData,
-  DoneData,
-} from "../../composables/SeviceData.js";
+import { getSerivce, Data } from "../../composables/SeviceData.js";
 import {
   send_burial_data,
   BU_msg,

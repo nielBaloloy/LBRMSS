@@ -131,7 +131,10 @@
           <SSR_datatable
             title="PENDING"
             :columns="columns"
-            :rowsData="PendingData"
+            :rowsData="Data"
+            :getStatusColor="getStatusColor"
+            :getStatusIcon="getStatusIcon"
+            @filterData="applyDateTimeFilter"
           />
         </div>
       </div>
@@ -165,7 +168,7 @@ import SidebarMenu from "../../../components/DashboardComponents/navigation_left
 import SSR_datatable from "src/components/ServicesComponents/SSR_table_component.vue";
 import StepperForm from "src/components/ServicesComponents/StepperForm.vue";
 import { menuData } from "src/data/menuData";
-import { getSerivce, PendingData } from "src/composables/SeviceData.js";
+import { getSerivce, Data } from "src/composables/SeviceData.js";
 
 // ✅ Async function defined before setup()
 
@@ -238,6 +241,14 @@ export default defineComponent({
         align: "center",
       },
       {
+        name: "Status",
+        label: "Status",
+        field: "EventProgress",
+        sortable: true,
+        align: "center",
+        icon: "pause",
+      },
+      {
         name: "Action",
         label: "Action",
         field: "Action",
@@ -258,11 +269,45 @@ export default defineComponent({
         router.push({ path: "/" });
       });
     };
+    const getStatusColor = (status) => {
+      switch (status) {
+        case "Pending":
+          return "orange"; // 🟠 Pending
+        case "Scheduled":
+          return "blue"; // 🔵 Scheduled
+        case "Done":
+          return "green"; // 🟢 Done
+        default:
+          return "grey"; // ❔ Default
+      }
+    };
 
+    const getStatusIcon = (status) => {
+      switch (status) {
+        case "Pending":
+          return "hourglass_empty"; // ⏳
+        case "Scheduled":
+          return "event"; // 📅
+        case "Done":
+          return "check_circle"; // ✅
+        default:
+          return "help"; // ❓
+      }
+    };
+    const save = (props) => {
+      console.log(props);
+    };
+    const applyDateTimeFilter = (filters) => {
+      console.log("Filtering with:", filters);
+      getSerivce(filters.status);
+    };
     return {
-      PendingData,
+      applyDateTimeFilter,
+      save,
+      Data,
       columns,
-
+      getStatusIcon,
+      getStatusColor,
       menuData,
       dialog2: ref(false),
       Logout,
