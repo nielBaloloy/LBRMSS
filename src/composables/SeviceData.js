@@ -17,12 +17,12 @@ const getSerivce = (load) => {
   console.log(load);
   return new Promise((resolve, reject) => {
     api
-      .get("Service.php", { params: { type: "pending" } })
+      .get("Service.php", { params: { type: load } })
       .then((response) => {
         let wrapper = response.data.Pending;
 
         // filter for pending service
-        if ((load = "Pending")) {
+        if (load == 0) {
           PendingData.value = wrapper
             .filter((res) => res.EventProgress == "Pending")
             .reverse();

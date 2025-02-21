@@ -27,31 +27,42 @@
           </template>
         </q-input>
       </template>
+      <template v-slot:top-left>
+        <dialog1
+          title="Filter"
+          :message="filterContent"
+          buttonLabel="Filter"
+          buttonColor="black"
+          icon="sort"
+        />
+      </template>
 
       <!-- Custom slot for Action column -->
       <template v-slot:body-cell-Action="{ row }">
         <q-td>
-          <q-btn
-            color="primary"
+          <q-btn-dropdown
             dense
             flat
-            icon="edit"
-            @click="editRow(row)"
+            icon="more_vert"
+            dropdown-icon="null"
             size="sm"
           >
-            <q-tooltip>Edit</q-tooltip>
-          </q-btn>
+            <q-list>
+              <q-item clickable v-close-popup @click="editRow(row)">
+                <q-item-section avatar>
+                  <q-icon name="edit" color="primary" />
+                </q-item-section>
+                <q-item-section>Edit</q-item-section>
+              </q-item>
 
-          <q-btn
-            color="negative"
-            dense
-            flat
-            icon="delete"
-            @click="deleteRow(row)"
-            size="sm"
-          >
-            <q-tooltip>Delete</q-tooltip>
-          </q-btn>
+              <q-item clickable v-close-popup @click="deleteRow(row)">
+                <q-item-section avatar>
+                  <q-icon name="delete" color="negative" />
+                </q-item-section>
+                <q-item-section>Delete</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
         </q-td>
       </template>
     </q-table>
@@ -60,13 +71,14 @@
 
 <script>
 import { ref, computed, watch } from "vue";
-
+import dialog1 from "src/components/DashboardComponents/quasarDialog1.vue";
 export default {
   props: {
     title: { type: String, default: "Table" },
     columns: { type: Array, required: true },
     rowsData: { type: Array, required: true }, // ✅ Pass an array of objects
   },
+  components: { dialog1 },
   setup(props) {
     const tableRef = ref();
     const filter = ref("");
@@ -131,6 +143,17 @@ export default {
     }
 
     watch(filter, onRequest);
+    let filterContent = `
+        <div class="servicfield" v-show="field2">
+            Type of Mass
+            <select
+              outlined
+              v-model="formData.TypeofMass"
+              :options="massOptions"
+              :dense="true"
+            />
+          </div>
+`;
 
     return {
       editRow,
@@ -141,6 +164,7 @@ export default {
       pagination,
       paginatedRows,
       onRequest,
+      filterContent,
     };
   },
 };

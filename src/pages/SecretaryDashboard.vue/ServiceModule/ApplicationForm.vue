@@ -176,7 +176,7 @@ export default defineComponent({
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
-      await getSerivce("pending"); // Ensure fetch completes before proceeding
+      await getSerivce(0); // Ensure fetch completes before proceeding
       dataLoaded.value = true; // ✅ Mark as loaded
     });
 
@@ -195,18 +195,55 @@ export default defineComponent({
 
     // Table columns
     const columns = [
-      { name: "name", label: "Client", field: "Client", sortable: true },
-      { name: "Service", label: "Service", field: "Service", sortable: true },
-      { name: "Type", label: "Type", field: "Type", sortable: true },
-      { name: "Date", label: "Date", field: "Date", sortable: true },
-      { name: "Venue", label: "Venue", field: "Venue", sortable: true },
+      {
+        name: "name",
+        label: "Client",
+        field: "Client",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Service",
+        label: "Service",
+        field: "Service",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Type",
+        label: "Type",
+        field: "Type",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Date",
+        label: "Date",
+        field: "Date",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Venue",
+        label: "Venue",
+        field: "Venue",
+        sortable: true,
+        align: "center",
+      },
       {
         name: "Assigned Priest",
         label: "Assigned Priest",
         field: "Assigned_Priest",
         sortable: true,
+        align: "center",
       },
-      { name: "Action", label: "Action", field: "Action", sortable: false },
+      {
+        name: "Action",
+        label: "Action",
+        field: "Action",
+        sortable: false,
+        align: "center",
+      },
     ];
 
     // Logout function

@@ -26,10 +26,12 @@
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
         $apiParameter = $arr['type'];
+       
         if (strpos($apiParameter, 'pending') !== false) {
         $Display_Pending = $this->db->rawQuery("SELECT * FROM eventstable WHERE Type != 'Seminar'");
         foreach ($Display_Pending as $event) {
           $pendingEvents[] = [
+            "all" => $event,
             "E_ID" => $event['E_ID'],
             "EventServiceID" => $event['EventServiceID'],
             "Service" => $event['Service'],
