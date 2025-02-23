@@ -1,0 +1,37 @@
+import { ref, readonly } from "vue";
+
+import { api } from "../boot/axios";
+
+const serviceList = ref([]);
+const position = ref();
+const account = ref([]);
+const isActive = ref();
+
+/**
+ * This function accepts parameters of an array then
+ * set the passed array to unitWork data.
+  @param {} object
+ */
+let availablePriest = ref([]);
+//this function will get the available preist based on the event date and time
+const getAvailablePriest = (eventDate) => {
+  console.log(eventDate);
+  return new Promise((resolve, reject) => {
+    api
+      .get("loadPriest.php", { params: { clientSchedule: eventDate } })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          console.log(response.data.availablePriest);
+          availablePriest.value = response.data.availablePriest;
+        } else {
+          console.log(response.data.availablePriest);
+          availablePriest.value = [];
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export { getAvailablePriest, availablePriest };

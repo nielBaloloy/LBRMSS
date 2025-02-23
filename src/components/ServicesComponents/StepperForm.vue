@@ -20,7 +20,7 @@
         class="ScheduleData"
       >
         <!-- services form -->
-        <div class="d-flex col align-items-center q-gutter-md">
+        <div class="d-flex col align-items-start q-gutter-md">
           <div class="servicfield">
             Client Name
             <q-input
@@ -29,6 +29,7 @@
               :dense="true"
               ref="step1Ref"
               :rules="[(val) => !!val || 'Field is required']"
+              class="input-field"
             />
           </div>
           <div class="servicfield">
@@ -44,6 +45,10 @@
                 fill-input
                 input-debounce="0"
                 :options="filterOptions"
+                option-label="event_name"
+                option-value="etype_id"
+                emit-value
+                map-options
                 @new-value="createValue"
                 @filter="filterFn"
                 @update:model-value="customField(formData.Service)"
@@ -63,27 +68,25 @@
 
           <div class="servicfield" v-show="field1">
             Service Type
-            <div class="">
-              <div class="q-gutter-sm">
-                <q-radio
-                  v-model="formData.Type"
-                  val="Special"
-                  label="Special"
-                  @update:model-value="dateShow(formData.Type)"
-                />
-                <q-radio
-                  v-model="formData.Type"
-                  val="Mass"
-                  label="Mass"
-                  @update:model-value="dateShow(formData.Type)"
-                />
-                <q-radio
-                  v-model="formData.Type"
-                  val="Certificate"
-                  label="Certification"
-                  @update:model-value="dateShow(formData.Type)"
-                />
-              </div>
+            <div class="q-gutter-sm">
+              <q-radio
+                v-model="formData.Type"
+                val="Special"
+                label="Special"
+                @update:model-value="dateShow(formData.Type)"
+              />
+              <q-radio
+                v-model="formData.Type"
+                val="Mass"
+                label="Mass"
+                @update:model-value="dateShow(formData.Type)"
+              />
+              <q-radio
+                v-model="formData.Type"
+                val="Certificate"
+                label="Certification"
+                @update:model-value="dateShow(formData.Type)"
+              />
             </div>
           </div>
 
@@ -94,8 +97,10 @@
               v-model="formData.TypeofMass"
               :options="massOptions"
               :dense="true"
+              class="input-field"
             />
           </div>
+
           <div class="servicfield" v-show="field3">
             Specific Service
             <q-input
@@ -104,13 +109,18 @@
               :dense="true"
               ref="step1Ref"
               :rules="[(val) => !!val || 'Field is required']"
+              class="input-field"
             />
           </div>
-          <div class="servicfield flex" v-show="dateField">
-            <div class="date q-mr-md">
-              Date of Event
+
+          <div
+            class="servicfield flex flex-wrap justify-between w-full"
+            v-show="dateField"
+          >
+            <div class="date">
+              <div class="mb-1">Date of Event</div>
               <q-input
-                style="width: 200px"
+                class="w-full"
                 ref="step1Ref"
                 :dense="true"
                 outlined
@@ -139,78 +149,80 @@
                 </template>
               </q-input>
             </div>
-            <div class="time flex">
-              <div class="timeFrom q-mr-md">
-                Time From
-                <q-input
-                  outlined
-                  :dense="true"
-                  v-model="formData.TimeFrom"
-                  mask="time"
-                  style="width: 200px"
-                >
-                  <template v-slot:append>
-                    <q-icon name="access_time" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-time v-model="formData.TimeFrom">
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
-              <div class="timeTo">
-                Time To
-                <q-input
-                  ref="step1Ref"
-                  outlined
-                  :dense="true"
-                  v-model="formData.TimeTo"
-                  mask="time"
-                  style="min-width: 200px"
-                >
-                  <template v-slot:append>
-                    <q-icon name="access_time" class="cursor-pointer">
-                      <q-popup-proxy
-                        cover
-                        transition-show="scale"
-                        transition-hide="scale"
-                      >
-                        <q-time
-                          v-model="formData.TimeTo"
-                          @update:model-value="durationInMinutesEvent(formData)"
-                        >
-                          <div class="row items-center justify-end">
-                            <q-btn
-                              v-close-popup
-                              label="Close"
-                              color="primary"
-                              flat
-                            />
-                          </div>
-                        </q-time>
-                      </q-popup-proxy>
-                    </q-icon>
-                  </template>
-                </q-input>
-              </div>
+
+            <div class="timeFrom flex-1">
+              <div class="mb-1">Time From</div>
+              <q-input
+                class="w-full"
+                outlined
+                :dense="true"
+                v-model="formData.TimeFrom"
+                mask="time"
+              >
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-time v-model="formData.TimeFrom">
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
             </div>
+
+            <div class="timeTo flex-1 min-w-[200px]">
+              <div class="mb-1">Time To</div>
+              <q-input
+                class="w-full"
+                ref="step1Ref"
+                outlined
+                :dense="true"
+                v-model="formData.TimeTo"
+                mask="time"
+              >
+                <template v-slot:append>
+                  <q-icon name="access_time" class="cursor-pointer">
+                    <q-popup-proxy
+                      cover
+                      transition-show="scale"
+                      transition-hide="scale"
+                    >
+                      <q-time
+                        v-model="formData.TimeTo"
+                        @update:model-value="durationInMinutesEvent(formData)"
+                      >
+                        <div class="row items-center justify-end">
+                          <q-btn
+                            v-close-popup
+                            label="Close"
+                            color="primary"
+                            flat
+                          />
+                        </div>
+                      </q-time>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+
             <div class="timeDurat hidden">
               {{ (formData.Duration = timeDurationEvent) }}
             </div>
           </div>
+
           <!-- ==============================Venue Type================================= -->
           <div class="venue" v-show="venue">
             <p>Venue Type</p>
@@ -229,61 +241,46 @@
 
           <div class="Venue" v-show="VenueTypeAddress">
             Venue Address
-
             <q-input
               outlined
               v-model="formData.Venue"
               :dense="true"
               :rules="[(val) => !!val || 'Field is required']"
+              class="input-field"
             />
           </div>
+
           <!-- mass upload -->
           <div class="massUpload" v-show="MassUpload">
-            <div class="massUpload">
-              <p>Upload Files Here</p>
-              <div class="q-pa-md bg-grey-2 flex justify-center">
-                <q-icon name="cloud_download" color="primary" size="32px" />
-              </div>
-              <div
-                class="File q-pa-md bg-grey-2 flex justify-center"
-                style="border: 1px dotted rgb(205, 205, 205)"
-              >
-                <q-file
-                  v-model="excelData"
-                  label="Drop your files here"
-                  use-chips
-                  multiple
-                  borderless
-                  accept=".csv,.xlsx"
-                />
-              </div>
+            <p>Upload Files Here</p>
+            <div class="q-pa-md bg-grey-2 flex justify-center">
+              <q-icon name="cloud_download" color="primary" size="32px" />
+            </div>
+            <div
+              class="File q-pa-md bg-grey-2 flex justify-center"
+              style="border: 1px dotted rgb(205, 205, 205)"
+            >
+              <q-file
+                v-model="excelData"
+                label="Drop your files here"
+                use-chips
+                multiple
+                borderless
+                accept=".csv,.xlsx"
+              />
+            </div>
 
-              <div class="q-pa-md bg-grey-2 flex justify-center">
-                <q-btn
-                  unelevated
-                  class="bg-amber-5"
-                  label="Upload"
-                  style="width: 100%"
-                ></q-btn>
-              </div>
+            <div class="q-pa-md bg-grey-2 flex justify-center">
+              <q-btn
+                unelevated
+                class="bg-amber-5"
+                label="Upload"
+                style="width: 100%"
+              ></q-btn>
             </div>
           </div>
-          <div class="hide" style="display: none">
-            {{ (ServiceWatch = formData.Service) }}
-          </div>
-          <div class="CertificateFor" v-show="Cfor">
-            Certification For
-            <q-input outlined v-model="formData.Venue" :dense="true" />
-          </div>
-          <div class="Description" v-show="Description_Field">
-            Description
-            <q-input
-              outlined
-              v-model="formData.Description"
-              :dense="true"
-              type="textarea"
-            />
-          </div>
+
+          <!-- Contact Number -->
           <div class="servicefield">
             Contact Number
             <q-input outlined v-model="formData.Contact_Number" dense>
@@ -292,9 +289,20 @@
               </template>
             </q-input>
           </div>
-          <div class="lastColumn flex justify-between q-mt-lg">
-            <div class="AddressField flex row" v-show="Address_A">
-              <div class="ServiceAddresss">
+
+          <div
+            class="lastColumn flex justify-between q-mt-lg"
+            style="width: 100%; display: flex"
+          >
+            <div
+              class="AddressField flex row q-gutter-md"
+              v-show="Address_A"
+              style="width: 100%; display: flex"
+            >
+              <div
+                class="ServiceAddresss col"
+                style="flex: 1 1 25%; min-width: 0; padding-right: 10px"
+              >
                 <label>Region<span>*</span></label>
                 <q-select
                   v-model="selectedARegion"
@@ -303,10 +311,14 @@
                   @input="onRegionChangeA()"
                   dense
                   outlined
-                  class="flex-wrap"
+                  class="full-width"
+                  style="width: 100%"
                 />
               </div>
-              <div class="ServiceAddresss">
+              <div
+                class="ServiceAddresss col"
+                style="flex: 1 1 25%; min-width: 0; padding-right: 10px"
+              >
                 <label>Province<span>*</span></label>
                 <q-select
                   v-model="selectedAProvince"
@@ -315,10 +327,14 @@
                   dense
                   outlined
                   :disable="!selectedARegion"
-                  class="flex-wrap"
+                  class="full-width"
+                  style="width: 100%"
                 />
               </div>
-              <div class="ServiceAddresss">
+              <div
+                class="ServiceAddresss col"
+                style="flex: 1 1 25%; min-width: 0; padding-right: 10px"
+              >
                 <label>City<span>*</span></label>
                 <q-select
                   v-model="selectedACity"
@@ -327,10 +343,14 @@
                   dense
                   outlined
                   :disable="!selectedAProvince"
-                  class="flex-wrap"
+                  class="full-width"
+                  style="width: 100%"
                 />
               </div>
-              <div class="ServiceAddresss">
+              <div
+                class="ServiceAddresss col"
+                style="flex: 1 1 25%; min-width: 0"
+              >
                 <label>Barangay<span class="ServiceAddresss">*</span></label>
                 <q-select
                   v-model="selectedABarangay"
@@ -339,30 +359,35 @@
                   dense
                   outlined
                   :disable="!selectedACity"
+                  class="full-width"
+                  style="width: 100%"
                 />
-              </div>
-              <div class="assignment">
-                {{ (formData.Event_Region = regionA) }}
-                {{ (formData.Event_Province = ProvinceA) }}
-                {{ (formData.Event_City = CityA) }}
-                {{ (formData.Event_Barangay = BrgyA) }}
               </div>
             </div>
           </div>
 
+          <!-- Assigned Priest -->
           <div class="servicefield" v-show="Preffered_Priest">
             Assigned Priest
             <q-select
               :dense="true"
               outlined
+              clearable
               ref="step1Ref"
               v-model="formData.Assigned_Priest"
-              :options="priestAvailable"
+              :options="
+                availablePriest && availablePriest.length
+                  ? availablePriest
+                  : [{ priest_id: null, priest_name: 'No available priest' }]
+              "
+              option-value="priest_id"
+              option-label="priest_name"
               :rules="[(val) => !!val || 'Field is required']"
             />
           </div>
         </div>
       </q-step>
+
       <!-- ===================================Event Details End====================================== -->
       <q-step
         :name="2"
@@ -372,13 +397,13 @@
         v-if="stepper2panel"
       >
         <div class="d-flex col align-items-center q-gutter-xs">
-          <div class="MarriageField" v-if="formData.Service == 'Marriage'">
-            <div class="GroomSection">
+          <div class="MarriageField" v-if="formData.Service == '1'">
+            <div class="GroomSections">
               <!-- ============================Groom Information======================================= -->
               <h6 class="q-mb-md q-mt-sm">Groom Information</h6>
               <div class="Marriage flex justify-between q-gutter-xs">
                 <div class="serviceField">
-                  Last Name
+                  Last Name <span style="color: red">*</span>
                   <q-input
                     :dense="true"
                     ref="step2Ref"
@@ -388,7 +413,7 @@
                   />
                 </div>
                 <div class="serviceField">
-                  First Name
+                  First Name <span style="color: red">*</span>
                   <q-input
                     :dense="true"
                     ref="step2Ref"
@@ -404,7 +429,6 @@
                     ref="step2Ref"
                     v-model="marriageData.Groom_Middle_Name"
                     outlined
-                    :rules="[(val) => !!val || 'Field is required']"
                   />
                 </div>
                 <div class="serviceField">
@@ -414,16 +438,10 @@
                     ref="step2Ref"
                     v-model="marriageData.Groom_Suffix"
                     outlined
-                    :rules="[(val) => !!val || 'Field is required']"
                   />
                 </div>
-                <div class="dateofMariiage hidden">
-                  {{ (marriageData.Date_of_Marriage = formData.Date) }}
-                  {{ (marriageData.Grooms_Age = Computedage) }}
-                </div>
                 <div class="serviceField q-mb-lg">
-                  BirthDate
-
+                  BirthDate <span style="color: red">*</span>
                   <q-input
                     :dense="true"
                     outlined
@@ -464,7 +482,7 @@
                   {{ (marriageData.Grooms_Age = Computedage) }}
                 </div>
                 <div class="serviceField">
-                  Age
+                  Age <span style="color: red">*</span>
                   <q-input
                     :dense="true"
                     ref="step2Ref"
@@ -473,7 +491,7 @@
                   />
                 </div>
                 <div class="serviceField">
-                  Status
+                  Status <span style="color: red">*</span>
                   <div class="status">
                     <q-radio
                       v-model="marriageData.Groom_Status"
@@ -488,7 +506,7 @@
                   </div>
                 </div>
                 <div class="serviceField">
-                  Mother's Name
+                  Mother's Name <span style="color: red">*</span>
                   <q-input
                     :dense="true"
                     ref="step2Ref"
@@ -497,76 +515,71 @@
                     :rules="[(val) => !!val || 'Field is required']"
                   />
                 </div>
-                <div class="lastColumn flex justify-between">
-                  <div class="serviceField q-mr-lg">
-                    Father's Name
-                    <q-input
+                <div class="serviceField">
+                  Father's Name <span style="color: red">*</span>
+                  <q-input
+                    :dense="true"
+                    ref="step2Ref"
+                    v-model="marriageData.Groom_Father"
+                    outlined
+                    :rules="[(val) => !!val || 'Field is required']"
+                  />
+                </div>
+
+                <div class="row full-width">
+                  <div class="serviceField">
+                    <label>Region <span style="color: red">*</span></label>
+                    <q-select
+                      v-model="selectedRegion"
+                      :options="regionOptions"
+                      label="Region"
+                      @input="onRegionChange()"
                       :dense="true"
-                      ref="step2Ref"
-                      v-model="marriageData.Groom_Father"
                       outlined
-                      :rules="[(val) => !!val || 'Field is required']"
                     />
                   </div>
-                  <div class="AddressField flex row">
-                    <div class="ServiceAddresss">
-                      <label>Region<span>*</span></label>
-                      <q-select
-                        v-model="selectedRegion"
-                        :options="regionOptions"
-                        label="Region"
-                        @input="onRegionChange()"
-                        dense
-                        outlined
-                        class="flex-wrap"
-                      />
-                    </div>
-                    <div class="ServiceAddresss">
-                      <label>Province<span>*</span></label>
-                      <q-select
-                        v-model="selectedProvince"
-                        :options="provinceOptions"
-                        label="Province"
-                        dense
-                        outlined
-                        :disable="!selectedRegion"
-                        class="flex-wrap"
-                      />
-                    </div>
-                    <div class="ServiceAddresss">
-                      <label>City<span>*</span></label>
-                      <q-select
-                        v-model="selectedCity"
-                        :options="cityOptions"
-                        label="City"
-                        dense
-                        outlined
-                        :disable="!selectedProvince"
-                        class="flex-wrap"
-                      />
-                    </div>
-                    <div class="ServiceAddresss">
-                      <label
-                        >Barangay<span class="ServiceAddresss">*</span></label
-                      >
-                      <q-select
-                        v-model="selectedBarangay"
-                        :options="barangayOptions"
-                        label="Barangay"
-                        dense
-                        outlined
-                        :disable="!selectedCity"
-                      />
-                    </div>
-                    <div class="assignment hidden">
-                      {{ (marriageData.Groom_Region = grEGION) }}
-                      {{ (marriageData.Groom_Province = gProvince) }}
-                      {{ (marriageData.Groom_City = selectedCity) }}
-                      {{ (marriageData.Groom_Barangay = brgy_g) }}
-                    </div>
+                  <div class="serviceField">
+                    <label>Province <span style="color: red">*</span></label>
+                    <q-select
+                      v-model="selectedProvince"
+                      :options="provinceOptions"
+                      label="Province"
+                      :dense="true"
+                      outlined
+                      :disable="!selectedRegion"
+                    />
+                  </div>
+                  <div class="serviceField" cols="4">
+                    <label>City <span style="color: red">*</span></label>
+                    <q-select
+                      v-model="selectedCity"
+                      :options="cityOptions"
+                      label="City"
+                      :dense="true"
+                      outlined
+                      :disable="!selectedProvince"
+                    />
+                  </div>
+                  <div class="serviceField" cols="4">
+                    <label>Barangay <span style="color: red">*</span></label>
+                    <q-select
+                      v-model="selectedBarangay"
+                      :options="barangayOptions"
+                      label="Barangay"
+                      :dense="true"
+                      outlined
+                      :disable="!selectedCity"
+                    />
+                  </div>
+                  <div class="assignment hidden">
+                    {{ (marriageData.Groom_Region = grEGION) }}
+                    {{ (marriageData.Groom_Province = gProvince) }}
+                    {{ (marriageData.Groom_City = selectedCity) }}
+                    {{ (marriageData.Groom_Barangay = brgy_g) }}
                   </div>
                 </div>
               </div>
+
               <!-- gROOM eND -->
 
               <!-- Bride -->
@@ -758,7 +771,7 @@
             </div>
             <!-- ==============================Groom Information END=================================== -->
           </div>
-          <div class="BaptismField" v-else-if="formData.Service == 'Baptism'">
+          <div class="BaptismField" v-else-if="formData.Service == '2'">
             <div class="container-app q-gutter-md flex q-pa-lg justify-start">
               <div style="display: none">
                 {{ (BaptismFormData.EventScheduleID = randnum) }}
@@ -951,10 +964,7 @@
               <div class="inputStep"></div>
             </div>
           </div>
-          <div
-            class="ConfirmationField"
-            v-else-if="formData.Service == 'Confirmation'"
-          >
+          <div class="ConfirmationField" v-else-if="formData.Service == '3'">
             <div class="container-app q-gutter-md flex q-pa-lg justify-start">
               <div style="display: none">
                 {{ (ConfirmationData.EventScheduleID = randnum) }}
@@ -1157,7 +1167,7 @@
               <div class="inputStep"></div>
             </div>
           </div>
-          <div class="BurialField" v-else-if="formData.Service == 'Burial'">
+          <div class="BurialField" v-else-if="formData.Service == '4'">
             <div style="display: none">
               {{ (BurialData.EventScheduleID = randnum) }}
               {{ (formData.EventServiceID = randnum) }}
@@ -1389,146 +1399,151 @@
         v-if="stepper3panel"
       >
         <!-- =====================================Marriage God Parents============================ -->
-        <div class="d-flex col align-items-center q-gutter-xs">
-          <div class="MarriageField" v-if="formData.Service == 'Marriage'">
-            <div class="header flex justify-between">
-              <h6 class="q-mb-md q-mt-sm">Groom Information</h6>
+        <div class="d-flex col align-items-center">
+          <div class="MarriageField q-pa-xs" v-if="formData.Service == '1'">
+            <!-- Header -->
+            <div class="header flex justify-between items-center">
+              <h6 class="q-mb-md q-mt-sm text-primary">Marriage Witness</h6>
               <q-btn
-                rounded
                 unelevated
+                color="primary"
                 @click="addCard"
                 size="md"
                 icon="add"
                 label="Add more"
-              ></q-btn>
+              />
             </div>
-            <div class="marriageInfo flex justify-center q-gutter-md">
-              <div>
-                <div
-                  class="cardwITNESS"
-                  v-for="(card, index) in cards"
-                  :key="index"
-                >
-                  <div class="flex q-gutter-md">
-                    <div class="q-mb-sm">
-                      Groom Witness
-                      <q-input
-                        v-model="card.field1"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <div>
-                      Address
-                      <q-input
-                        v-model="card.field2"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <!-- bride -->
-                    <div>
-                      Bride Testium
-                      <q-input
-                        v-model="card.field3"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <div>
-                      Address
-                      <q-input
-                        v-model="card.field4"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <q-btn
+
+            <!-- Witness Cards -->
+            <div class="marriageInfo column">
+              <div
+                v-for="(card, index) in cards"
+                :key="index"
+                class="cardWitness q-pa-sm"
+              >
+                <q-card flat bordered class="shadow-1">
+                  <q-card-section class="flex items-center q-gutter-md">
+                    <!-- Groom Witness -->
+                    <q-input
+                      v-model="card.field1"
+                      label="Groom Witness"
+                      dense
                       outlined
-                      unelevated
-                      @click="removeCard"
-                      size="sm"
-                      icon="remove"
-                      :disable="cardValues.length <= 1 ? true : false"
-                    ></q-btn>
-                  </div>
-                </div>
-                <div style="display: none">
-                  {{ cardValues }}
-                </div>
+                      class="input-width"
+                    />
+                    <!-- Groom Address -->
+                    <q-input
+                      v-model="card.field2"
+                      label="Address"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Bride Testium -->
+                    <q-input
+                      v-model="card.field3"
+                      label="Bride Testium"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Bride Address -->
+                    <q-input
+                      v-model="card.field4"
+                      label="Address"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Remove Button -->
+
+                    <q-btn
+                      flat
+                      color="negative"
+                      icon="delete"
+                      @click="removeCard(index)"
+                      :disable="cards.length <= 1"
+                    />
+                  </q-card-section>
+                </q-card>
               </div>
             </div>
           </div>
-          <div class="MarriageField" v-if="formData.Service == 'Baptism'">
-            <div class="header flex justify-between">
-              <h6 class="q-mb-md q-mt-sm">God Parents Information</h6>
+
+          <div class="MarriageField q-pa-md" v-if="formData.Service == '2'">
+            <!-- Header -->
+            <div class="header flex justify-between items-center">
+              <h6 class="q-mb-md q-mt-sm text-primary">
+                God Parents Information
+              </h6>
               <q-btn
                 rounded
                 unelevated
+                color="primary"
                 @click="addCard_B"
                 size="md"
                 icon="add"
                 label="Add more"
-              ></q-btn>
+              />
             </div>
-            <div class="marriageInfo flex justify-center q-gutter-md">
-              <div>
-                <div
-                  class="cardwITNESS"
-                  v-for="(card, index) in cards_B"
-                  :key="index"
-                >
-                  <div class="flex q-gutter-md">
-                    <div class="q-mb-sm">
-                      Ninong
-                      <q-input
-                        v-model="card.field1"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <div>
-                      Address
-                      <q-input
-                        v-model="card.field2"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <!-- bride -->
-                    <div>
-                      Ninang
-                      <q-input
-                        v-model="card.field3"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <div>
-                      Address
-                      <q-input
-                        v-model="card.field4"
-                        :dense="true"
-                        outlined
-                      ></q-input>
-                    </div>
-                    <q-btn
+
+            <!-- God Parents Cards -->
+            <div class="marriageInfo column q-gutter-md">
+              <div
+                v-for="(card, index) in cards_B"
+                :key="index"
+                class="cardWitness q-pa-sm q-mb-md"
+              >
+                <q-card flat bordered class="q-pa-sm shadow-1">
+                  <q-card-section class="flex items-center q-gutter-md">
+                    <!-- Ninong -->
+                    <q-input
+                      v-model="card.field1"
+                      label="Ninong"
+                      dense
                       outlined
-                      unelevated
-                      @click="removeCard_B"
-                      size="sm"
+                      class="input-width"
+                    />
+                    <!-- Ninong Address -->
+                    <q-input
+                      v-model="card.field2"
+                      label="Address"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Ninang -->
+                    <q-input
+                      v-model="card.field3"
+                      label="Ninang"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Ninang Address -->
+                    <q-input
+                      v-model="card.field4"
+                      label="Address"
+                      dense
+                      outlined
+                      class="input-width"
+                    />
+                    <!-- Remove Button -->
+                    <q-btn
+                      flat
+                      color="negative"
                       icon="remove"
-                      :disable="cardValues_B.length <= 1 ? true : false"
-                    ></q-btn>
-                  </div>
-                </div>
-                <div style="display: block">
-                  {{ (BaptismFormData.BaptismWitness = cardValues_B) }}
-                </div>
+                      label="Remove"
+                      @click="removeCard_B(index)"
+                      :disable="cards_B.length <= 1"
+                    />
+                  </q-card-section>
+                </q-card>
               </div>
             </div>
           </div>
-          <div class="MarriageField" v-if="formData.Service == 'Confirmation'">
+
+          <div class="MarriageField" v-if="formData.Service == '3'">
             <div class="header flex justify-between">
               <h6 class="q-mb-md q-mt-sm">Witness Information</h6>
               <q-btn
@@ -1597,7 +1612,7 @@
               </div>
             </div>
           </div>
-          <div class="Field" v-if="formData.Service == 'Burial'">
+          <div class="Field" v-if="formData.Service == '4'">
             <div class="inputStep">
               <p class="text-grey-9 q-mb-xs text-subtitle">Date of Death</p>
               <q-input
@@ -1709,83 +1724,135 @@
       >
         <!-- =====================================Marriage God Parents============================ -->
         <div class="d-flex col align-items-center q-gutter-xs">
-          <div class="MarriageField" v-if="formData.Service == 'Marriage'">
+          <div class="MarriageField" v-if="formData.Service == '1'">
             <div class="header justify-between">
               <h6 class="q-mb-md q-mt-sm">
                 Documentary Requirements Checklist
               </h6>
               <div class="q-gutter-sm">
-                <q-checkbox
-                  v-model="requirementsList.Baptismal"
-                  label="Baptismal Certifiate"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                />
-                <q-checkbox
-                  v-model="requirementsList.Marriage_License"
-                  val="Marriage License"
-                  label="Marriage_License"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                />
-                <q-checkbox
-                  v-model="requirementsList.Confirmation"
-                  val="Confirmation"
-                  label="Confirmation"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                />
-                <q-checkbox
-                  v-model="requirementsList.LiveBirthCert"
-                  val="Birth Certificate"
-                  label="Birth Certificate"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                />
-                <q-checkbox
-                  v-model="requirementsList.Cenomar"
-                  val="Cenomar"
-                  label="Cenomar"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                />
-                <q-checkbox
-                  v-model="requirementsList.Interogation"
-                  val="Interogation"
-                  label="Interogation"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                  color="amber"
-                />
-                <q-checkbox
-                  v-model="requirementsList.PreCana"
-                  val="PreCana Seminar"
-                  label="PreCana Seminar"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                  color="amber"
-                />
-                <q-checkbox
-                  v-model="requirementsList.Confession"
-                  val="Confession"
-                  label="Confession"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="checkAllPropertiesTrue(requirementsList)"
-                  color="amber"
-                />
+                <table class="requirements-table">
+                  <tbody>
+                    <tr>
+                      <td class="label-column">Baptismal Certificate</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Baptismal"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Marriage License</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Marriage_License"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Confirmation</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Confirmation"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Birth Certificate</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.LiveBirthCert"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Cenomar</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Cenomar"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Interrogation</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Interogation"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">PreCana Seminar</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.PreCana"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td class="label-column">Confession</td>
+                      <td class="checkbox-column">
+                        <q-checkbox
+                          v-model="requirementsList.Confession"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            checkAllPropertiesTrue(requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
                 <div class="Status" style="display: none">
                   {{ requirementsList }}
@@ -1801,7 +1868,6 @@
                     {{ (marriageData.Status = "Complete") }}
                   </div>
                 </div>
-                {{ marriageData.Status }}
               </div>
             </div>
 
@@ -1825,151 +1891,161 @@
                       v-for="(cardSeminar, index) in Schedulecards"
                       :key="index"
                     >
-                      <div class="flex q-gutter-md">
-                        <div class="q-mb-sm">
-                          Title
-                          <q-input
-                            ref="step4Ref"
-                            v-model="cardSeminar.field1"
-                            :dense="true"
-                            outlined
-                          ></q-input>
-                        </div>
-
-                        <div>
-                          Date
-                          <q-input
-                            :dense="true"
-                            outlined
-                            v-model="cardSeminar.field2"
-                          >
-                            <template v-slot:prepend>
-                              <q-icon name="event" class="cursor-pointer">
-                                <q-popup-proxy
-                                  cover
-                                  transition-show="scale"
-                                  transition-hide="scale"
-                                >
-                                  <q-date
-                                    @update:model-value="
-                                      durationSeminar(cardSeminar)
-                                    "
-                                    v-model="cardSeminar.field2"
-                                    mask="YYYY-MM-DD"
-                                  >
-                                    <div class="row items-center justify-end">
-                                      <q-btn
-                                        v-close-popup
-                                        label="Close"
-                                        color="primary"
-                                        flat
-                                      />
-                                    </div>
-                                  </q-date>
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-                          </q-input>
-                        </div>
-                        <!-- bride -->
-                        <div>
-                          Time Start
-                          <q-input
-                            outlined
-                            v-model="cardSeminar.field3"
-                            mask="time"
-                            dense
-                          >
-                            <template v-slot:append>
-                              <q-icon name="access_time" class="cursor-pointer">
-                                <q-popup-proxy
-                                  cover
-                                  transition-show="scale"
-                                  transition-hide="scale"
-                                >
-                                  <q-time v-model="cardSeminar.field3">
-                                    <div class="row items-center justify-end">
-                                      <q-btn
-                                        v-close-popup
-                                        label="Close"
-                                        color="primary"
-                                        flat
-                                      />
-                                    </div>
-                                  </q-time>
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-                          </q-input>
-                        </div>
-                        <div>
-                          Time End
-                          <q-input
-                            outlined
-                            v-model="cardSeminar.field4"
-                            mask="time"
-                            dense
-                          >
-                            <template v-slot:append>
-                              <q-icon name="access_time" class="cursor-pointer">
-                                <q-popup-proxy
-                                  cover
-                                  transition-show="scale"
-                                  transition-hide="scale"
-                                >
-                                  <q-time
-                                    v-model="cardSeminar.field4"
-                                    @update:model-value="
-                                      durationInMinutesSeminar(cardSeminar)
-                                    "
-                                  >
-                                    <div class="row items-center justify-end">
-                                      <q-btn
-                                        v-close-popup
-                                        label="Close"
-                                        color="primary"
-                                        flat
-                                      />
-                                    </div>
-                                  </q-time>
-                                </q-popup-proxy>
-                              </q-icon>
-                            </template>
-                          </q-input>
-                        </div>
-                        <div class="q-mb-sm">
-                          Venue
-                          <q-input
-                            ref="step4Ref"
-                            v-model="cardSeminar.field7"
-                            :dense="true"
-                            outlined
-                          ></q-input>
-                        </div>
-                        <div class="scheduleData hidden">
-                          {{ SchedulecardValues }}
-                          {{ (marriageData.Witness = cardValues) }}
-                          {{ SeminarDay }}
-                          {{ timeDurationSeminar }}
-                          <div style="display: block">
-                            {{ SchedulecardValues }}
-                            {{ (cardSeminar.field5 = SeminarDay) }}
-                            {{ (cardSeminar.field6 = timeDurationSeminar) }}
-                            {{
-                              (marriageData.SeminarDetails = SchedulecardValues)
-                            }}
-                            {{ (formData.EventServiceID = randnum) }}
+                      <div class="seminar-card q-pa-md q-mb-sm">
+                        <div class="flex q-gutter-md items-center">
+                          <div class="field">
+                            <label>Title</label>
+                            <q-input
+                              ref="step4Ref"
+                              v-model="cardSeminar.field1"
+                              dense
+                              outlined
+                            />
                           </div>
+
+                          <div class="field">
+                            <label>Date</label>
+                            <q-input
+                              dense
+                              outlined
+                              v-model="cardSeminar.field2"
+                            >
+                              <template v-slot:prepend>
+                                <q-icon name="event" class="cursor-pointer">
+                                  <q-popup-proxy
+                                    cover
+                                    transition-show="scale"
+                                    transition-hide="scale"
+                                  >
+                                    <q-date
+                                      @update:model-value="
+                                        durationSeminar(cardSeminar)
+                                      "
+                                      v-model="cardSeminar.field2"
+                                      mask="YYYY-MM-DD"
+                                    >
+                                      <div class="row items-center justify-end">
+                                        <q-btn
+                                          v-close-popup
+                                          label="Close"
+                                          color="primary"
+                                          flat
+                                        />
+                                      </div>
+                                    </q-date>
+                                  </q-popup-proxy>
+                                </q-icon>
+                              </template>
+                            </q-input>
+                          </div>
+
+                          <div class="field">
+                            <label>Time Start</label>
+                            <q-input
+                              outlined
+                              v-model="cardSeminar.field3"
+                              dense
+                            >
+                              <template v-slot:append>
+                                <q-icon
+                                  name="access_time"
+                                  class="cursor-pointer"
+                                >
+                                  <q-popup-proxy
+                                    cover
+                                    transition-show="scale"
+                                    transition-hide="scale"
+                                  >
+                                    <q-time v-model="cardSeminar.field3">
+                                      <div class="row items-center justify-end">
+                                        <q-btn
+                                          v-close-popup
+                                          label="Close"
+                                          color="primary"
+                                          flat
+                                        />
+                                      </div>
+                                    </q-time>
+                                  </q-popup-proxy>
+                                </q-icon>
+                              </template>
+                            </q-input>
+                          </div>
+
+                          <div class="field">
+                            <label>Time End</label>
+                            <q-input
+                              outlined
+                              v-model="cardSeminar.field4"
+                              dense
+                            >
+                              <template v-slot:append>
+                                <q-icon
+                                  name="access_time"
+                                  class="cursor-pointer"
+                                >
+                                  <q-popup-proxy
+                                    cover
+                                    transition-show="scale"
+                                    transition-hide="scale"
+                                  >
+                                    <q-time
+                                      v-model="cardSeminar.field4"
+                                      @update:model-value="
+                                        durationInMinutesSeminar(cardSeminar)
+                                      "
+                                    >
+                                      <div class="row items-center justify-end">
+                                        <q-btn
+                                          v-close-popup
+                                          label="Close"
+                                          color="primary"
+                                          flat
+                                        />
+                                      </div>
+                                    </q-time>
+                                  </q-popup-proxy>
+                                </q-icon>
+                              </template>
+                            </q-input>
+                          </div>
+
+                          <div class="field">
+                            <label>Venue</label>
+                            <q-input
+                              ref="step4Ref"
+                              v-model="cardSeminar.field7"
+                              dense
+                              outlined
+                            />
+                          </div>
+                          <div class="scheduleData hidden">
+                            {{ SchedulecardValues }}
+                            {{ (marriageData.Witness = cardValues) }}
+                            {{ SeminarDay }}
+                            {{ timeDurationSeminar }}
+                            <div style="display: block">
+                              {{ SchedulecardValues }}
+                              {{ (cardSeminar.field5 = SeminarDay) }}
+                              {{ (cardSeminar.field6 = timeDurationSeminar) }}
+                              {{
+                                (marriageData.SeminarDetails =
+                                  SchedulecardValues)
+                              }}
+                              {{ (formData.EventServiceID = randnum) }}
+                            </div>
+                          </div>
+                          <q-btn
+                            unelevated
+                            @click="RemoveScheduleCard(Schedulecards)"
+                            size="sm"
+                            icon="delete"
+                            label="Remove"
+                            color="red"
+                            class="remove-btn"
+                            :disable="Schedulecards.length <= 1"
+                          />
                         </div>
-                        <q-btn
-                          rounded
-                          unelevated
-                          @click="RemoveScheduleCard(Schedulecards)"
-                          size="md"
-                          icon="remove"
-                          label="Remove"
-                          :disable="Schedulecards.length <= 1 ? true : false"
-                        ></q-btn>
                       </div>
                     </div>
                   </div>
@@ -1978,7 +2054,7 @@
             </div>
           </div>
           <!-- ======================= BAPTISM DATA ====================================== -->
-          <div class="MarriageField" v-if="formData.Service == 'Baptism'">
+          <div class="MarriageField" v-if="formData.Service == '2'">
             <div class="header justify-between">
               <h6 class="q-mb-md q-mt-sm">
                 Documentary Requirements Checklist
@@ -2222,7 +2298,7 @@
             </div>
           </div>
           <!-- =========================Confirmation Data ===================================== -->
-          <div class="MarriageField" v-if="formData.Service == 'Confirmation'">
+          <div class="MarriageField" v-if="formData.Service == '3'">
             <div class="header justify-between">
               <h6 class="q-mb-md q-mt-sm">
                 Documentary Requirements Checklist
@@ -2486,7 +2562,8 @@
               </div>
             </div>
           </div>
-          <div class="MarriageField" v-if="formData.Service == 'Burial'">
+
+          <div class="MarriageField" v-if="formData.Service == '4'">
             Sacramental and Documentary Requirements
 
             <div class="inputStep" style="width: 200px">
@@ -2642,18 +2719,19 @@ import {
 import { useQuasar } from "quasar";
 import philippineData from "../../AddressPH/philippine_provinces_cities_municipalities_and_barangays_2019v2.json";
 import moment from "moment";
-import {
-  sendMarriageData,
-  msg,
-  Marriage_PendingData,
-  msgColor,
-} from "../../composables/Marriage.js";
+
 import {
   sendConfirmationData,
   msgs,
   msgColors,
 } from "../../composables/Confirmation.js";
-import { getSerivce, Data } from "../../composables/SeviceData.js";
+import {
+  getSerivce,
+  Data,
+  sendEventCeremonyData,
+  msg,
+  msgColor,
+} from "../../composables/SeviceData.js";
 import {
   send_burial_data,
   BU_msg,
@@ -2666,17 +2744,18 @@ import {
   send_blessing,
   send_mass,
 } from "../../composables/OtherService.js";
+import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 
-const stringOptions = [
-  "Marriage",
-  "Baptism",
-  "Confirmation",
-  "Burial",
-  "Annointing of the Sick",
-  "Blessing",
-  "Misa",
-  "Others",
-];
+const stringOptions = ref([
+  { etype_id: "1", event_name: "Marriage" },
+  { etype_id: "2", event_name: "Baptism" },
+  { etype_id: "3", event_name: "Confirmation" },
+  { etype_id: "4", event_name: "Burial" },
+  { etype_id: "5", event_name: "Anointing of the Sick" },
+  { etype_id: "6", event_name: "Blessing" },
+  { etype_id: "7", event_name: "Misa" },
+  { etype_id: "8", event_name: "Others" },
+]);
 
 export default defineComponent({
   name: "StepperForm",
@@ -2690,7 +2769,7 @@ export default defineComponent({
     let provinceOptions = ref([]);
     let cityOptions = ref([]);
     let barangayOptions = ref([]);
-    let priestAvailable = ["Jay Jay", "Eduard"];
+
     let massOptions = [
       "Mass Intentions",
       "Special Occasion Masses",
@@ -2703,12 +2782,20 @@ export default defineComponent({
       value: null,
       category: null,
     });
-    const filterOptions = ref(stringOptions);
-    let createValue = (val, done) => {
+    const filterOptions = ref([...stringOptions.value]);
+
+    const createValue = (val, done) => {
       if (val.length > 0) {
-        if (!stringOptions.includes(val)) {
-          stringOptions.push(val);
+        const exists = stringOptions.value.some(
+          (item) => item.event_name.toLowerCase() === val.toLowerCase()
+        );
+
+        if (!exists) {
+          const newId = (stringOptions.value.length + 1).toString();
+          const newItem = { etype_id: newId, event_name: val };
+          stringOptions.value.push(newItem);
         }
+
         done(val, "toggle");
       }
     };
@@ -2716,11 +2803,11 @@ export default defineComponent({
     const filterFn = (val, update, abort) => {
       update(() => {
         if (val === "") {
-          filterOptions.value = stringOptions;
+          filterOptions.value = [...stringOptions.value];
         } else {
           const needle = val.toLowerCase();
-          filterOptions.value = stringOptions.filter(
-            (v) => v.toLowerCase().indexOf(needle) > -1
+          filterOptions.value = stringOptions.value.filter((v) =>
+            v.event_name.toLowerCase().includes(needle)
           );
         }
       });
@@ -2760,12 +2847,19 @@ export default defineComponent({
     //data
 
     // Age Computation
-    let Computedage = ref();
-    let computeAge = (DOM, DOB) => {
-      let dom = new Date(DOM);
-      let dob = new Date(DOB);
-      const diffTime = Math.abs(dom - dob);
-      Computedage.value = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
+    let Computedage = ref(null);
+
+    const computeAge = (DOM, DOB) => {
+      if (!DOM || !DOB) return (Computedage.value = null);
+
+      let dom = new Date(DOM),
+        dob = new Date(DOB);
+      let age = dom.getFullYear() - dob.getFullYear();
+
+      if (dom < new Date(dob.setFullYear(dom.getFullYear()))) age--;
+
+      Computedage.value = age;
+      console.log("Age:", Computedage.value);
     };
     // bride Computed Age
 
@@ -2802,9 +2896,11 @@ export default defineComponent({
     let stepTitle2 = ref();
     let Address_A = ref(false);
     let Description_Field = ref(false);
+
     let customField = (res) => {
+      console.log(res);
       // change this according to selected services
-      if (res === "Marriage") {
+      if (res === "1") {
         field1.value = true;
         field3.value = false;
         stepper2panel.value = true;
@@ -2812,16 +2908,7 @@ export default defineComponent({
         stepTitle.value = "Witness and God Parents";
         stepTitle2.value = "Seminar and Requirements";
         Address_A.value = false;
-      } else if (res === "Baptism") {
-        field1.value = true;
-        field3.value = false;
-        stepper2panel.value = true;
-        Preffered_Priest.value = true;
-        stepper3panel.value = true;
-        stepTitle.value = "Witness and God Parents";
-        stepTitle2.value = "Seminar and Requirements";
-        Address_A.value = false;
-      } else if (res === "Confirmation") {
+      } else if (res === "2") {
         field1.value = true;
         field3.value = false;
         stepper2panel.value = true;
@@ -2830,7 +2917,16 @@ export default defineComponent({
         stepTitle.value = "Witness and God Parents";
         stepTitle2.value = "Seminar and Requirements";
         Address_A.value = false;
-      } else if (res === "Burial") {
+      } else if (res === "3") {
+        field1.value = true;
+        field3.value = false;
+        stepper2panel.value = true;
+        Preffered_Priest.value = true;
+        stepper3panel.value = true;
+        stepTitle.value = "Witness and God Parents";
+        stepTitle2.value = "Seminar and Requirements";
+        Address_A.value = false;
+      } else if (res === "4") {
         field1.value = true;
         field3.value = false;
         stepper2panel.value = true;
@@ -2839,7 +2935,7 @@ export default defineComponent({
         stepTitle.value = "Additional Info";
         stepTitle2.value = "Requirements";
         Address_A.value = false;
-      } else if (res === "Annointing of the Sick") {
+      } else if (res === "5") {
         field1.value = false;
         field3.value = false;
         field2.value = false;
@@ -2848,7 +2944,7 @@ export default defineComponent({
         stepper2panel.value = false;
         Preffered_Priest.value = true;
         Address_A.value = true;
-      } else if (res === "Blessing") {
+      } else if (res === "6") {
         field1.value = false;
         field3.value = false;
         field2.value = false;
@@ -2858,7 +2954,7 @@ export default defineComponent({
         stepper2panel.value = false;
         Preffered_Priest.value = true;
         Address_A.value = true;
-      } else if (res === "Misa") {
+      } else if (res === "7") {
         field1.value = false;
         field2.value = true;
         field3.value = false;
@@ -2869,7 +2965,7 @@ export default defineComponent({
         Description_Field.value = true;
         Preffered_Priest.value = true;
         venue.value = true;
-      } else if (res === "Others") {
+      } else if (res === "8") {
         field1.value = false;
         field2.value = false;
         field3.value = true;
@@ -2895,6 +2991,7 @@ export default defineComponent({
     let selectedABarangay = ref(null);
 
     onMounted(() => {
+      getAvailablePriest();
       console.log(philippineData);
       regionOptions.value = Object.keys(philippineData)
         .map((regionCode) => ({
@@ -3029,7 +3126,7 @@ export default defineComponent({
         }
         Certificate.value = true;
         Event.value = false;
-      } else if (type === "Misa") {
+      } else if (type === "Mass") {
         dateField.value = true;
         MassUpload.value = true;
         venue.value = true;
@@ -3193,6 +3290,7 @@ export default defineComponent({
     let selectedBarangayBride = ref(null);
 
     onMounted(() => {
+      getAvailablePriest();
       console.log(philippineData);
       regionOptions.value = Object.keys(philippineData)
         .map((regionCode) => ({
@@ -3993,22 +4091,15 @@ export default defineComponent({
         default:
           // Marriage x special
           if (
-            formData.value.Service == "Marriage" &&
+            formData.value.Service == "1" &&
             formData.value.Type == "Special"
           ) {
-            sendMarriageData(formData.value, marriageData.value);
-            onMounted(() => {
-              let loads = "pending";
-              getSerivce(loads);
-            });
-            let GetScheduledData = () => {
-              let loads = "Scheduled";
-              getSerivce(loads);
-            };
-            let GetDoneData = () => {
-              let loads = "Done";
-              getSerivce(loads);
-            };
+            sendEventCeremonyData(
+              formData.value.Service,
+              formData.value,
+              marriageData.value
+            );
+
             $q.notify({
               message: msg,
               color: msgColor.value,
@@ -4020,7 +4111,7 @@ export default defineComponent({
             formData.value.Service == "Baptism" &&
             formData.value.Type == "Special"
           ) {
-            sendMarriageData(formData.value, BaptismFormData.value);
+            sendEventCeremonyData(formData.value, BaptismFormData.value);
             console.log();
             onMounted(() => {
               let loads = "pending";
@@ -4041,7 +4132,7 @@ export default defineComponent({
             });
           }
           if (
-            formData.value.Service == "Confirmation" &&
+            formData.value.Service == "3" &&
             formData.value.Type == "Special"
           ) {
             sendConfirmationData(formData.value, ConfirmationData.value);
@@ -4049,14 +4140,7 @@ export default defineComponent({
               let loads = "pending";
               getSerivce(loads);
             });
-            let GetScheduledData = () => {
-              let loads = "Scheduled";
-              getSerivce(loads);
-            };
-            let GetDoneData = () => {
-              let loads = "Done";
-              getSerivce(loads);
-            };
+
             $q.notify({
               message: msgs,
               color: msgColors.value,
@@ -4123,8 +4207,26 @@ export default defineComponent({
     function onBackStep() {
       stepperRef.value.previous();
     }
-    //
-
+    //=======get avialable priest based on the date
+    const eventDetails = computed(() => ({
+      date: formData.value.Date,
+      timeFrom: formData.value.TimeFrom,
+      timeTo: formData.value.TimeTo,
+    }));
+    watch(
+      () => [
+        formData.value.Date,
+        formData.value.TimeFrom,
+        formData.value.TimeTo,
+      ],
+      ([newDate, newTimeFrom, newTimeTo]) => {
+        if (newDate && newTimeFrom && newTimeTo) {
+          formData.value.Assigned_Priest = null;
+          getAvailablePriest(eventDetails.value);
+          // Pass event details to function
+        }
+      }
+    );
     return {
       // Stepper
       Description_Field,
@@ -4236,7 +4338,7 @@ export default defineComponent({
       timeDurationEvent,
       durationInMinutesEvent,
       //Preffered Priest
-      priestAvailable,
+      availablePriest,
       // ==========================BAPTISM DATA=============================== //
       BaptismFormData,
       // Ninong Ninang Section
@@ -4317,18 +4419,76 @@ export default defineComponent({
   margin: 0 auto;
 }
 .MarriageField {
-  max-width: 65vw;
+  max-width: 850px;
 }
 .AddressField {
-  max-width: 47vw;
   display: flex;
 }
 .ServiceAddresss {
-  width: 12em;
+  width: 250px;
 }
 .GroomSection {
   background-color: rgb(253, 253, 253);
   padding: 1em;
   margin-top: -30px;
+}
+.input-width {
+  width: 20%;
+  min-width: 100px;
+}
+.requirements-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.requirements-table tr {
+  border-bottom: 1px solid #ccc;
+}
+
+.label-column {
+  text-align: left;
+  padding: 10px;
+  font-weight: bold;
+  width: 70%;
+}
+
+.checkbox-column {
+  text-align: right;
+  padding: 10px;
+  width: 30%;
+}
+.seminar-card {
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* Equal Input Sizing */
+.field {
+  flex: 1;
+  min-width: 160px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* Remove Button */
+.remove-btn {
+  background: #e24144;
+  color: white;
+  transition: 0.3s ease-in-out;
+  margin-left: auto;
+}
+
+.remove-btn:hover {
+  background: #ff7875;
 }
 </style>

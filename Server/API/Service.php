@@ -31,7 +31,9 @@
         $Display_Pending = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
                                                 LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
-                                                LEFT JOIN lbrmss_position d ON d.pos_id = c.position WHERE a.remark = '1' AND event_progress = '$apiParameter' ORDER BY a.created_at  ");
+                                                LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
+                                                LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
+                                                WHERE a.remark = '1' AND event_progress = '$apiParameter' ORDER BY a.created_at  ");
 
       if(count($Display_Pending) > 0){
 
@@ -51,7 +53,7 @@
             "E_ID" => $event['event_id'],
             "EventServiceID" => $event['service_id'],
             "Service" => $event['event_name'],
-            "Client" => $event['client'],
+            "Client" => $event['name'],
             "Type" => ($event['type'] == '1') ? "Mass" : "Special",
             "Date" => $event['date'],
             "Venue" => $event['venue_name'], 
@@ -78,39 +80,40 @@
         $arr = json_decode($datas, true);
         
         $Event =$arr['eventData'];//Event Data
-        $eventData = Array(
-          "E_ID" => null,
-          "EventServiceID" => $Event['EventServiceID'],
-          "Client" => $Event['Client'],
-          "Service" => $Event['Service'],
-          "Others" => $Event['Others'],
-          "TypeofMass" => $Event['TypeofMass'],
-          "Type" => 'Special',
-          "TimeTo" => $Event['TimeTo'],
-          "TimeFrom" => $Event['TimeFrom'],
-          "Date" => $Event['Date'],  
-          "Venue" =>  $Event['Event_Barangay']. " ".$Event['Event_City']. " ". $Event['Event_Province'] ,
-          "Duration" => $Event['Duration'],
-          "Days" => $Event['Days'],
-          "Venue_type" => 'Outside',
-          "Assigned_Priest" => $Event['Assigned_Priest'],
-          "Contact_Number" => $Event['Contact_Number'],
-          "Event_Region"=>$Event['Event_Region'],
-          "Event_Province"=>$Event['Event_Province'],
-          "Event_City"=>$Event['Event_City'],
-          "Event_Brgy"=>$Event['Event_Barangay'],
-          "CertificateFor" =>'NA',
-          "EventProgress" =>'Pending',
-          "RequirementStatus"=>'NA'
-          // "Description"=>$Event['Description']
-          );
+         echo $Event;
+        // $eventData = Array(
+        //   "E_ID" => null,
+        //   "EventServiceID" => $Event['EventServiceID'],
+        //   "Client" => $Event['Client'],
+        //   "Service" => $Event['Service'],
+        //   "Others" => $Event['Others'],
+        //   "TypeofMass" => $Event['TypeofMass'],
+        //   "Type" => 'Special',
+        //   "TimeTo" => $Event['TimeTo'],
+        //   "TimeFrom" => $Event['TimeFrom'],
+        //   "Date" => $Event['Date'],  
+        //   "Venue" =>  $Event['Event_Barangay']. " ".$Event['Event_City']. " ". $Event['Event_Province'] ,
+        //   "Duration" => $Event['Duration'],
+        //   "Days" => $Event['Days'],
+        //   "Venue_type" => 'Outside',
+        //   "Assigned_Priest" => $Event['Assigned_Priest'],
+        //   "Contact_Number" => $Event['Contact_Number'],
+        //   "Event_Region"=>$Event['Event_Region'],
+        //   "Event_Province"=>$Event['Event_Province'],
+        //   "Event_City"=>$Event['Event_City'],
+        //   "Event_Brgy"=>$Event['Event_Barangay'],
+        //   "CertificateFor" =>'NA',
+        //   "EventProgress" =>'Pending',
+        //   "RequirementStatus"=>'NA'
+        //   // "Description"=>$Event['Description']
+        //   );
 
-          $insert_EventInfo =$this->db->insert('eventstable', $eventData);
-          if($insert_EventInfo){
-            echo json_encode(array("Status"=>"Success"));
-          }else{
-            echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-          }
+        //   $insert_EventInfo =$this->db->insert('eventstable', $eventData);
+        //   if($insert_EventInfo){
+        //     echo json_encode(array("Status"=>"Success"));
+        //   }else{
+        //     echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+        //   }
     }
  
      

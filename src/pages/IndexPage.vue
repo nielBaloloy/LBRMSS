@@ -77,12 +77,9 @@
 </template>
 
 <style lang="scss" scoped>
-
-
 * {
   margin: 0;
   overflow: hidden;
-  
 }
 .main-container {
   background: rgb(221, 221, 221);
@@ -134,11 +131,16 @@
   display: flex;
   flex-direction: row;
 }
-
 </style>
 <script>
 import { defineComponent, ref, onMounted } from "vue";
-import { LoginPayload,account,status,position,isActive} from '../composables/login'
+import {
+  LoginPayload,
+  account,
+  status,
+  position,
+  isActive,
+} from "../composables/login";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 
@@ -153,37 +155,34 @@ export default defineComponent({
       password: null,
       Module: "Login",
     });
-    
+
     let sessionkey = SessionStorage.getItem("log");
     if (sessionkey === null || "") {
       router.push({ path: "/" });
     } else {
-      router.push({ path: "/SecretaryDashboard" });
+      router.push({ path: "/dashboard" });
     }
     let login = (payload) => {
-        LoginPayload(payload);
-        setTimeout(() => {
-         
-          loadData();
-        }, 1000);
+      LoginPayload(payload);
+      setTimeout(() => {
+        loadData();
+      }, 1000);
 
-        //loading function'
-        let loadData = () => {
+      //loading function'
+      let loadData = () => {
         $q.loading.show({
           message: "Verifying Credentials...",
         });
 
         timer = setTimeout(() => {
           if (status.value === "Success" && isActive.value === 1) {
-            if (position.value == "Secretary" || position.value == "Admin" ) {
+            if (position.value == "Secretary" || position.value == "Admin") {
               let accDetails = JSON.stringify(account.value);
               SessionStorage.set("log", accDetails);
-              setTimeout(
-                () => 
+              setTimeout(() =>
                 router.push({
-                  path: "/SecretaryDashboard",
-                }),
-                
+                  path: "/dashboard",
+                })
               );
             }
             if (position.value == "Assistant Secretary") {
@@ -193,7 +192,7 @@ export default defineComponent({
               setTimeout(
                 () => sendlogs(payload),
                 router.push({
-                  path: "/SecretaryDashboard",
+                  path: "/dashboard",
                 }),
                 1000
               );
@@ -204,7 +203,7 @@ export default defineComponent({
               setTimeout(
                 () => sendlogs(payload),
                 router.push({
-                  path: "/CashierDashboard",
+                  path: "/dashboard",
                 }),
                 1000
               );
@@ -214,8 +213,7 @@ export default defineComponent({
               message: "Username or Password is incorrect",
               color: "red-7",
             });
-          }
-          else if (isActive.value === "No") {
+          } else if (isActive.value === "No") {
             $q.notify({
               message: "Your Account is no longer active  ",
               color: "red-7",
@@ -224,7 +222,7 @@ export default defineComponent({
 
           $q.loading.hide();
           timer = void 0;
-        },1000);
+        }, 1000);
       };
     };
     return {
@@ -236,7 +234,5 @@ export default defineComponent({
       loginData,
     };
   },
- 
 });
-
 </script>

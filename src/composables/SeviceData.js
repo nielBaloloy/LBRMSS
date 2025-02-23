@@ -10,7 +10,9 @@ import {} from "./Marriage";
 
 // declarations
 let Data = ref([]);
-
+let EventListData = ref([]);
+let msg = ref();
+let msgColor = ref();
 // this promise will get all the pending service from all table
 const getSerivce = (load) => {
   console.log(load);
@@ -30,4 +32,57 @@ const getSerivce = (load) => {
   });
 };
 
-export { getSerivce, Data };
+const sendEventCeremonyData = (eventType, event_Payload, ServicePayload) => {
+  return new Promise((resolve, reject) => {
+    if (event_Payload.Service === "1") {
+      api
+        .post("MarriageAPI.php", {
+          eventData: event_Payload,
+          MarriageData: ServicePayload,
+        })
+        .then((response) => {
+          if (response.data.Status == "Success") {
+            msg.value = "Application Submitted";
+            msgColor.value = "green-5";
+            getSerivce(0);
+          } else {
+            msg.value = "It's not you, its me";
+            msgColor.value = "red-5";
+          }
+
+          console.log(msg.value, msgColor.value);
+        })
+        .catch((error) => {
+          msg.value = "an error occured";
+          msgColor.value = "red-5";
+          reject(error);
+        });
+    }
+    if (event_Payload.Service === "2") {
+      api
+        .post("BaptismApi.php", {
+          eventData: event_Payload,
+          BaptismData: ServicePayload,
+        })
+        .then((response) => {
+          if (response.data.Status == "Success") {
+            msg.value = "Application Submitteds";
+            msgColor.value = "green-5";
+            getSerivce(0);
+          } else {
+            msg.value = "It's not you , its me";
+            msgColor.value = "red-5";
+          }
+
+          console.log(msg.value, msgColor.value);
+        })
+        .catch((error) => {
+          msg.value = "an error occured";
+          msgColor.value = "red-5";
+          reject(error);
+        });
+    }
+  });
+};
+
+export { getSerivce, Data, sendEventCeremonyData, msg, msgColor };

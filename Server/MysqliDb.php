@@ -2432,6 +2432,11 @@ class MysqliDb
         return $this;
     }
 
+    /**this method get the last inserted id from a table */
+    
+   
+
+
     /**
      * This method allows you to specify multiple (method chaining optional) OR WHERE statements for the join table on part of the SQL query.
      *
@@ -2518,6 +2523,80 @@ class MysqliDb
                     $this->_query .= $this->_buildPair ($operator, $val);
         }
     }
+
+
+    /** ========= get max id of a table and its field */
+    public function getMaxId($tbl, $id) {
+        $query = $this->rawQueryOne("SELECT MAX($id) AS max_id FROM $tbl");
+        return ($query && isset($query['max_id'])) ? $query['max_id'] : 0;
+    }
+
+// With Return Value
+/**This function executes multiple SQL
+ *  statements in a transaction 
+ * and returns true if successful or false otherwise. */
+    public function database_update($sql) {
+        $queries = explode(";", trim($sql));
+        $ret = false;
+    
+        $this->startTransaction(); // Begin transaction
+        $success = true;
+    
+        foreach ($queries as $query) {
+            if (!empty(trim($query))) { // Skip empty queries
+                $q = $this->rawQuery($query);
+                $success = $success && $q;
+            }
+        }
+    
+        if ($success) {
+            $this->commit(); // Commit transaction
+            $ret = true;
+        } else {
+            $this->rollback(); // Rollback transaction on failure
+        }
+    
+        return $ret;
+    }
+    /**Without Return Value */
+    public function database_update1($sql) {
+        $queries = explode(";", trim($sql));
+    
+        $this->startTransaction(); // Begin transaction
+        $success = true;
+    
+        foreach ($queries as $query) {
+            if (!empty(trim($query))) { // Skip empty queries
+                $q = $this->rawQuery($query);
+                $success = $success && $q;
+            }
+        }
+    
+        if ($success) {
+            $this->commit(); // Commit transaction
+        } else {
+            $this->rollback(); // Rollback transaction
+        }
+    }
+    
+
+    // get user account id
+    public function getAccountId($eid, $userTypeId) {
+        return $this->where('eid', $eid)
+                    ->where('userTypeId', $userTypeId)
+                    ->where('remark', '1')
+                    ->get('across_p_user_account');
+    }
+    
+
+
+
+
+
+
+
+
+
 }
 
 // END class

@@ -99,15 +99,23 @@
       bordered
     >
       <div class="LOGO q-mb-xl"></div>
-      <SidebarMenu :menuItems="menuData" />
+      <SidebarMenu
+        :menuItems="menuData"
+        v-if="myObject.AccessLvl === 'Secretary'"
+      />
+      <SidebarMenu
+        :menuItems="menuData2"
+        v-if="myObject.AccessLvl === 'Cashier'"
+      />
     </q-drawer>
 
     <q-page-container class="bg-accent">
       <div class="banner q-pa-lg">
         <q-banner class="banner-plate bg-secondary text-dark q-pa-md">
-          <p class="text-h5">Welcome {{ myObject.Fullname }}</p>
+          <p class="text-h5">Welcome {{ myObject.Name }}</p>
         </q-banner>
-        <EventCard />
+        <EventCard v-if="myObject.AccessLvl === 'Secretary'" />
+        <Graph v-if="myObject.AccessLvl === 'Cashier'" />
       </div>
     </q-page-container>
   </q-layout>
@@ -118,10 +126,11 @@ import { ref, defineComponent } from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import EventCard from "../../components/DashboardComponents/ScheduleCard-PLate.vue";
+import Graph from "../../components/DashboardComponents/MainGraph.vue";
 import SidebarMenu from "../../components/DashboardComponents/navigation_left.vue";
-import { menuData } from "src/data/menuData";
+import { menuData, menuData2 } from "src/data/menuData";
 export default defineComponent({
-  components: { EventCard, SidebarMenu },
+  components: { EventCard, SidebarMenu, Graph },
   setup() {
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
@@ -164,6 +173,7 @@ export default defineComponent({
     };
 
     return {
+      menuData2,
       menuData,
       Logout,
       myObject,
