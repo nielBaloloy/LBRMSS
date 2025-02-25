@@ -29,7 +29,13 @@ const routes = [
         "../pages/SecretaryDashboard.vue/AccountManagement/AccountManagement.vue"
       ),
   },
-
+  {
+    path: "/EventSchedule",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/EventScheduler/EventScheduler_main.vue"
+      ),
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

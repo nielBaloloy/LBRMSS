@@ -169,7 +169,11 @@ import SSR_datatable from "src/components/ServicesComponents/SSR_table_component
 import StepperForm from "src/components/ServicesComponents/StepperForm.vue";
 import { menuData } from "src/data/menuData";
 import { getSerivce, Data } from "src/composables/SeviceData.js";
-
+import FullCalendar from "@fullcalendar/vue3";
+import dayGridPlugin from "@fullcalendar/daygrid"; // Month view
+import timeGridPlugin from "@fullcalendar/timegrid"; // Week & Day views
+import interactionPlugin from "@fullcalendar/interaction"; // Drag & Drop
+import listPlugin from "@fullcalendar/list"; // List view
 // ✅ Async function defined before setup()
 
 export default defineComponent({
@@ -301,7 +305,26 @@ export default defineComponent({
       console.log("Filtering with:", filters);
       getSerivce(filters.status);
     };
+
+    const calendarOptions = ref({
+      plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
+      initialView: "dayGridMonth", // Default view
+      headerToolbar: {
+        left: "prev,next today",
+        center: "title",
+        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth", // Views
+      },
+      selectable: true,
+      editable: true,
+      events: [
+        { title: "Event 1", start: "2025-02-25" },
+        { title: "Event 2", start: "2025-02-28" },
+        { title: "Meeting", start: "2025-03-02T10:00:00" },
+        { title: "Workshop", start: "2025-03-05T14:00:00" },
+      ],
+    });
     return {
+      calendarOptions,
       applyDateTimeFilter,
       save,
       Data,

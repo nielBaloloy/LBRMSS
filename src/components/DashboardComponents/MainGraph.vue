@@ -57,7 +57,7 @@
 </template>
 <script>
 import { defineComponent, ref, onMounted } from "vue";
-import Chart from "chart.js/auto";
+import { Chart } from "chart.js";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter } from "vue-router";
 
