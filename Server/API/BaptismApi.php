@@ -35,33 +35,108 @@
         $Event =$arr['eventData'];//Event Data
         $BaptismData =$arr['BaptismData']; // Baptism data
 
-        //to insert eventData
-        $eventData = Array(
-            "E_ID" => null,
-            "EventServiceID" => $Event['EventServiceID'],
-            "Client" => $Event['Client'],
-            "Service" => $Event['Service'],
-            "Others" => $Event['Others'],
-            "TypeofMass" => $Event['TypeofMass'],
-            "Type" => $Event['Type'],
-            "TimeTo" => $Event['TimeTo'],
-            "TimeFrom" => $Event['TimeFrom'],
-            "Date" => $Event['Date'],  
-            "Venue" => $Event['Venue'],
-            "Duration" => $Event['Duration'],
-            "Days" => $Event['Days'],
-            "Venue_type" => $Event['Venue_type'],
-            "Assigned_Priest" => $Event['Assigned_Priest'],
-            "Contact_Number" => $Event['Contact_Number'],
-            "CertificateFor" => $Event['CertificateFor'],
-            "EventProgress" =>$BaptismData['EventProgress'],
-            "RequirementStatus"=>$BaptismData['Status'],
-            "Description"=>$Event['Description']
-    
+            /**get current date and time*/
+        $dt = new DateTime();
+        $dty = $dt->format('Y-m-d H:i:s');
+            
+            // event array
+       $ClientData = Array(
+              "cid" => '',
+              "name" => $Event['Client'],
+              "contact_no" => $Event['Contact_Number'],
+              "created_at" => $dty,
+              "created_by" => '1',//to be changed later 
+              "remark" => '1',
             );
+           
+            $insertClient = $this->db->insert('lbrmss_client_list',$ClientData);
 
-            $insert_EventInfo =$this->db->insert('eventstable', $eventData);
+            if($insertClient){
 
+                $clientId = $this->db->getMaxId('lbrmss_client_list','cid');
+                $new_cid= $clientId;
+    
+                if (isset($MarriageData['EventProgress'])) {
+                  $status = strtolower($MarriageData['EventProgress']); // Convert to lowercase for consistency
+              
+                  if ($status === "scheduled") {
+                      $eventProgress = 1;
+                  } elseif ($status === "pending") {
+                      $eventProgress = 0;
+                  }elseif ($status === "done") {
+                    $eventProgress = 2;
+                }
+              }
+              $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
+              //to insert eventData
+                $eventData = Array(
+                    "event_id" => '',
+                    "service_id" => $Event['Service'],
+                    "client" => $new_cid,
+                    "date" =>  $Event['Date'],
+                    "date_to" =>  $Event['Date'],
+                    "time_from"           => $Event['TimeTo'],
+                    "time_to"             => $Event['TimeFrom'],
+                    "venue_name"          => $Event['Venue'],
+                    "duration"            => $Event['Duration'],
+                    "type"                => $type,
+                    "days"                => $Event['Days'],
+                    "venue_type"          => $Event['Venue_type'],
+                    "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+                    "event_progress"      => $eventProgress,
+                    "requirement_status"  => $MarriageData['Status'],
+                    "created_at"          => $dty,
+                    "created_by"          => '1',
+                    "remark"              => '1'
+
+                );
+                $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
+
+                if($insert_EventInfo){
+                    $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
+                    $new_eventId= $eventId;
+                    
+                    /** insert into lbrmss_baptism_main */
+                    $marriageAssignment = array(
+                        "mid" => '',
+                        "event_id" =>   $new_eventId,
+                        "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                        "remark" => '1'
+                    );
+
+                    /** insert into lbrmss_bapt_person */
+                    $baptismData = array(
+                        "bapt_person_id" => '', // Assuming this is auto-incremented
+                        "bapt_event_id" => $baptEventId, // Link to event ID
+                        "bapt_lname" => $baptismDetails['Last_Name'] ?? '',
+                        "bapt_mname" => $baptismDetails['Middle_Name'] ?? '',
+                        "bapt_fname" => $baptismDetails['First_Name'] ?? '',
+                        "bapt_suffix" => $baptismDetails['Suffix'] ?? null,
+                        "bapt_age" => $baptismDetails['Age'] ?? '',
+                        "bapt_dob" => isset($baptismDetails['BirthDate']) && strtotime($baptismDetails['BirthDate']) 
+                                        ? date('Y-m-d', strtotime($baptismDetails['BirthDate'])) 
+                                        : null,
+                        "bapt_birthplace" => $baptismDetails['Birthplace'] ?? '',
+                        "bapt_gender" => $baptismDetails['Gender'] ?? '',
+                        "bapt_father" => $baptismDetails['Father'] ?? '',
+                        "bapt_mother" => $baptismDetails['Mother'] ?? '',
+                        "bapt_legitimacy" => $baptismDetails['Legitimacy'] ?? '', // 1 = illegal, 2 = legal
+                        "bapt_region" => $baptismDetails['Region'] ?? '',
+                        "bapt_province" => $baptismDetails['Province'] ?? '',
+                        "bapt_City" => $baptismDetails['City'] ?? '',
+                        "bapt_Barangay" => $baptismDetails['Barangay'] ?? '',
+                        "created_at" => date('Y-m-d H:i:s'),
+                        "created_by" => $loggedInUserId ?? '1', // Dynamically assign user ID
+                        "updated_by" => null,
+                        "remark" => '1' // 1 = show, 0 = hide
+                    );
+                    
+                }
+
+    
+
+            };
+        
 
             // Baptism Personal Details
             $baptismData = array(

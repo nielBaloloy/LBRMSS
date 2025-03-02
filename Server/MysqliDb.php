@@ -292,6 +292,10 @@ class MysqliDb
         }
 
         self::$_instance = $this;
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
     }
 
     /**
@@ -2588,7 +2592,21 @@ class MysqliDb
                     ->get('across_p_user_account');
     }
     
+    public function getDecodedSession($key, $prefix = '__q_strn') {
+        if (!isset($_SESSION[$key])) {
+            return null;
+        }
 
+        $rawData = $_SESSION[$key];
+
+        // Remove prefix if necessary
+        $jsonString = preg_replace('/^' . preg_quote($prefix, '/') . '/', '', $rawData);
+
+        // Decode JSON string
+        $sessionData = json_decode($jsonString, true);
+
+        return $sessionData ?: null; // Return decoded array or null if invalid
+    }
 
 
 

@@ -10,6 +10,7 @@
   header("Access-Control-Allow-Headers: Content-Type");
  
   require_once('../MysqlIDb.php');
+  require_once('../model/sessionGet.php');
  
  
   class API
@@ -39,6 +40,17 @@
           echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
           }
           else{
+            $session = new SessionModel();
+            $session->setSessionData('log', [
+              "UID" => 1,
+              "Name" => "Jay Barcellano",
+              "AccessLvl" => "Secretary",
+              "Username" => "JAY_1",
+              "Password" => "Admins",
+              "isActive" => 1,
+              "remark" => 1
+          ]);
+           
             echo json_encode(array("Status"=>"Success", "loginData"=>$account ));
           }
       
