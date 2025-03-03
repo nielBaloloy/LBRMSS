@@ -4152,7 +4152,7 @@ export default defineComponent({
               formData.value,
               marriageData.value
             );
-
+            console.log(msg.value);
             $q.notify({
               message: msg,
               color: msgColor.value,
@@ -4164,9 +4164,13 @@ export default defineComponent({
             formData.value.Service == "2" &&
             formData.value.Type == "Special"
           ) {
-            sendEventCeremonyData(formData.value, BaptismFormData.value);
+            sendEventCeremonyData(
+              formData.value.Service,
+              formData.value,
+              BaptismFormData.value
+            );
             // console.log(formData.value, BaptismFormData.value);
-
+            console.log(msg.value);
             $q.notify({
               message: msg,
               color: msgColor.value,

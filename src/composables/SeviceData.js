@@ -57,8 +57,7 @@ const sendEventCeremonyData = (eventType, event_Payload, ServicePayload) => {
           msgColor.value = "red-5";
           reject(error);
         });
-    }
-    if (event_Payload.Service === "2") {
+    } else if (event_Payload.Service === "2") {
       api
         .post("BaptismApi.php", {
           eventData: event_Payload,
