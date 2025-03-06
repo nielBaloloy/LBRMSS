@@ -25,15 +25,28 @@
       {
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
-        $apiParameter = ($arr['type'] == '0') ? '0' :(($arr['type'] == '1') ? '1' : '2');
-       
+        $apiParameter = (isset($arr['type']['status']) ? $arr['type']['status'] : "0" );
         
+        $filter  = (isset($arr['type']) ? $arr['type'] :"");
+       
+        $filterRange = "";
+        if (!empty($filter['dateFrom']) && !empty($filter['dateTo'])) {
+          $dateFrom = $filter['dateFrom'];
+          $dateTo = $filter['dateTo'];
+          $filterRange = " AND (DATE(a.created_at) BETWEEN '$dateFrom' AND '$dateTo')";
+      } else {
+          $filterRange = "";
+      }
+
+
+
         $Display_Pending = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
                                                 LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
-                                                WHERE a.remark = '1' AND event_progress = '$apiParameter' ORDER BY a.created_at  ");
+                                                WHERE a.remark = '1' AND event_progress = '$apiParameter' $filterRange 
+                                                ORDER BY a.created_at");
 
       if(count($Display_Pending) > 0){
 

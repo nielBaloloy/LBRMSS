@@ -232,6 +232,7 @@
 
 <script>
 import { ref, computed, watch, defineEmits } from "vue";
+import { FilterRange } from "src/composables/SeviceData";
 
 export default {
   props: {
@@ -241,7 +242,7 @@ export default {
     getStatusColor: Function,
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
-  emits: ["filterData"],
+  emits: ["filterData", "FilterRanges"],
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
@@ -309,7 +310,7 @@ export default {
       dateTo: "",
       timeFrom: "",
       timeTo: "",
-      status: "Pending", // Initial status is empty
+      status: "0", // Initial status is empty
     });
 
     // Define the emit function
@@ -319,9 +320,15 @@ export default {
       { label: "Done", value: "2" },
     ];
     const emitFilterEvent = () => {
-      emit("filterData", filters.value); // Emit the filter data to parent component
+      emit("filterData", filters.value);
+      console.log(filters.value);
+    };
+
+    let FilterData = (filterpayload) => {
+      emit("FilterRanges", filterpayload.value);
     };
     return {
+      FilterData,
       statusOptions,
       emitFilterEvent,
       editRow,

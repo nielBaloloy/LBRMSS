@@ -1589,12 +1589,12 @@
                       unelevated
                       @click="removeCard_B"
                       size="sm"
-                      icon="remove"
+                      icon="delete"
                       :disable="cardValues_B.length <= 1 ? true : false"
                     ></q-btn>
                   </div>
                 </div>
-                <div style="display: block">
+                <div style="display: none">
                   {{ (ConfirmationData.Witness = cardValues_B) }}
                 </div>
               </div>
@@ -2350,72 +2350,106 @@
                 Documentary Requirements Checklist
               </h6>
               <div class="q-gutter-sm">
-                <q-checkbox
-                  v-model="C_requirementsList.Baptismal"
-                  label="Baptismal Certifiate"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                />
-                <q-checkbox
-                  v-model="C_requirementsList.Marriage_License"
-                  val="Marriage License"
-                  label="Marriage_License"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                />
-                <q-checkbox
-                  v-model="C_requirementsList.Confirmation"
-                  val="Confirmation"
-                  label="Confirmation"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                />
-                <q-checkbox
-                  v-model="C_requirementsList.LiveBirthCert"
-                  val="Birth Certificate"
-                  label="Birth Certificate"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                />
-                <q-checkbox
-                  v-model="C_requirementsList.Cenomar"
-                  val="Cenomar"
-                  label="Cenomar"
-                  color="amber"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                />
-
-                <q-checkbox
-                  v-model="C_requirementsList.Confession"
-                  val="Confession"
-                  label="Confession"
-                  true-value="true"
-                  false-value="false"
-                  @update:model-value="
-                    C_checkAllPropertiesTrue(C_requirementsList)
-                  "
-                  color="amber"
-                />
+                <table border="1" style="width: 100%; text-align: center">
+                  <thead>
+                    <tr>
+                      <th>List</th>
+                      <th>Checkbox</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Baptismal Certificate</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.Baptismal"
+                          label="Baptismal Certificate"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Marriage License</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.Marriage_License"
+                          label="Marriage License"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Confirmation</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.Confirmation"
+                          label="Confirmation"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Birth Certificate</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.LiveBirthCert"
+                          label="Birth Certificate"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cenomar</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.Cenomar"
+                          label="Cenomar"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Confession</td>
+                      <td>
+                        <q-checkbox
+                          v-model="C_requirementsList.Confession"
+                          label="Confession"
+                          color="amber"
+                          true-value="true"
+                          false-value="false"
+                          @update:model-value="
+                            C_checkAllPropertiesTrue(C_requirementsList)
+                          "
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
                 <div class="Status" style="display: none">
                   {{ C_requirementsList }}
@@ -2796,6 +2830,7 @@ import {
 } from "../../composables/OtherService.js";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 
+import { api } from "src/boot/axios";
 const stringOptions = ref([
   { etype_id: "1", event_name: "Marriage" },
   { etype_id: "2", event_name: "Baptism" },
@@ -4181,17 +4216,36 @@ export default defineComponent({
             formData.value.Service == "3" &&
             formData.value.Type == "Special"
           ) {
-            sendConfirmationData(formData.value, ConfirmationData.value);
-            onMounted(() => {
-              let loads = "pending";
-              getSerivce(loads);
-            });
+            // sendEventCeremonyData(
+            //   formData.value.Service,
+            //   formData.value,
+            //   ConfirmationData.value
+            // );
+            api
+              .post("Confirmation.php", {
+                eventData: formData.value,
+                ConfirmationData: ConfirmationData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  msg.value = "It's not you, its me";
+                  msgColor.value = "red-5";
+                }
 
-            $q.notify({
-              message: msgs,
-              color: msgColors.value,
-              position: "bottom-right",
-            });
+                console.log(msg.value, msgColor.value);
+              })
+              .catch((error) => {
+                msg.value = "an error occured";
+                msgColor.value = "red-5";
+                reject(error);
+              });
           }
           if (
             formData.value.Service == "Burial" &&
@@ -4560,5 +4614,28 @@ export default defineComponent({
 
 .remove-btn:hover {
   background: #ff7875;
+}
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+td {
+  border-top: 1px solid #ddd;
+}
+
+q-checkbox {
+  margin-top: 5px;
 }
 </style>

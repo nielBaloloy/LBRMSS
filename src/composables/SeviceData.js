@@ -83,5 +83,22 @@ const sendEventCeremonyData = (eventType, event_Payload, ServicePayload) => {
     }
   });
 };
-
-export { getSerivce, Data, sendEventCeremonyData, msg, msgColor };
+const FilterRange = (filterpayload) => {
+  console.log(filterpayload);
+  api
+    .get("Service.php", { params: { filter: filterpayload } })
+    .then((response) => {
+      if (response.data.Status == "Success") {
+        Data.value = response.data.data;
+        getSerivce(0);
+      } else {
+        Data.value = response.data.data;
+      }
+    })
+    .catch((error) => {
+      msg.value = "an error occured";
+      msgColor.value = "red-5";
+      reject(error);
+    });
+};
+export { getSerivce, Data, sendEventCeremonyData, msg, msgColor, FilterRange };

@@ -303,7 +303,7 @@ export default defineComponent({
     };
     const applyDateTimeFilter = (filters) => {
       console.log("Filtering with:", filters);
-      getSerivce(filters.status);
+      getSerivce(filters);
     };
 
     const calendarOptions = ref({

@@ -21,7 +21,7 @@
       }
 
 
-      public function httpGet($payload)
+      public function httpGet($payload) 
       {
        
 
@@ -35,128 +35,174 @@
         $Event =$arr['eventData'];//Event Data
         $ConfirmationData =$arr['ConfirmationData']; // Baptism data
         
-        //to insert eventData
+        $dt = new DateTime();
+        $dty = $dt->format('Y-m-d H:i:s');
+
+        $ClientData = Array(
+          "cid" => '',
+          "name" => $Event['Client'],
+          "contact_no" => $Event['Contact_Number'],
+          "created_at" => $dty,
+          "created_by" => '1',//to be changed later 
+          "remark" => '1',
+        );
+
+        $insertClient = $this->db->insert('lbrmss_client_list',$ClientData);
+        if($insertClient){
+          $clientId = $this->db->getMaxId('lbrmss_client_list','cid');
+          $new_cid= $clientId;
+
+          if (isset($ConfirmationData['EventProgress'])) {
+            $status = strtolower($ConfirmationData['EventProgress']); // Convert to lowercase for consistency
+        
+            if ($status === "scheduled") {
+                $eventProgress = 1;
+            } elseif ($status === "pending") {
+                $eventProgress = 0;
+            }elseif ($status === "done") {
+              $eventProgress = 2;
+          }
+        }
+
+        $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
+
         $eventData = Array(
-            "E_ID" => null,
-            "EventServiceID" => $Event['EventServiceID'],
-            "Client" => $Event['Client'],
-            "Service" => $Event['Service'],
-            "Others" => $Event['Others'],
-            "TypeofMass" => $Event['TypeofMass'],
-            "Type" => $Event['Type'],
-            "TimeTo" => $Event['TimeTo'],
-            "TimeFrom" => $Event['TimeFrom'],
-            "Date" => $Event['Date'],  
-            "Venue" => $Event['Venue'],
-            "Duration" => $Event['Duration'],
-            "Days" => $Event['Days'],
-            "Venue_type" => $Event['Venue_type'],
-            "Assigned_Priest" => $Event['Assigned_Priest'],
-            "Contact_Number" => $Event['Contact_Number'],
-            "CertificateFor" => $Event['CertificateFor'],
-            "EventProgress" =>$ConfirmationData['EventProgress'],
-            "RequirementStatus"=>$ConfirmationData['Status'],
-            "Description"=>$Event['Description']
-    
-            );
+          "event_id" => '',
+          "service_id" => $Event['Service'],
+          "client" => $new_cid,
+          "date" =>  $Event['Date'],
+          "date_to" =>  $Event['Date'],
+          "time_from"           => $Event['TimeTo'],
+          "time_to"             => $Event['TimeFrom'],
+          "venue_name"          => $Event['Venue'],
+          "duration"            => $Event['Duration'],
+          "type"                => $type,
+          "days"                => $Event['Days'],
+          "venue_type"          => $Event['Venue_type'],
+          "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+          "event_progress"      => $eventProgress,
+          "requirement_status"  => $ConfirmationData['Status'],
+          "created_at"          => $dty,
+          "created_by"          => '1',
+          "remark"              => '1'
 
-            $insert_EventInfo =$this->db->insert('eventstable', $eventData);
+        );
+          
+        $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
+        if($insert_EventInfo){
 
+          $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
+          $new_eventId= $eventId;
 
-            // Confirmation Personal Details
-            $ConfirmationDatas = array(
-                "CID" => null,
-                "First_Name" => $ConfirmationData['First_Name'],
-                "Middle_Name" => $ConfirmationData['Middle_Name'],
-                "Last_Name" => $ConfirmationData['Last_Name'],
-                "Suffix" => $ConfirmationData['Suffix'],
-                "Gender" => $ConfirmationData['Gender'],
-                "Birth_Date" => $ConfirmationData['Birth_Date'],
-                "Birth_Place" => $ConfirmationData['Birth_Place'],
-                "Legitimacy" => $ConfirmationData['Legitamacy'],
-                "Nationality" => $ConfirmationData['Nationality'],
-                "Father_Name" => $ConfirmationData['Father_Name'],
-                "Mother_Name" => $ConfirmationData['Mother_Name'],
-                "EventProgress" => $ConfirmationData['EventProgress'],
-                "Status" => $ConfirmationData['Status'],
-                "ContactNumber" => $ConfirmationData['ContactNumber'],
-                "Contact_Person" => $ConfirmationData['Contact_Person'],
-                "EventScheduleID" => $ConfirmationData['EventScheduleID'],
-                "Region" => $ConfirmationData['Region'],
-                "Province" => $ConfirmationData['Province'],
-                "City" => $ConfirmationData['City'],
-                "Barangay" => $ConfirmationData['Barangay'],
-            );
-            $insert_BaptismData = $this->db->insert('confirmation', $ConfirmationDatas);
+          $ConfirmationAssignment = array(
+            "con_id" => '',
+            "event_id" =>   $new_eventId,
+            "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+            "remark" => '1'
+        );
+        $getConf_id = $this->db->getMaxId('lbrmss_confirmation_main','con_id')+1;
 
 
-             //Witness/Sponsor Section
-             $witnessLen = count($ConfirmationData['Witness']);
-            for ($x = 0; $x<$witnessLen; $x++){
-                $sponsorData = array(
-                "ID" =>null,
-                "ServiceID" => $Event['EventServiceID'],
+          $ConfirmationDatas = array(
+            "con_person_id" => '',
+            "con_event_id" => $getConf_id,
+            "con_lname" => $ConfirmationData['Last_Name'],
+            "con_mname" => $ConfirmationData['Middle_Name'],
+            "con_fname" => $ConfirmationData['First_Name'],
+            "con_suffix" => $ConfirmationData['Suffix'],
+            "con_gender" => $ConfirmationData['Gender'],
+            "con_birthplace" => $ConfirmationData['Birth_Place'],
+            "con_birth_date" => $ConfirmationData['Birth_Date'],
+            "con_region" => $ConfirmationData['Region'],
+            "con_province" => $ConfirmationData['Province'],
+            "con_city" => $ConfirmationData['City'],
+            "con_barangay" => $ConfirmationData['Barangay'],
+            "con_mother" => $ConfirmationData['Mother_Name'],
+            "con_father" => $ConfirmationData['Father_Name'],
+            "con_legitimacy" => $ConfirmationData['Legitamacy'],
+            "Nationality" => $ConfirmationData['Nationality'],
+            "created_at" => date('Y-m-d H:i:s'),
+            "created_by" => $loggedInUserId ?? '1',
+            "updated_at" => $ConfirmationData['updated_at'] ?? '',
+            "updated_by" => $ConfirmationData['updated_by'] ?? '',
+            "remark" => '1'
+        );
+
+        $witnessLen = count($ConfirmationData["Witness"]);
+        $multiInsertDataW = [];
+
+        for ($x = 0; $x < $witnessLen; $x++) {
+            $multiInsertDataW[] = array(
+                "w_id" => '',
+                "ServiceID" => $new_eventId,
                 "Ninong" => $ConfirmationData['Witness'][$x]['Ninong'],
                 "Ninong_Address" => $ConfirmationData['Witness'][$x]['Ninong_Address'],
                 "Ninang" => $ConfirmationData['Witness'][$x]['Ninang_Testium'],
                 "Ninang_Address" => $ConfirmationData['Witness'][$x]['Ninang_Address'],
             );
-            // =======================================================//
-            $insertWitness = $this->db->insert('witness_testium_tbl',$sponsorData);
-            }
-            // requirement
-            $requirementData = array(
-                "ID" => null,
-                "ServiceID"=> $Event['EventServiceID'],
-                "Marriage_License" => $ConfirmationData['Requirement']['Marriage_License'],
-                "Confirmation" => $ConfirmationData['Requirement']['Confirmation'],
-                "LiveBirthCert" => $ConfirmationData['Requirement']['LiveBirthCert'],
-                "Cenomar" => 'no',
-                "Baptismal" => 'no',
-                "Interogation" => 'no',
-                "PreCana" => 'no',
-                "Confession" => 'no',
-                "PermissionLetter" => 'no'
-            );
-                $insertRequirement = $this->db->insert('requirements_tbl',$requirementData);
-             // Seminar Section
-                $SeminarLength = count($ConfirmationData["SeminarDetails"]);
-                for ($s = 0; $s<$SeminarLength; $s++){
-                    $seminarData = array(
-                    "E_ID" => null,
-                    "EventServiceID" => $Event['EventServiceID'],
-                    "Client" => $Event['Client'],
-                    "Service" => $ConfirmationData['SeminarDetails'][$s]['SeminarTitle'],
-                    "Others" => null,
-                    "TypeofMass" => null,
-                    "Type" => "Seminar",
-                    "TimeTo" => $ConfirmationData['SeminarDetails'][$s]['timeStart'],
-                    "TimeFrom" => $ConfirmationData['SeminarDetails'][$s]['timeEnd'],
-                    "Date" => $ConfirmationData['SeminarDetails'][$s]['Date'], 
-                    "Venue" => $ConfirmationData['SeminarDetails'][$s]['SeminarVenue'], 
-                    "Duration" => $ConfirmationData['SeminarDetails'][$s]['duration'],
-                    "Days" => $ConfirmationData['SeminarDetails'][$s]['days'],
-                    "Venue_type" => "Church",
-                    "Assigned_Priest" => null,
-                    "Contact_Number" => null,
-                    "CertificateFor" =>null,
-                    "EventProgress" =>$ConfirmationData['EventProgress'],
-                    "RequirementStatus"=>$ConfirmationData['Status']
-                );
-                // insert Seminar Details here (Query)
-                $insertSeminar = $this->db->insert('eventstable',$seminarData);
-                }
+        }
+        $tableNames = 'witness_testium_tbl';
 
-                if($insert_EventInfo == true && $ConfirmationDatas == true &&
-                $insertWitness == true && $insertRequirement ==true){
-                  // fetch the marriage data to be displayed on peending table
-                  $Display_Pending = $this->db->where('EventProgress', "Pending")
-                                              ->get('eventstable');
-                  echo json_encode(array("Status"=>"Success", "Pending"=>$Display_Pending));
-                }else{
-                  echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-                }
+         /** lbrmss_seminar */
+         $SeminarLength = count($ConfirmationData["SeminarDetails"]);
+         $multiInsertData = [];
 
+         for ($s = 0; $s < $SeminarLength; $s++) {
+             $multiInsertData[] = array(
+                 "seminar_id" => '', // Auto-increment
+                 "event_id" =>  $new_eventId,
+                 "seminar_title" => $ConfirmationData['SeminarDetails'][$s]['SeminarTitle'],
+                 "date_from" => $ConfirmationData['SeminarDetails'][$s]['Date'], 
+                 "date_to" => $ConfirmationData['SeminarDetails'][$s]['Date'], // Adjust if necessary
+                 "time_from" => $ConfirmationData['SeminarDetails'][$s]['timeStart'],
+                 "time_to" => $ConfirmationData['SeminarDetails'][$s]['timeEnd'],
+                 "status" => $ConfirmationData['Status'],
+                 "duration" => $ConfirmationData['SeminarDetails'][$s]['duration'],
+                 "days" => $ConfirmationData['SeminarDetails'][$s]['days'],
+                 "seminar_Venue" => $ConfirmationData['SeminarDetails'][$s]['SeminarVenue'], 
+                 "remark" => 1 // Default to show (1) as per image comment
+             );
+         }
+
+         // Perform bulk insert using insertMulti
+         $tableName = 'lbrmss_seminar'; // Replace with actual table name
+         
+         /** requirements */
+         $RequirementsData = array(
+          "req_id" => null, // Auto-increment
+          "event_id" =>$new_eventId,
+          "baptismal_certificate" => $ConfirmationData['Requirement']['Baptismal'] ?? 'no',
+          "marriage_license" => $ConfirmationData['Requirement']['Marriage_License'] ?? 'no',
+          "confirmation" => $ConfirmationData['Requirement']['Confirmation'] ?? 'no',
+          "birth_certificate" => $ConfirmationData['Requirement']['LiveBirthCert'] ?? 'no',
+          "cenomar" => $ConfirmationData['Requirement']['Cenomar'] ?? 'no',
+          "interrogation" => $ConfirmationData['Requirement']['Interogation'] ?? 'no',
+          "precana_seminar" => $ConfirmationData['Requirement']['PreCana'] ?? 'no',
+          "confession" => $ConfirmationData['Requirement']['Confession'] ?? 'no',
+          "remark" => 1 // Default to show (1) based on previous schema
+      );
+
+      
+          $insert_confirmation_data = $this->db->insert('lbrmss_confirmation_main', $ConfirmationAssignment);
+          $insert_assignment_info = $this->db->insert('lbrmss_con_person', $ConfirmationDatas);
+          $insertedWitness = $this->db->insertMulti($tableNames, $multiInsertDataW);
+          $insertedIds = $this->db->insertMulti($tableName, $multiInsertData);
+          $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
+        
+        if($insert_confirmation_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement){
+            echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
+          } else{
+            echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+          }
+
+
+        }else{
+          echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+        }
+        } else{
+          echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+        }
+      
 }
  
      
