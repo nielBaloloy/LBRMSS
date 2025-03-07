@@ -31,11 +31,162 @@
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
          
-        // ===============Special TYpe Baptism====================//
         $Event =$arr['eventData'];//Event Data
         $BurialData =$arr['BurialData']; // Baptism data
-        $Requiement = $arr['BurialData']['Requirements'];
-        //to insert eventData
+        
+        $dt = new DateTime();
+        $dty = $dt->format('Y-m-d H:i:s');
+       
+         $ClientData = Array(
+          "cid" => '',
+          "name" => $Event['Client'],
+          "contact_no" => $Event['Contact_Number'],
+          "created_at" => $dty,
+          "created_by" => '1',//to be changed later 
+          "remark" => '1',
+        );
+
+        $insertClient = $this->db->insert('lbrmss_client_list',$ClientData);
+        if($insertClient){
+          $clientId = $this->db->getMaxId('lbrmss_client_list','cid');
+          $new_cid= $clientId;
+
+          if (isset($BurialData['EventProgress'])) {
+            $status = strtolower($BurialData['EventProgress']); // Convert to lowercase for consistency
+        
+            if ($status === "scheduled") {
+                $eventProgress = 1;
+            } elseif ($status === "pending") {
+                $eventProgress = 0;
+            }elseif ($status === "done") {
+              $eventProgress = 2;
+          }
+        }
+
+        $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
+
+        $eventData = Array(
+          "event_id" => '',
+          "service_id" => $Event['Service'],
+          "client" => $new_cid,
+          "date" =>  $Event['Date'],
+          "date_to" =>  $Event['Date'],
+          "time_from"           => $Event['TimeTo'],
+          "time_to"             => $Event['TimeFrom'],
+          "venue_name"          => $Event['Venue'],
+          "duration"            => $Event['Duration'],
+          "type"                => $type,
+          "days"                => $Event['Days'],
+          "venue_type"          => $Event['Venue_type'],
+          "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+          "event_progress"      => $eventProgress,
+          "requirement_status"  => $BurialData['Status'],
+          "created_at"          => $dty,
+          "created_by"          => '1',
+          "remark"              => '1'
+
+        );
+        $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
+
+        if($insert_EventInfo){
+          $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
+          $new_eventId= $eventId;
+
+          $BurialAssignment = array(
+            "burial_id" => '',
+            "event_id" =>   $new_eventId,
+            "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+            "remark" => '1'
+        );
+
+        $getConf_id = $this->db->getMaxId('lbrmss_confirmation_main','con_id')+1;
+
+        $burialRecord = array(
+          'bpid' => null, // Auto-increment ID (not provided in image)
+          'event_id' => $BurialData['EventScheduleID'], 
+          'bu_lname' => $BurialData['Last_Name'],
+          'bu_mname' => $BurialData['Middle_Name'],
+          'bu_fname' => $BurialData['First_Name'],
+          'bu_suffix' => $BurialData['Suffix'], // Now mapped
+          'bu_gender' => $BurialData['Gender'], // Assuming 1 = Male, 2 = Female
+          'bu_age' => $BurialData['Age'],
+          'bu_birthdate' => $BurialData['Birth_Date'],
+          'bu_birthplace' => $BurialData['Birth_Place'],
+          'bu_status' => $BurialData['Status'], // Now mapped
+          'bu_father' => $BurialData['Father_Name'],
+          'bu_mother' => $BurialData['Mother_Name'],
+          'bu_spouse' => $BurialData['Spouse'], // Now mapped
+          'bu_nationality' => $BurialData['Nationality'],
+          'bu_reg' => $BurialData['Region'],
+          'bu_prov' => $BurialData['Province'],
+          'bu_city' => $BurialData['City'],
+          'bu_brgy' => $BurialData['Barangay'],
+          'date_of_death' => $BurialData['Date_of_Death'],
+          'cause_of_death' => $BurialData['Cause_of_Death'],
+          'burial_option' =>$BurialData['Burial_Arrangement'],
+          'date_of_burial' => $BurialData['Date_of_Burial'],
+          'place_of_interment' => $BurialData['Place_of_Interment'],
+        );
+
+         // Perform bulk insert using insertMulti
+         $tableName = 'lbrmss_seminar'; // Replace with actual table name
+         
+         /** requirements */
+         $RequirementsData = array(
+          "req_id" => null, // Auto-increment
+          "event_id" => $new_eventId,
+          "baptismal_certificate" => $ConfirmationData['Requirements']['Baptismal'] ?? 'no',
+          "marriage_license" => $ConfirmationData['Requirements']['Marriage_License'] ?? 'no',
+          "confirmation" => $ConfirmationData['Requirements']['Confirmation'] ?? 'no',
+          "birth_certificate" => $ConfirmationData['Requirements']['LiveBirthCert'] ?? 'no',
+          "cenomar" => $ConfirmationData['Requirements']['Cenomar'] ?? 'no',
+          "interrogation" => $ConfirmationData['Requirements']['Interogation'] ?? 'no',
+          "precana_seminar" => $ConfirmationData['Requirements']['PreCana'] ?? 'no',
+          "confession" => $ConfirmationData['Requirements']['Confession'] ?? 'no',
+          "family_consent" => $ConfirmationData['Requirements']['Family_Consent'] ?? 'no',
+          "cremation_authorization" => $ConfirmationData['Requirements']['Cremation_Authorization'] ?? 'no',
+          "death_certificate" => $ConfirmationData['Requirements']['Death_Certificate'] ?? 'no',
+          "remark" => 1 // Default to show (1) based on schema
+      );
+
+      $insert_Burial_data = $this->db->insert('lbrmss_burial', $BurialAssignment);
+      $insert_assignment_info = $this->db->insert('lbrmss_burial_person', $burialRecord);
+      
+      $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
+      
+      if($insert_Burial_data && $insert_assignment_info  && $insertRequirement){
+        echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
+      } else{
+        echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+      }
+
+        }else{
+          echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+        }
+
+        }else{
+          echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         $eventData = Array(
             "E_ID" => null,
             "EventServiceID" => $Event['EventServiceID'],
@@ -63,35 +214,34 @@
 
 
             // Baptism Personal Details
-            $burialData = array(
-              "BU_ID" => $BurialData['BU_ID'],
-              "First_Name" => $BurialData['First_Name'],
-              "Middle_Name" => $BurialData['Middle_Name'],
-              "Last_Name" => $BurialData['Last_Name'],
-              "Suffix" => $BurialData['Suffix'],
-              "Gender" => $BurialData['Gender'],
-              "Age" => $BurialData['Age'],
-              "Status" => $BurialData['Status'],
-              "Birth_Date" => $BurialData['Birth_Date'],
-              "Date_of_Death" => $BurialData['Date_of_Death'],
-              "Date_of_Burial" => $BurialData['Date_of_Burial'],
-              "Nationality" => $BurialData['Nationality'],
-              "Father_Name" => $BurialData['Father_Name'],
-              "Mother_Name" => $BurialData['Mother_Name'],
-              "Burial_Arrangement"=>$BurialData['Burial_Arrangement'],
-              "Spouse" => $BurialData['Spouse'],
-              "Sacrament" => $BurialData['Sacrament'],
-              "Cause_of_Death" => $BurialData['Cause_of_Death'],
-              "Place_of_Interment" => $BurialData['Place_of_Interment'],
-              "Assigned_Priest" => $BurialData['Assigned_Priest'],
-              "Remarks" => $BurialData['Remarks'],
-              "EventScheduleID" => $BurialData['EventScheduleID'],
-              "Region" => $BurialData['Region'],
-              "Province" => $BurialData['Province'],
-              "City" => $BurialData['City'],
-              "Barangay" => $BurialData['Barangay'],
-          );
+            $burialRecord = [
+              'bpid' => null, // Auto-increment ID (not provided in image)
+              'event_id' => $BurialData['EventScheduleID'], 
+              'bu_lname' => $BurialData['Last_Name'],
+              'bu_mname' => $BurialData['Middle_Name'],
+              'bu_fname' => $BurialData['First_Name'],
+              'bu_suffix' => $BurialData['Suffix'], // Now mapped
+              'bu_gender' => $BurialData['Gender'], // Assuming 1 = Male, 2 = Female
+              'bu_age' => $BurialData['Age'],
+              'bu_birthdate' => $BurialData['Birth_Date'],
+              'bu_birthplace' => $BurialData['Birth_Place'],
+              'bu_status' => $BurialData['Status'], // Now mapped
+              'bu_father' => $BurialData['Father_Name'],
+              'bu_mother' => $BurialData['Mother_Name'],
+              'bu_spouse' => $BurialData['Spouse'], // Now mapped
+              'bu_nationality' => $BurialData['Nationality'],
+              'bu_reg' => $BurialData['Region'],
+              'bu_prov' => $BurialData['Province'],
+              'bu_city' => $BurialData['City'],
+              'bu_brgy' => $BurialData['Barangay'],
+              'date_of_death' => $BurialData['Date_of_Death'],
+              'cause_of_death' => $BurialData['Cause_of_Death'],
+              'burial_option' =>$BurialData['Burial_Arrangement'],
+              'date_of_burial' => $BurialData['Date_of_Burial'],
+              'place_of_interment' => $BurialData['Place_of_Interment'],
+          ];
           
+           
             $insert_BurialData = $this->db->insert('burial', $burialData);
 
             //requirement

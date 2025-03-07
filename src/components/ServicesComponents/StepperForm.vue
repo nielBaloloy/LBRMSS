@@ -4248,27 +4248,37 @@ export default defineComponent({
               });
           }
           if (
-            formData.value.Service == "Burial" &&
+            formData.value.Service == "4" &&
             formData.value.Type == "Special"
           ) {
-            send_burial_data(formData.value, BurialData.value);
-            onMounted(() => {
-              let loads = "pending";
-              getSerivce(loads);
-            });
-            let GetScheduledData = () => {
-              let loads = "Scheduled";
-              getSerivce(loads);
-            };
-            let GetDoneData = () => {
-              let loads = "Done";
-              getSerivce(loads);
-            };
-            $q.notify({
-              message: BU_msg,
-              color: BU_msgColor.value,
-              position: "bottom-right",
-            });
+            api
+              .post("burial.php", {
+                eventData: formData.value,
+                BurialData: BurialData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                }
+
+                console.log(msg.value, msgColor.value);
+              })
+              .catch((error) => {
+                msg.value = "an error occured";
+                msgColor.value = "red-5";
+                reject(error);
+              });
           }
           if (formData.value.Service == "Annointing of the Sick") {
             formData.value.EventScheduleID = randnum.value;
