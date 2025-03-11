@@ -18,6 +18,8 @@ const props = defineProps({
 const calendarOptions = ref({
   plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
   initialView: props.initialView,
+  dayMaxEvents: true, // Enables the "See More" link when there are too many events
+
   headerToolbar: {
     left: "prev,next today",
     center: "title",
@@ -26,6 +28,17 @@ const calendarOptions = ref({
   selectable: true,
   editable: true,
   events: props.events,
+  eventContent: function (arg) {
+    let icon = arg.event.extendedProps.icon || "📅"; // Default icon
+    let eventTitle = document.createElement("div");
+    eventTitle.innerHTML = `${icon} ${arg.event.title}`;
+    return { domNodes: [eventTitle] };
+  },
+  eventDidMount: (info) => {
+    info.el.style.backgroundColor = "#FFC107"; // Change event background dynamically
+    info.el.style.borderRadius = "5px"; // Optional: Rounded corners
+    info.el.style.padding = "5px"; // Optional: Add spacing
+  },
 });
 
 // Watch for changes in events and update dynamically

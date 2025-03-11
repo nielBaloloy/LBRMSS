@@ -95,40 +95,92 @@
         $arr = json_decode($datas, true);
         
         $Event =$arr['eventData'];//Event Data
-         echo $Event;
-        // $eventData = Array(
-        //   "E_ID" => null,
-        //   "EventServiceID" => $Event['EventServiceID'],
-        //   "Client" => $Event['Client'],
-        //   "Service" => $Event['Service'],
-        //   "Others" => $Event['Others'],
-        //   "TypeofMass" => $Event['TypeofMass'],
-        //   "Type" => 'Special',
-        //   "TimeTo" => $Event['TimeTo'],
-        //   "TimeFrom" => $Event['TimeFrom'],
-        //   "Date" => $Event['Date'],  
-        //   "Venue" =>  $Event['Event_Barangay']. " ".$Event['Event_City']. " ". $Event['Event_Province'] ,
-        //   "Duration" => $Event['Duration'],
-        //   "Days" => $Event['Days'],
-        //   "Venue_type" => 'Outside',
-        //   "Assigned_Priest" => $Event['Assigned_Priest'],
-        //   "Contact_Number" => $Event['Contact_Number'],
-        //   "Event_Region"=>$Event['Event_Region'],
-        //   "Event_Province"=>$Event['Event_Province'],
-        //   "Event_City"=>$Event['Event_City'],
-        //   "Event_Brgy"=>$Event['Event_Barangay'],
-        //   "CertificateFor" =>'NA',
-        //   "EventProgress" =>'Pending',
-        //   "RequirementStatus"=>'NA'
-        //   // "Description"=>$Event['Description']
-        //   );
 
-        //   $insert_EventInfo =$this->db->insert('eventstable', $eventData);
-        //   if($insert_EventInfo){
-        //     echo json_encode(array("Status"=>"Success"));
-        //   }else{
-        //     echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-        //   }
+        $dt = new DateTime();
+        $dty = $dt->format('Y-m-d H:i:s');
+
+        $ClientData = Array(
+          "cid" => '',
+          "name" => $Event['Client'],
+          "contact_no" => $Event['Contact_Number'],
+          "created_at" => $dty,
+          "created_by" => '1',//to be changed later 
+          "remark" => '1',
+        );
+        $insertClient = $this->db->insert('lbrmss_client_list',$ClientData);
+        
+        if($insertClient){
+          $clientId = $this->db->getMaxId('lbrmss_client_list','cid');
+          $new_cid= $clientId;
+
+     
+        $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
+
+
+          $eventData = Array(
+            "event_id" => '',
+            "service_id" => $Event['Service'],
+            "client" => $new_cid,
+            "date" =>  $Event['Date'],
+            "date_to" =>  $Event['Date'],
+            "time_from"           => $Event['TimeTo'],
+            "time_to"             => $Event['TimeFrom'],
+            "venue_name"            => $Event['Venue'],
+            "duration"            => $Event['Duration'],
+            "type"                => $type,
+            "days"                => $Event['Days'],
+            "venue_type"          => $Event['Venue_type'],
+            "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+            "event_progress"      => 1,
+            "requirement_status"  => 1,
+            "created_at"          => $dty,
+            "created_by"          => '1',
+            "remark"              => '1'
+
+          );
+
+           $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
+            if ($insert_EventInfo){
+              $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
+              $new_eventId= $eventId;
+              $AnnointingData = array(
+                "a_id" => '',
+                "event_id" =>   $new_eventId,
+                "region"   =>   $Event['Event_Region'],
+                "province" =>    $Event['Event_Province'],
+                "city"     =>  $Event['Event_City'],
+                "brgy"    =>  $Event['Event_Barangay'],
+                "description"  =>"",
+                "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                "created_at"    => $dty,
+                "created_by" => '1',
+                "remark" => '1'
+            );
+            
+              $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
+              if($insertAnnointing){
+                
+                $ScheduleData = array(
+                  "sched_id" => '',
+                  "priest_id" => $Event['Assigned_Priest']['priest_id'],
+                  "sched_event_id" => $new_eventId,
+                  "date_from" => $Event['Date'],
+                  "date_to" =>$Event['Date'],
+                  "time_from" => $Event['TimeTo'],
+                  "time_to"       => $Event['TimeFrom'],
+                  "created_at" => $dty,
+                  "remark" => '1' // 1 = show, 0 = hide
+              );
+              $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
+                echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
+                //logs here
+              }
+            }else{
+              echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
+            }
+        }
+
+        
     }
  
      

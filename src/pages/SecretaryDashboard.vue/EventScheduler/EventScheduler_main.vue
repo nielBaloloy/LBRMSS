@@ -103,20 +103,39 @@
     </q-drawer>
 
     <q-page-container class="calendar-container">
-      <Calendar :initialView="'timeGridWeek'" :events="eventList" />
+      <Calendar :initialView="'dayGridMonth'" :events="eventList" />
     </q-page-container>
   </q-layout>
 </template>
 <script setup>
-import { ref } from "vue";
+import { api } from "src/boot/axios";
+import { ref, onMounted } from "vue";
 import { menuData } from "src/data/menuData";
 import Calendar from "src/components/DashboardComponents/calendarComponent.vue";
 import SidebarMenu from "src/components/DashboardComponents/navigation_left.vue";
 const menuDatacalendar = menuData;
-const eventList = ref([
-  { title: "Meeting", start: "2025-02-02T10:00:00" },
-  { title: "Workshop", start: "2025-03-02T14:00:00" },
-]);
+const eventList = ref([]);
+let load = "";
+const loadScheduleData = () => {
+  return new Promise((resolve, reject) => {
+    api
+      .get("event_service_data.php", { params: { type: load } })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          eventList.value = response.data.data;
+        } else {
+          eventList.value = response.data.data;
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+onMounted(async () => {
+  loadScheduleData();
+});
 </script>
 <style scoped>
 .calendar-container {

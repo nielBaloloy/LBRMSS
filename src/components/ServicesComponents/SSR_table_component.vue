@@ -256,7 +256,6 @@ export default {
     });
     function editRow(row) {
       console.log("Edit row:", row);
-      // Add logic to edit the row (e.g., open a dialog with a form)
     }
 
     function deleteRow(row) {

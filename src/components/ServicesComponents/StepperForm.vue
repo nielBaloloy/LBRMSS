@@ -358,6 +358,12 @@
             </div>
           </div>
 
+          <div class="assignment hidden">
+            {{ (formData.Event_Region = regionA) }}
+            {{ (formData.Event_Province = ProvinceA) }}
+            {{ (formData.Event_City = CityA) }}
+            {{ (formData.Event_Barangay = BrgyA) }}
+          </div>
           <!-- Assigned Priest -->
           <div class="servicefield" v-show="Preffered_Priest">
             Assigned Priest
@@ -2741,11 +2747,13 @@
               <q-img src="../../assets/checklist_10703250.png" class="my-img" />
               <q-space />
               <q-card-section class="text-h6"
-                >Applicaton Submitted</q-card-section
+                >Your application is now ready for submission. Click 'Finish' to
+                complete the process</q-card-section
               >
             </q-card-section>
           </q-card>
         </div>
+        rd
       </q-step>
       <template v-slot:navigation>
         <q-stepper-navigation v-show="Event">
@@ -3485,6 +3493,124 @@ export default defineComponent({
       }
     };
     // ================================================================================
+
+    //========================= Get Address Event ============================
+
+    let selectedRegionEvent = ref(null);
+    let SelectedProvinceEvent = ref(null);
+    let selectedCityEvent = ref(null);
+    let selectedBarangayEvent = ref(null);
+
+    onMounted(() => {
+      getAvailablePriest();
+      console.log(philippineData);
+      regionOptions.value = Object.keys(philippineData)
+        .map((regionCode) => ({
+          label: /^(0[1-9]|1[0-3]|[4][A-B]|[1-3]?[0-9])$/.test(regionCode)
+            ? `Region ${regionCode}`
+            : regionCode,
+          value: regionCode,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+      console.log(regionOptions);
+    });
+    watch(selectedRegionEvent, (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        onRegionChangeEvent();
+      }
+    });
+
+    watch(SelectedProvinceEvent, (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        onProvinceChangeEvent();
+      }
+    });
+
+    watch(selectedCityEvent, (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        onCityChangeEvent();
+      }
+    });
+
+    watch(selectedBarangayEvent, (newValue, oldValue) => {
+      if (newValue !== oldValue) {
+        onBarangayChangeEvent();
+      }
+    });
+
+    let regionEvent = ref();
+    let ProvinceEvent = ref();
+    let CityEvent = ref();
+    let BrgyEvent = ref();
+    const onRegionChangeEvent = () => {
+      SelectedProvinceEvent.value = null;
+      selectedCityEvent.value = null;
+      selectedBarangayEvent.value = null;
+
+      let selectedR = selectedRegionEvent.value.value;
+      const regionData = philippineData[selectedR]?.province_list;
+
+      provinceOptions.value = Object.keys(regionData).map((provinceName) => ({
+        label: provinceName,
+        value: provinceName,
+      }));
+      regionEvent.value = selectedRegionEvent.value.value;
+      console.log(regionEvent);
+      // updateSuppAddress();
+      // console.log(regionData)
+    };
+
+    const onProvinceChangeEvent = () => {
+      if (SelectedProvinceEvent.value !== null) {
+        selectedCityEvent.value = null;
+        selectedBarangayEvent.value = null;
+        let selectedR = selectedRegionEvent.value.value;
+        let selectedP = SelectedProvinceEvent.value.value;
+        const SelectedProvinceEventData =
+          philippineData[selectedR]?.province_list[selectedP];
+        if (SelectedProvinceEventData) {
+          const municipalityData = SelectedProvinceEventData.municipality_list;
+          cityOptions.value = Object.keys(municipalityData).map(
+            (municipalityName) => ({
+              label: municipalityName,
+              value: municipalityName,
+            })
+          );
+          ProvinceEvent.value = SelectedProvinceEvent.value.value;
+        }
+      }
+    };
+
+    const onCityChangeEvent = () => {
+      if (selectedCityEvent.value !== null) {
+        selectedBarangayEvent.value = null;
+        let selectedR = selectedRegionEvent.value.value;
+        let selectedP = SelectedProvinceEvent.value.value;
+        let selectedC = selectedCityEvent.value.value;
+        const selectedMunicipalityData =
+          philippineData[selectedR]?.province_list[selectedP]
+            ?.municipality_list[selectedC];
+        if (selectedMunicipalityData) {
+          const barangayList = selectedMunicipalityData.barangay_list;
+          barangayOptions.value = barangayList.map((barangayName) => ({
+            label: barangayName,
+            value: barangayName,
+          }));
+          CityEvent.value = selectedCityEvent.value.value;
+          // updateSuppAddress();
+        }
+      }
+    };
+
+    const onBarangayChangeEvent = () => {
+      let brgy = ref();
+      if (selectedBarangayEvent.value !== null) {
+        brgy.value = selectedBarangayEvent.value;
+        BrgyEvent.value = brgy.value.value;
+      }
+    };
+    //========================================================================
+
     const showInputValue = (Event_Details, Marriage_Details) => {
       console.log(Event_Details);
       console.log(Marriage_Details);
@@ -4280,9 +4406,35 @@ export default defineComponent({
                 reject(error);
               });
           }
-          if (formData.value.Service == "Annointing of the Sick") {
+          if (formData.value.Service == "5") {
             formData.value.EventScheduleID = randnum.value;
-            send_Annointing_Data(formData.value);
+            api
+              .post("Service.php", {
+                eventData: formData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                }
+
+                console.log(msg.value, msgColor.value);
+              })
+              .catch((error) => {
+                msg.value = "an error occured";
+                msgColor.value = "red-5";
+                reject(error);
+              });
           }
           // sendclose(false);
           $q.notify({
