@@ -4422,8 +4422,9 @@ export default defineComponent({
                   getSerivce(0);
                 } else {
                   $q.notify({
-                    message: "Information saved Successfully",
-                    color: "green-6",
+                    message:
+                      "This schedule is already taken! Please choose another date or time.",
+                    color: "red-6",
                     position: "bottom-right",
                   });
                 }
@@ -4431,8 +4432,11 @@ export default defineComponent({
                 console.log(msg.value, msgColor.value);
               })
               .catch((error) => {
-                msg.value = "an error occured";
-                msgColor.value = "red-5";
+                $q.notify({
+                  message: "Server Error",
+                  color: "red-6",
+                  position: "bottom-right",
+                });
                 reject(error);
               });
           }

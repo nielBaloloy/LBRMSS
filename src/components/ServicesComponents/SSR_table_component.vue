@@ -251,7 +251,7 @@ export default {
       sortBy: "Client", // Default sorting field
       descending: false,
       page: 1,
-      rowsPerPage: 5,
+      rowsPerPage: 10,
       rowsNumber: props.rowsData.length, // Set initially
     });
     function editRow(row) {

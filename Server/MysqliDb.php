@@ -2608,9 +2608,29 @@ class MysqliDb
         return $sessionData ?: null; // Return decoded array or null if invalid
     }
 
+    /** this function will check
+     *  if the given date, time ,venue and priest
+     *  is already exist in the events table 
+     * this will return true or false*/
 
-
-
+     public function validateEventSchedule($DateFrom, $DateTo, $TimeFrom, $TimeTo, $Priest, $tableName) {
+       
+       $this->where('priest_assigned_id', $Priest);
+    
+        $this->where('(date BETWEEN ? AND ? OR date_to BETWEEN ? AND ? OR ? BETWEEN date AND date_to OR ? BETWEEN date AND date_to)', 
+                   array($DateFrom, $DateTo, $DateFrom, $DateTo, $DateFrom, $DateTo));
+    
+        // Fixing the time range condition
+       $this->where('(time_from BETWEEN ? AND ? OR time_to BETWEEN ? AND ? OR ? BETWEEN time_from AND time_to OR ? BETWEEN time_from AND time_to)', 
+                   array($TimeFrom, $TimeTo, $TimeFrom, $TimeTo, $TimeFrom, $TimeTo));
+    
+        $existingEvents = $this->get($tableName); // Fetch matching records from the dynamic table
+    
+        return count($existingEvents) > 0; // Returns true if an event exists, false otherwise
+    }
+    
+    
+    
 
 
 
