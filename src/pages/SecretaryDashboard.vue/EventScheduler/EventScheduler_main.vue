@@ -112,6 +112,7 @@
   </q-layout>
 </template>
 <script setup>
+import { useQuasar } from "quasar";
 import { api } from "src/boot/axios";
 import { ref, onMounted } from "vue";
 import { menuData } from "src/data/menuData";
@@ -119,6 +120,7 @@ import Calendar from "src/components/DashboardComponents/calendarComponent.vue";
 import SidebarMenu from "src/components/DashboardComponents/navigation_left.vue";
 const menuDatacalendar = menuData;
 const eventList = ref([]);
+const $q = useQuasar();
 let load = "";
 const loadScheduleData = () => {
   return new Promise((resolve, reject) => {
@@ -138,8 +140,80 @@ const loadScheduleData = () => {
 };
 
 //function to view event information
-const viewEvent = (event) => {
-  console.log(event); // Example: Convert title to uppercase with pin icon
+const viewEvent = (info) => {
+  let eventData = info._def.extendedProps.all;
+  let priest =
+    eventData.pos_prefix +
+    " " +
+    eventData.fname +
+    " " +
+    eventData.mname.substr(0, 1) +
+    ". " +
+    eventData.lname;
+  $q.dialog({
+    title: `Event Details`,
+    message: ` <form style="
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 10px;
+      font-family: Arial, sans-serif;
+    ">
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Event Name</label>
+        <input type="text" value="${eventData.event_name}" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+      
+
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Date</label>
+        <input type="text" value="${eventData.date}" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Priest Assigned</label>
+        <input type="text" value="${priest}" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Time</label>
+        <input type="text" value="${eventData.time_from} - ${
+      eventData.time_to
+    }" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Venue</label>
+        <input type="text" value="${
+          eventData.venue_name || "Not specified"
+        }" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Requirement Status</label>
+        <input type="text" value="${
+          eventData.requirement_status ? "Completed" : "Pending"
+        }" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+    </form>
+  `,
+    html: true,
+  })
+    .onOk(() => {
+      // console.log('OK')
+    })
+    .onCancel(() => {
+      // console.log('Cancel')
+    })
+    .onDismiss(() => {
+      // console.log('I am triggered on both OK and Cancel')
+    });
 };
 
 onMounted(async () => {
