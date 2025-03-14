@@ -13,6 +13,7 @@ import listPlugin from "@fullcalendar/list"; // List view
 const props = defineProps({
   initialView: { type: String, default: "dayGridMonth" },
   events: { type: Array, default: () => [] },
+  viewEventFunction: { type: Function, default: () => {} },
 });
 
 const calendarOptions = ref({
@@ -28,11 +29,15 @@ const calendarOptions = ref({
   selectable: true,
   editable: true,
   events: props.events,
+
   eventContent: function (arg) {
     let icon = arg.event.extendedProps.icon || "📅"; // Default icon
     let eventTitle = document.createElement("div");
     eventTitle.innerHTML = `${icon} ${arg.event.title}`;
     return { domNodes: [eventTitle] };
+  },
+  eventClick: (info) => {
+    props.viewEventFunction(info.event); // Call the function prop with the clicked event
   },
   eventDidMount: (info) => {
     info.el.style.backgroundColor = "#FFC107"; // Change event background dynamically

@@ -103,7 +103,11 @@
     </q-drawer>
 
     <q-page-container class="calendar-container">
-      <Calendar :initialView="'dayGridMonth'" :events="eventList" />
+      <Calendar
+        :initialView="'dayGridMonth'"
+        :events="eventList"
+        :viewEventFunction="viewEvent"
+      />
     </q-page-container>
   </q-layout>
 </template>
@@ -131,6 +135,11 @@ const loadScheduleData = () => {
         reject(error);
       });
   });
+};
+
+//function to view event information
+const viewEvent = (event) => {
+  console.log(event); // Example: Convert title to uppercase with pin icon
 };
 
 onMounted(async () => {
