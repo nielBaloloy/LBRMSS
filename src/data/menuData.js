@@ -25,7 +25,7 @@ export const menuData = [
     icon: "folder_open",
     children: [
       {
-        to: "/SecretaryDashboard/Account-Management",
+        to: "/Marriage",
         label: "Marriage Records",
       },
       {

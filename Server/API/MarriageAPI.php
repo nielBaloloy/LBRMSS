@@ -23,7 +23,62 @@
 
       public function httpGet($payload)
       {
+        $datas = json_encode($payload);
+        $arr = json_decode($datas, true);
+      //   $apiParameter = (isset($arr['type']['status']) ? $arr['type']['status'] : "0" );
+        
+      //   $filter  = (isset($arr['type']) ? $arr['type'] :"");
        
+      //   $filterRange = "";
+      //   if (!empty($filter['dateFrom']) && !empty($filter['dateTo'])) {
+      //     $dateFrom = $filter['dateFrom'];
+      //     $dateTo = $filter['dateTo'];
+      //     $filterRange = " AND (DATE(a.created_at) BETWEEN '$dateFrom' AND '$dateTo')";
+      // } else {
+      //     $filterRange = "";
+      // }
+
+
+
+        $Marriage = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
+                                                LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
+                                                LEFT JOIN lbrmss_mariage_main mm ON mm.event_id =a.event_id
+                                                LEFT JOIN lbrmss_m_groom mg ON mg.g_event_id = mm.event_id 
+                                                LEFT JOIN lbrmss_m_bride mb ON mb.b_event_id = mm.event_id
+                                                LEFT JOIN witness_testium_tbl mw ON mw.ServiceID = mm.event_id
+                                                WHERE a.remark = '1' AND a.service_id = 1 GROUP BY a.event_id
+                                                ORDER BY a.created_at");
+
+      if(count($Marriage) > 0){
+
+        foreach ($Marriage as $event) {
+          $groom  = $event['groom_lname']." ".$event['groom_mname']." ".$event['groom_fname'];
+          $bride  = $event['groom_lname']." ".$event['bride_mname']." ".$event['bride_fname'];
+          $pendingEvents[] = [
+            "all" => $event,
+            "E_ID" => $event['event_id'],
+            "EventServiceID" => $event['service_id'],
+            "Service" => $event['event_name'],
+            "Client" => $groom." and ".$bride,
+            "Type" => ($event['type'] == '1') ? "Mass" : "Special",
+            "Date" => $event['date'],
+            "Venue" => $event['venue_name'], 
+            'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
+            "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
+        
+              ];
+        
+        }
+       
+        
+        echo json_encode(array("Status"=>"Success", "data"=>$pendingEvents));
+      }else{
+          echo json_encode(array("Status"=>"Failed", "data"=>[]));
+        }
+            
+        
 
       }
       public function httpPost($payload)

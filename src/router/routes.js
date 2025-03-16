@@ -22,18 +22,20 @@ const routes = [
         "../pages/SecretaryDashboard.vue/ServiceModule/ApplicationForm.vue"
       ),
   },
-  {
-    path: "/SecretaryDashboard/Account-Management",
-    component: () =>
-      import(
-        "../pages/SecretaryDashboard.vue/AccountManagement/AccountManagement.vue"
-      ),
-  },
+
   {
     path: "/EventSchedule",
     component: () =>
       import(
         "../pages/SecretaryDashboard.vue/EventScheduler/EventScheduler_main.vue"
+      ),
+  },
+
+  {
+    path: "/Marriage",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/CannonicalRecords/MarriageMain.vue"
       ),
   },
   // Always leave this as last one,
