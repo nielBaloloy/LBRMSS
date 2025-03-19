@@ -181,7 +181,12 @@
                 </q-item-section>
                 <q-item-section>Edit</q-item-section>
               </q-item>
-
+              <q-item clickable v-close-popup @click="print(row)">
+                <q-item-section avatar>
+                  <q-icon name="print" color="print" />
+                </q-item-section>
+                <q-item-section>Request Print</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup @click="deleteRow(row)">
                 <q-item-section avatar>
                   <q-icon name="delete" color="negative" />
@@ -199,14 +204,14 @@
 <script>
 import { ref, computed, watch, defineEmits } from "vue";
 import { FilterRange } from "src/composables/SeviceData";
-
+import { api } from "src/boot/axios";
 export default {
   props: {
     title: { type: String, default: "Table" },
     columns: { type: Array, required: true },
     rowsData: { type: Array, required: true },
   },
-  emits: ["filterData", "FilterRanges"],
+  emits: ["edit", "FilterRanges", "filterData"],
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
@@ -219,9 +224,11 @@ export default {
       rowsNumber: props.rowsData.length, // Set initially
     });
     function editRow(row) {
-      console.log("Edit row:", row);
+      emit("edit", row);
     }
-
+    function print(x) {
+      const eventId = x["all"].event_id;
+    }
     function deleteRow(row) {
       // $q.dialog({
       //   title: "Confirm",
@@ -302,7 +309,7 @@ export default {
       pagination,
       paginatedRows,
       onRequest,
-
+      print,
       filters,
       fixed: ref(false),
     };

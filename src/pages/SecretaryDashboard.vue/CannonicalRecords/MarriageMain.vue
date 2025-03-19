@@ -115,7 +115,22 @@
           title="PENDING"
           :columns="columns"
           :rowsData="MarraigeData"
+          @edit="editForm"
+          @filterData="applyDateTimeFilter"
         />
+      </div>
+
+      <div class="dialog bg-primary">
+        <q-dialog v-model="dialog">
+          <q-card class="popUpService" style="width: 950px; max-width: 100vw">
+            <q-card-section class="row items-center q-gutter-sm">
+              <h6>Edit Marriage</h6>
+            </q-card-section>
+            <q-card-section class="row items-center q-gutter-sm">
+              <EditDialog :eventData="selectedService" />
+            </q-card-section>
+          </q-card>
+        </q-dialog>
       </div>
     </q-page-container>
   </q-layout>
@@ -128,10 +143,10 @@ import { useRouter, useRoute } from "vue-router";
 import SSR_datatable_v2 from "../../../components/ServicesComponents/SSR_table_component_v2.vue";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
-
+import EditDialog from "src/pages/SecretaryDashboard.vue/CannonicalRecords/MarriageEdit.vue"; // Import the component
 import { getMarriage, MarraigeData } from "src/composables/Marriage.js";
 export default defineComponent({
-  components: { SidebarMenu, SSR_datatable_v2 },
+  components: { SidebarMenu, SSR_datatable_v2, EditDialog },
   setup() {
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
@@ -144,6 +159,14 @@ export default defineComponent({
     const $q = useQuasar();
     const router = useRouter();
 
+    const selectedService = ref(null);
+    const dialog = ref(false);
+
+    function editForm(data) {
+      console.log(data);
+      selectedService.value = data;
+      dialog.value = true;
+    }
     let myObject = ref();
     let sessionkey = SessionStorage.getItem("log");
     if (sessionkey === null || "") {
@@ -233,13 +256,22 @@ export default defineComponent({
         align: "center",
       },
     ];
+    const confirmAction = () => {
+      console.log("User confirmed!");
+    };
 
+    const handleDialogAction = (actionLabel) => {
+      console.log(`User clicked: ${actionLabel}`);
+    };
     return {
       columns,
+      editForm,
 
+      selectedService,
       MarraigeData,
       menuData2,
       menuData,
+      dialog,
       Logout,
       myObject,
       activeclick,
