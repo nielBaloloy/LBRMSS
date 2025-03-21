@@ -248,11 +248,11 @@ export default {
     const filter = ref("");
     const loading = ref(false);
     const pagination = ref({
-      sortBy: "Client",
+      sortBy: "Client", // Default sorting field
       descending: false,
       page: 1,
       rowsPerPage: 10,
-      rowsNumber: props.rowsData.length,
+      rowsNumber: props.rowsData.length, // Set initially
     });
     function editRow(row) {
       console.log("Edit row:", row);
@@ -269,53 +269,37 @@ export default {
       // Add logic to remove the row from your data
       // });
     }
-    // ✅ Computed property to filter and paginate
+    // ✅ Computed property to filter and sort data
     const filteredRows = computed(() => {
-      if (!filter.value) return props.rowsData;
+      if (!filter.value) return props.rowsData; // If no filter, return all data
+
       const lowerFilter = filter.value.toLowerCase();
+
       return props.rowsData.filter((row) =>
         Object.values(row).some(
           (value) =>
-            value && value.toString().toLowerCase().includes(lowerFilter)
+            value && value.toString().toLowerCase().includes(lowerFilter) // Convert all values to strings before filtering
         )
       );
     });
-
+    // ✅ Paginate the data separately
     const paginatedRows = computed(() => {
       const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
       const end = start + pagination.value.rowsPerPage;
       return filteredRows.value.slice(start, end);
     });
 
-    // ✅ Watch `filteredRows` and update `rowsNumber`
+    // ✅ Watch the filtered data to update the total row count (avoids side effect in computed)
     watch(filteredRows, (newFilteredRows) => {
       pagination.value.rowsNumber = newFilteredRows.length;
     });
 
-    // ✅ Handle pagination updates properly
-    function onRequest(props) {
-      const { page, rowsPerPage } = props.pagination;
-      pagination.value.page = page;
-      pagination.value.rowsPerPage = rowsPerPage;
+    function onRequest() {
+      loading.value = true;
+      setTimeout(() => {
+        loading.value = false;
+      }, 500); // Simulate a delay
     }
-
-    // ✅ Ensure pagination updates properly
-    watch(
-      pagination,
-      () => {
-        pagination.value.rowsNumber = filteredRows.value.length;
-      },
-      { deep: true }
-    );
-
-    // ✅ Ensure `rowsNumber` updates if `rowsData` changes dynamically
-    watch(
-      () => props.rowsData,
-      (newRows) => {
-        pagination.value.rowsNumber = newRows.length;
-      },
-      { deep: true, immediate: true }
-    );
 
     watch(filter, onRequest);
 
@@ -354,7 +338,7 @@ export default {
       pagination,
       paginatedRows,
       onRequest,
-      filteredRows,
+
       filters,
       fixed: ref(false),
     };

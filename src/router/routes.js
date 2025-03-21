@@ -38,6 +38,15 @@ const routes = [
         "../pages/SecretaryDashboard.vue/CannonicalRecords/MarriageMain.vue"
       ),
   },
+
+  {
+    path: "/ServicePayment",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/FinanceModule/ServiceFeePayment.vue"
+      ),
+  },
+  //ServicePayment
   // Always leave this as last one,
   // but you can also remove it
   {

@@ -98,7 +98,7 @@
 
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
-        
+       
         /** Apply validation
          *  events with same day time, venue and priest is not allowed
          */
@@ -156,22 +156,24 @@
                   if ($insert_EventInfo){
                     $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
                     $new_eventId= $eventId;
-                    $AnnointingData = array(
-                      "a_id" => '',
-                      "event_id" =>   $new_eventId,
-                      "region"   =>   $Event['Event_Region'],
-                      "province" =>    $Event['Event_Province'],
-                      "city"     =>  $Event['Event_City'],
-                      "brgy"    =>  $Event['Event_Barangay'],
-                      "description"  =>"",
-                      "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
-                      "created_at"    => $dty,
-                      "created_by" => '1',
-                      "remark" => '1'
-                  );
-                  
-                    $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
-                    if($insertAnnointing){
+                      if($Event['Service'] == '5'){ //insert to annointing
+                        $AnnointingData = array(
+                          "a_id" => '',
+                          "event_id" =>   $new_eventId,
+                          "region"   =>   $Event['Event_Region'],
+                          "province" =>    $Event['Event_Province'],
+                          "city"     =>  $Event['Event_City'],
+                          "brgy"    =>  $Event['Event_Barangay'],
+                          "description"  =>"",
+                          "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                          "created_at"    => $dty,
+                          "created_by" => '1',
+                          "remark" => '1'
+                      );
+                      
+                        $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
+                      }
+                
                       
                       $ScheduleData = array(
                         "sched_id" => '',
@@ -184,10 +186,13 @@
                         "created_at" => $dty,
                         "remark" => '1' // 1 = show, 0 = hide
                     );
+
+
                     $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
+                    
                       echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
                       //logs here
-                    }
+                    
                   }else{
                     echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
                   }

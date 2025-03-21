@@ -94,7 +94,8 @@
         /**get current date and time*/
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
-        
+        $dtyOne = $dt->format('Y-m-d');
+        $cleanDate = str_replace("-", "", $dtyOne);
         // event array
         $ClientData = Array(
           "cid" => '',
@@ -265,7 +266,25 @@
                   );
                   
                   // Insert the data into the database
-                  
+                  $dateofEvent = $Event['Date'];
+                  $oneWeekBefore = date("Y-m-d", strtotime($dateofEvent . " -1 week"));
+                    $EventFeeData = array(
+                      "event_fee_id" => '', 
+                      "event_id" => $new_eventId, // Foreign key reference to event
+                      "reference_no" => "REF-".$cleanDate.$new_eventId, // Unique reference number
+                      "amount_total" =>'', // Total amount for the event
+                      "down_payment" => '', // Initial payment
+                      "balance" => '', // Remaining balance
+                      "due_date" => $oneWeekBefore, // Payment due date 1 week before event
+                      "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+                      "created_at" => $dty, // Timestamp of creation
+                      "updated_at" => '', // Timestamp of last update
+                      "created_by" =>'1', // User who created the record
+                      "updated_by" => '', // User who last updated the record
+                      "remark" => '1' // 1 = Show, 0 = Hide
+                  );
+
+                  $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
                   $insert_Groom_info = $this->db->insert('lbrmss_m_groom', $marriageGroomData);
                   $insert_Bride_info = $this->db->insert('lbrmss_m_bride', $marriageBrideData);
                   $insert_assignment_info = $this->db->insert('lbrmss_mariage_main', $marriageAssignment);
@@ -273,7 +292,7 @@
                   $insertedIds = $this->db->insertMulti($tableName, $multiInsertData);
                   $insertRequirement = $this->db->insert('lbrmss_m_requirements', $marriageRequirementsData);
                   
-                      if($insert_Groom_info && $insert_Bride_info && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement){
+                      if($insertFeeTemplate && $insert_Groom_info && $insert_Bride_info && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement){
                         echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
                       } else{
                         echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));

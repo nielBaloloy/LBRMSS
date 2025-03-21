@@ -222,7 +222,7 @@ export default defineComponent({
 
           $q.loading.hide();
           timer = void 0;
-        }, 1000);
+        }, 3000);
       };
     };
     return {
