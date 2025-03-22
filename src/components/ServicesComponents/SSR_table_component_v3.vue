@@ -182,29 +182,14 @@
       <!-- Custom slot for Action column -->
       <template v-slot:body-cell-Action="{ row }">
         <q-td>
-          <q-btn-dropdown
-            dense
-            flat
-            icon="more_vert"
-            dropdown-icon="null"
+          <q-btn
+            unelevated
+            no-caps
+            icon="open_in_new"
             size="sm"
+            @click="editRow(row)"
           >
-            <q-list>
-              <q-item clickable v-close-popup @click="editRow(row)">
-                <q-item-section avatar>
-                  <q-icon name="edit" color="primary" />
-                </q-item-section>
-                <q-item-section>Edit</q-item-section>
-              </q-item>
-
-              <q-item clickable v-close-popup @click="deleteRow(row)">
-                <q-item-section avatar>
-                  <q-icon name="delete" color="negative" />
-                </q-item-section>
-                <q-item-section>Delete</q-item-section>
-              </q-item>
-            </q-list>
-          </q-btn-dropdown>
+          </q-btn>
         </q-td>
       </template>
       <template v-slot:body-cell="props">
@@ -242,20 +227,20 @@ export default {
     getStatusColor: Function,
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
-  emits: ["filterData", "FilterRanges"],
+  emits: ["filterData", "FilterRanges", "openReq"],
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
     const pagination = ref({
-      sortBy: "Client", // Default sorting field
+      sortBy: "Client",
       descending: false,
       page: 1,
       rowsPerPage: 10,
-      rowsNumber: props.rowsData.length, // Set initially
+      rowsNumber: props.rowsData.length,
     });
     function editRow(row) {
-      console.log("Edit row:", row);
+      emit("openReq", row);
     }
 
     function deleteRow(row) {
@@ -271,35 +256,51 @@ export default {
     }
     // ✅ Computed property to filter and sort data
     const filteredRows = computed(() => {
-      if (!filter.value) return props.rowsData; // If no filter, return all data
-
+      if (!filter.value) return props.rowsData;
       const lowerFilter = filter.value.toLowerCase();
-
       return props.rowsData.filter((row) =>
         Object.values(row).some(
           (value) =>
-            value && value.toString().toLowerCase().includes(lowerFilter) // Convert all values to strings before filtering
+            value && value.toString().toLowerCase().includes(lowerFilter)
         )
       );
     });
-    // ✅ Paginate the data separately
+
     const paginatedRows = computed(() => {
       const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
       const end = start + pagination.value.rowsPerPage;
       return filteredRows.value.slice(start, end);
     });
 
-    // ✅ Watch the filtered data to update the total row count (avoids side effect in computed)
+    // ✅ Watch `filteredRows` and update `rowsNumber`
     watch(filteredRows, (newFilteredRows) => {
       pagination.value.rowsNumber = newFilteredRows.length;
     });
 
-    function onRequest() {
-      loading.value = true;
-      setTimeout(() => {
-        loading.value = false;
-      }, 500); // Simulate a delay
+    // ✅ Handle pagination updates properly
+    function onRequest(props) {
+      const { page, rowsPerPage } = props.pagination;
+      pagination.value.page = page;
+      pagination.value.rowsPerPage = rowsPerPage;
     }
+
+    // ✅ Ensure pagination updates properly
+    watch(
+      pagination,
+      () => {
+        pagination.value.rowsNumber = filteredRows.value.length;
+      },
+      { deep: true }
+    );
+
+    // ✅ Ensure `rowsNumber` updates if `rowsData` changes dynamically
+    watch(
+      () => props.rowsData,
+      (newRows) => {
+        pagination.value.rowsNumber = newRows.length;
+      },
+      { deep: true, immediate: true }
+    );
 
     watch(filter, onRequest);
 
@@ -338,7 +339,7 @@ export default {
       pagination,
       paginatedRows,
       onRequest,
-
+      filteredRows,
       filters,
       fixed: ref(false),
     };

@@ -240,40 +240,55 @@ export default {
       // Add logic to remove the row from your data
       // });
     }
-    // ✅ Computed property to filter and sort data
+    // ✅ Computed property to filter and paginate
     const filteredRows = computed(() => {
-      if (!filter.value) return props.rowsData; // If no filter, return all data
-
+      if (!filter.value) return props.rowsData;
       const lowerFilter = filter.value.toLowerCase();
-
       return props.rowsData.filter((row) =>
         Object.values(row).some(
           (value) =>
-            value && value.toString().toLowerCase().includes(lowerFilter) // Convert all values to strings before filtering
+            value && value.toString().toLowerCase().includes(lowerFilter)
         )
       );
     });
-    // ✅ Paginate the data separately
+
     const paginatedRows = computed(() => {
       const start = (pagination.value.page - 1) * pagination.value.rowsPerPage;
       const end = start + pagination.value.rowsPerPage;
       return filteredRows.value.slice(start, end);
     });
 
-    // ✅ Watch the filtered data to update the total row count (avoids side effect in computed)
+    // ✅ Watch `filteredRows` and update `rowsNumber`
     watch(filteredRows, (newFilteredRows) => {
       pagination.value.rowsNumber = newFilteredRows.length;
     });
 
-    function onRequest() {
-      loading.value = true;
-      setTimeout(() => {
-        loading.value = false;
-      }, 500); // Simulate a delay
+    // ✅ Handle pagination updates properly
+    function onRequest(props) {
+      const { page, rowsPerPage } = props.pagination;
+      pagination.value.page = page;
+      pagination.value.rowsPerPage = rowsPerPage;
     }
 
-    watch(filter, onRequest);
+    // ✅ Ensure pagination updates properly
+    watch(
+      pagination,
+      () => {
+        pagination.value.rowsNumber = filteredRows.value.length;
+      },
+      { deep: true }
+    );
 
+    // ✅ Ensure `rowsNumber` updates if `rowsData` changes dynamically
+    watch(
+      () => props.rowsData,
+      (newRows) => {
+        pagination.value.rowsNumber = newRows.length;
+      },
+      { deep: true, immediate: true }
+    );
+
+    watch(filter, onRequest);
     //========= Filter ===========================
     const filters = ref({
       dateFrom: "",

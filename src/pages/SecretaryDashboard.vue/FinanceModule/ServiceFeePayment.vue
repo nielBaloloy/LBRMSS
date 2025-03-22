@@ -144,6 +144,7 @@
                   :getStatusColor="getStatusColor"
                   :getStatusIcon="getStatusIcon"
                   @filterData="applyDateTimeFilter"
+                  @openReq="editForm"
                 />
               </div>
             </q-tab-panel>
@@ -159,6 +160,16 @@
             </q-tab-panel>
           </q-tab-panels>
         </q-card>
+        <div class="dialog bg-primary">
+          <q-dialog v-model="dialog">
+            <q-card class="popUpService" style="width: 950px; max-width: 100vw">
+              <q-card-section class="row items-center q-gutter-sm">
+                <h6>Open Request</h6>
+                <OpenRequestModal :requestData="selectedService" />
+              </q-card-section>
+            </q-card>
+          </q-dialog>
+        </div>
       </div>
     </q-page-container>
   </q-layout>
@@ -173,8 +184,9 @@ import SidebarMenu from "../../../components/DashboardComponents/navigation_left
 import { menuData, menuData2 } from "src/data/menuData";
 import { getSerivce, Data } from "src/composables/SeviceData.js";
 import { getMarriage, MarraigeData } from "src/composables/Marriage.js";
+import OpenRequestModal from "src/pages/SecretaryDashboard.vue/FinanceModule/ServiceFee_open_request.vue";
 export default defineComponent({
-  components: { SidebarMenu, SSR_datatable },
+  components: { SidebarMenu, SSR_datatable, OpenRequestModal },
   setup() {
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
@@ -330,12 +342,16 @@ export default defineComponent({
       console.log("Filtering with:", filters);
       getSerivce(filters);
     };
+
+    //=================== save request ===========================
+
     return {
       getStatusIcon,
       applyDateTimeFilter,
       getStatusColor,
       columns,
       editForm,
+
       tab,
       Data,
       selectedService,
