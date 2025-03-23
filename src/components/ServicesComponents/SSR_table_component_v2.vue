@@ -258,18 +258,22 @@ export default {
       return filteredRows.value.slice(start, end);
     });
 
-    // ✅ Watch `filteredRows` and update `rowsNumber`
     watch(filteredRows, (newFilteredRows) => {
       pagination.value.rowsNumber = newFilteredRows.length;
     });
 
-    // ✅ Handle pagination updates properly
     function onRequest(props) {
+      console.log("Received props:", props);
+
+      if (!props.pagination) {
+        console.warn("Pagination data is undefined.");
+        return;
+      }
+
       const { page, rowsPerPage } = props.pagination;
       pagination.value.page = page;
       pagination.value.rowsPerPage = rowsPerPage;
     }
-
     // ✅ Ensure pagination updates properly
     watch(
       pagination,

@@ -48,6 +48,7 @@
                                                 LEFT JOIN lbrmss_m_groom mg ON mg.g_event_id = mm.event_id 
                                                 LEFT JOIN lbrmss_m_bride mb ON mb.b_event_id = mm.event_id
                                                 LEFT JOIN witness_testium_tbl mw ON mw.ServiceID = mm.event_id
+                                                 LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
                                                 WHERE a.remark = '1' AND a.service_id = 1 GROUP BY a.event_id
                                                 ORDER BY a.created_at");
 
@@ -271,9 +272,11 @@
                     $EventFeeData = array(
                       "event_fee_id" => '', 
                       "event_id" => $new_eventId, // Foreign key reference to event
-                      "reference_no" => "REF-".$cleanDate.$new_eventId, // Unique reference number
+                      "service_id" =>  $Event['Service'],
+                      "reference_no" => "REFM-".$cleanDate.$new_eventId, // Unique reference number
+                      "payment_type" =>'0',
                       "amount_total" =>'', // Total amount for the event
-                      "down_payment" => '', // Initial payment
+                      "payment" => '', // Initial payment
                       "balance" => '', // Remaining balance
                       "due_date" => $oneWeekBefore, // Payment due date 1 week before event
                       "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid

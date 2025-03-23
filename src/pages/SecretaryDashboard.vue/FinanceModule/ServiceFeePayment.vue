@@ -164,7 +164,20 @@
           <q-dialog v-model="dialog">
             <q-card class="popUpService" style="width: 950px; max-width: 100vw">
               <q-card-section class="row items-center q-gutter-sm">
-                <h6>Open Request</h6>
+                <q-banner
+                  inline-actions
+                  rounded
+                  class="bg-amber-5 text-white"
+                  style="width: 950px"
+                >
+                  <strong>View Request</strong>
+                  <template v-slot:action>
+                    <p class="text-subtitle2">
+                      Reference Number
+                      <strong>{{ selectedService.all.reference_no }}</strong>
+                    </p>
+                  </template>
+                </q-banner>
                 <OpenRequestModal :requestData="selectedService" />
               </q-card-section>
             </q-card>

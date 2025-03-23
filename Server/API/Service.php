@@ -44,9 +44,10 @@
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
                                                 LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
-                                                LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
+                                                LEFT JOIN lbrmss_client_list e ON e.cid = a.client
+                                                 LEFT JOIN lbrmss_event_fee ef ON ef.event_id = a.event_id
                                                 WHERE a.remark = '1' AND event_progress = '$apiParameter' $filterRange 
-                                                ORDER BY a.created_at");
+                                                ORDER BY a.created_at DESC");
 
       if(count($Display_Pending) > 0){
 
