@@ -1,5 +1,9 @@
 <template>
   <div class="requestpanel">
+    <div class="row justify-center q-mt-md">
+      <p class="text-h6">Payment Breakdown</p>
+    </div>
+
     <q-form @submit="submitForm" ref="marriageForm">
       <q-card-section>
         <q-table flat bordered :rows="feeRows" :columns="columns" hide-bottom>
@@ -14,6 +18,7 @@
                   type="number"
                   outlined
                   dense
+                  readonly
                   :rules="[(val) => val >= 0 || 'Enter a valid amount']"
                 />
               </q-td>
@@ -85,15 +90,24 @@
 
 <script setup>
 import { defineProps, defineEmits, computed, ref, watch } from "vue";
-import { useQuasar } from "quasar";
-
+import { useQuasar, SessionStorage } from "quasar";
+import { api } from "../../../boot/axios";
 const props = defineProps({
   modelValue: Boolean,
   requestData: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(["update:modelValue", "update:eventData", "action"]);
+const emit = defineEmits([
+  "update:modelValue",
+  "update:eventData",
+  "action",
+  "closeDialog",
+]);
 const $q = useQuasar();
+let myObject = ref();
+let sessionkey = SessionStorage.getItem("log");
+myObject.value = JSON.parse(sessionkey);
+console.log(myObject.value);
 
 const columns = [
   {
@@ -149,6 +163,7 @@ const totalFees = computed(() => {
 
 // ✅ Down payment logic (50% of total fees)
 const isDownPayment = ref(false);
+const paymentType = ref(1); // Default to 1 when unchecked
 const downPayment = computed(() =>
   isDownPayment.value ? totalFees.value * 0.5 : 0
 );
@@ -165,9 +180,9 @@ const paymentStatusOptions = ["Pending", "Partial", "Paid"];
 const payment_info = ref({
   event_fee_id: null,
   event_id: props.requestData.all.event_id, // Foreign key reference to event
-  service_id: "",
+  service_id: props.requestData.all.service_id,
   reference_no: props.requestData.all.reference_no, // Unique reference number
-  payment_type: "0",
+  payment_type: paymentType.value,
   amount_total: totalFees.value, // Total amount for the event
   payment: null, // Initial payment
   balance: remainingBalance.value, // Remaining balance
@@ -175,7 +190,7 @@ const payment_info = ref({
   status: "1", // 1 = Pending, 2 = Partially Paid, 3 = Paid
   created_at: null, // Timestamp of creation
   updated_at: null, // Timestamp of last update
-  created_by: "1", // User who created the record
+  created_by: myObject.value.UID, // User who created the record
   updated_by: null, // User who last updated the record
   remark: "1", // 1 = Show, 0 = Hide
 });
@@ -189,7 +204,7 @@ const submitForm = () => {
         message: "Are you sure you want to proceed with the payment?",
         cancel: true,
         persistent: true,
-        icon: "savings", // Material Design Icon (for cash/payment)
+        icon: "person", // Material Design Icon (for cash/payment)
         ok: {
           label: "Confirm", // Change OK button to Confirm
           color: "positive", // Make it green
@@ -204,10 +219,29 @@ const submitForm = () => {
         .onOk(() => {
           console.log("payment :", payment_info.value);
           console.log("Form Submitted:", fees.value);
-          $q.notify({
-            type: "positive",
-            message: "Marriage fees submitted successfully!",
-          });
+          const payload = {
+            ...payment_info.value,
+            ...fees.value,
+          };
+          api
+            .post("ServiceFee_Requset_save.php", payload)
+            .then((response) => {
+              if (response.data.message == "") {
+                $q.notify({
+                  type: "positive",
+                  message: "Marriage fees submitted successfully!",
+                });
+              }
+            })
+            .catch((error) => {
+              reject(error);
+              $q.notify({
+                type: "negative",
+                message: "Network Error",
+              });
+            });
+
+          emit("closeDialog");
         })
         .onCancel(() => {
           console.log("Payment Cancelled");
@@ -220,10 +254,54 @@ const submitForm = () => {
     }
   } else {
     if ((payment_info.value.payment = downPayment.value)) {
-      $q.notify({
-        type: "positive",
-        message: "Marriage fees submitted successfully!",
-      });
+      $q.dialog({
+        dark: false,
+        title: "Confirm Payment",
+        message: "Are you sure you want to proceed with the downpayment?",
+        cancel: true,
+        persistent: true,
+        icon: "person", // Material Design Icon (for cash/payment)
+        ok: {
+          label: "Confirm", // Change OK button to Confirm
+          color: "positive", // Make it green
+          unelevated: true, // Gives a press effect
+        },
+        cancel: {
+          label: "Cancel",
+          color: "primary",
+          unelevated: true, // Gives a press effect
+        },
+      })
+        .onOk(() => {
+          console.log("payment :", payment_info.value);
+          console.log("Form Submitted:", fees.value);
+          const payload = {
+            ...payment_info.value,
+            ...fees.value,
+          };
+          api
+            .post("ServiceFee_Requset_save.php", payload)
+            .then((response) => {
+              if (response.data.message == "") {
+                $q.notify({
+                  type: "positive",
+                  message: "Marriage fees submitted successfully!",
+                });
+              }
+            })
+            .catch((error) => {
+              reject(error);
+              $q.notify({
+                type: "negative",
+                message: "Network Error",
+              });
+            });
+
+          emit("closeDialog");
+        })
+        .onCancel(() => {
+          console.log("Payment Cancelled");
+        });
     } else {
       $q.notify({
         type: "negative",
@@ -244,29 +322,10 @@ const resetForm = () => {
   isDownPayment.value = false;
   payment_info.value.payment = null;
 };
-// watch(isDownPayment, (newValue) => {
-//   payment_info.value.payment = newValue ? downPayment.value : totalFees.value;
-// });
-
-// // ✅ Watch for manual changes in payment & validate it
-// watch(
-//   payment_info,
-//   (newPayment) => {
-//     const requiredAmount = isDownPayment.value
-//       ? downPayment.value
-//       : totalFees.value;
-
-//     if (newPayment.payment !== requiredAmount) {
-//       $q.notify({
-//         type: "negative",
-//         message: `Payment must be exactly ₱${requiredAmount}`,
-//       });
-
-//       payment_info.value.payment = requiredAmount; // Auto-corrects the value
-//     }
-//   },
-//   { deep: true }
-// );
+watch(isDownPayment, (newValue) => {
+  paymentType.value = newValue ? 2 : 1; // 2 if checked, 1 if unchecked
+  console.log("Payment Type:", paymentType.value);
+});
 </script>
 
 <style scoped>

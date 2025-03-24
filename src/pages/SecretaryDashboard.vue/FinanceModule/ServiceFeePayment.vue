@@ -178,7 +178,10 @@
                     </p>
                   </template>
                 </q-banner>
-                <OpenRequestModal :requestData="selectedService" />
+                <OpenRequestModal
+                  :requestData="selectedService"
+                  @closeDialog="dialog = false"
+                />
               </q-card-section>
             </q-card>
           </q-dialog>
