@@ -38,7 +38,7 @@
         $dty = $dt->format('Y-m-d H:i:s');
         $dtyOne = $dt->format('Y-m-d');
         $event = array(
-            "event_fee_id" => null, // Auto-incremented, usually not set manually
+            
             "event_id" => $PaymentData['event_id'],
             "service_id" => $PaymentData['service_id'],
             "reference_no" =>$PaymentData['reference_no'],
@@ -56,15 +56,38 @@
         );
         $this->db->where('remark','1');
         $this->db->where('event_id', $ev_id);
-        if ($this->db->update ('lbrmss_event_fee', $event)){
-          $updateEventStatus = $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE event_id ='$ev_id' AND remark = '1'");
+        if ($this->db->update('lbrmss_event_fee', $event)){
+          /** Validate id if the event id has a seminar and asssigned priest  */
           $getEventData = $this->db->rawQuery("SELECT a.event_id, a.date, a.date_to,a.time_from, a.time_to, a.priest_assigned_id, b.seminar_id
-                                              FROM lbrmss_event_table_main AS a 
-                                              LEFT JOIN lbrmss_seminar AS b ON a.event_id = b.event_id 
-                                              WHERE a.event_id = '$ev_id' AND b.event_id ='$ev_id' AND a.remark = '1' AND b.remark ='1';")->result_array();
+          FROM lbrmss_event_table_main AS a 
+          LEFT JOIN lbrmss_seminar AS b ON a.event_id = b.event_id 
+          WHERE a.event_id = '$ev_id' AND b.event_id ='$ev_id' AND a.remark = '1' AND b.remark ='1';");
 
-          
-          echo json_encode(array("message"=>"" ));
+          $this->db->where ("event_id", $ev_id);
+          $hasSeminar = $this->db->getOne("lbrmss_seminar");
+          if(!empty($hasSeminar)){
+              /** If not empty update seminar  */
+              foreach($getEventData as $seminar){
+                $sid = $seminar['seminar_id'];
+                  $updateSeminar = $this->db->rawQuery("UPDATE lbrmss_seminar SET status = '1' WHERE seminar_id ='$sid' AND remark = '1';");
+              }
+          }
+          /** insert priest schedule */
+          $priestAssigned = array(
+            "sched_id" => $getEventData[0][''],
+            "priest_id"=>$getEventData[0]['priest_assigned_id'],
+            "sched_event_id"=>$getEventData[0]['event_id'],
+            "date_from" =>$getEventData[0]['date'],
+            "date_to" =>$getEventData[0]['date_to'],
+            "time_from" =>$getEventData[0]['time_from'],
+            "time_to"=>$getEventData[0]['time_to'],
+            "created_at" =>$dty,
+            "remark"=>'1'
+          );
+          $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
+          $updateEventStatus = $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE event_id ='$ev_id' AND remark = '1'");
+  
+          echo json_encode(array("message"=>""));
         }
          else
                {
