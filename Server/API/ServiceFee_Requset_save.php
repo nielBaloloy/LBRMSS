@@ -56,11 +56,21 @@
         );
         $this->db->where('remark','1');
         $this->db->where('event_id', $ev_id);
-            if ($this->db->update ('lbrmss_event_fee', $event))
-            echo json_encode(array("message"=>"" ));
-            else
-               
-         echo json_encode(array("message"=>"Error" ));
+        if ($this->db->update ('lbrmss_event_fee', $event)){
+          $updateEventStatus = $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE event_id ='$ev_id' AND remark = '1'");
+          $getEventData = $this->db->rawQuery("SELECT a.event_id, a.date, a.date_to,a.time_from, a.time_to, a.priest_assigned_id, b.seminar_id
+                                              FROM lbrmss_event_table_main AS a 
+                                              LEFT JOIN lbrmss_seminar AS b ON a.event_id = b.event_id 
+                                              WHERE a.event_id = '$ev_id' AND b.event_id ='$ev_id' AND a.remark = '1' AND b.remark ='1';")->result_array();
+
+          
+          echo json_encode(array("message"=>"" ));
+        }
+         else
+               {
+                echo json_encode(array("message"=>"Error" ));
+               }
+        
       
     }
  
