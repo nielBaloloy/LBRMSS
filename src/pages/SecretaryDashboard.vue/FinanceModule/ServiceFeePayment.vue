@@ -123,9 +123,9 @@
             narrow-indicator
           >
             <q-tab name="service" label="Services Request">
-              <q-badge color="red" style="margin-left: 30px" floating
-                >2</q-badge
-              >
+              <q-badge color="red" style="margin-left: 30px" floating>{{
+                pending_count
+              }}</q-badge>
             </q-tab>
             <q-tab name="certificate" label="Certificate">
               <q-badge color="red" floating>2</q-badge>
@@ -140,7 +140,7 @@
                 <!-- <ServicesDashboard /> -->
                 <SSR_datatable
                   :columns="columns"
-                  :rowsData="Data"
+                  :rowsData="PaymentList"
                   :getStatusColor="getStatusColor"
                   :getStatusIcon="getStatusIcon"
                   @filterData="applyDateTimeFilter"
@@ -198,7 +198,12 @@ import { useRouter, useRoute } from "vue-router";
 import SSR_datatable from "src/components/ServicesComponents/SSR_table_component_v3.vue";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
-import { getSerivce, Data } from "src/composables/SeviceData.js";
+import {
+  getSerivce,
+  Data,
+  paymentSetList,
+  PaymentList,
+} from "src/composables/SeviceData.js";
 import { getMarriage, MarraigeData } from "src/composables/Marriage.js";
 import OpenRequestModal from "src/pages/SecretaryDashboard.vue/FinanceModule/ServiceFee_open_request.vue";
 export default defineComponent({
@@ -207,7 +212,7 @@ export default defineComponent({
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
-      await getSerivce(0); // Ensure fetch completes before proceeding
+      await paymentSetList(1); // Ensure fetch completes before proceeding
       dataLoaded.value = true; // ✅ Mark as loaded
     });
 
@@ -359,7 +364,11 @@ export default defineComponent({
       getSerivce(filters);
     };
 
-    //=================== save request ===========================
+    /** Load Counter */
+    let pending_count = ref();
+    const countPendingRequest = () => {
+      getSerivce();
+    };
 
     return {
       getStatusIcon,
@@ -367,8 +376,9 @@ export default defineComponent({
       getStatusColor,
       columns,
       editForm,
-
+      pending_count,
       tab,
+      PaymentList,
       Data,
       selectedService,
       MarraigeData,

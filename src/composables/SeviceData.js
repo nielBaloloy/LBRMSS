@@ -101,4 +101,54 @@ const FilterRange = (filterpayload) => {
       reject(error);
     });
 };
-export { getSerivce, Data, sendEventCeremonyData, msg, msgColor, FilterRange };
+
+const countPendingPayment = () => {
+  return new Promise((resolve, reject) => {
+    api
+      .get("Service.php", { params: { type: load } })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          Data.value = response.data.data;
+        } else {
+          Data.value = response.data.data;
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+/** Finance Get Pending Request
+ * Pending , Paid
+ */
+
+const PaymentList = ref([]);
+const paymentSetList = (load) => {
+  console.log(load);
+  return new Promise((resolve, reject) => {
+    api
+      .get("financial_page_service_request.php", { params: { type: load } })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          PaymentList.value = response.data.data;
+        } else {
+          PaymentList.value = response.data.data;
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export {
+  getSerivce,
+  Data,
+  sendEventCeremonyData,
+  msg,
+  msgColor,
+  FilterRange,
+  paymentSetList,
+  PaymentList,
+};
