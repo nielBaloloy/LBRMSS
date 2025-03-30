@@ -21,9 +21,25 @@
       }
       public function httpGet($payload)
       {
-        $this->db->rawQuery("SELECT COUNT(event_id) FROM lbrmss_event_services WHERE service_id != '7' AND status = '1' AND remark ='1'");
-       
+        $serviceId = json_encode($payload);
+        $ServiceID = json_decode($serviceId, true);
       
+       $ID  = $ServiceID['service'];
+
+       switch($ID){
+          case 1 :
+            //marriages  service Counter
+         
+        $Display_Pending = $this->db->rawQuery("SELECT count(ef.event_id) as counter
+                                                FROM  
+                                                lbrmss_event_fee ef 
+                                                WHERE ef.remark = '1' AND ef.status = '1' AND ef.service_id ='$ID'
+                                                ORDER BY ef.reference_no DESC");
+         
+           $Display_Pending;
+            echo json_encode(array("Status"=>"Success", "data"=>$Display_Pending));
+            break;
+       }
             
       }
      

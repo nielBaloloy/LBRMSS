@@ -314,14 +314,14 @@ export default {
       dateTo: "",
       timeFrom: "",
       timeTo: "",
-      status: "0", // Initial status is empty
+      status: "1", // Initial status is empty
     });
 
     // Define the emit function
     const statusOptions = [
-      { label: "Pending", value: "0" },
-      { label: "Scheduled", value: "1" },
-      { label: "Done", value: "2" },
+      { label: "Pending", value: "1" },
+      { label: "Partially Paid", value: "2" },
+      { label: "Paid", value: "3" },
     ];
     const emitFilterEvent = () => {
       emit("filterData", filters.value);

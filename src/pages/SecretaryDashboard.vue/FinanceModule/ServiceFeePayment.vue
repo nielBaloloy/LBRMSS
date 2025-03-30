@@ -123,9 +123,11 @@
             narrow-indicator
           >
             <q-tab name="service" label="Services Request">
-              <q-badge color="red" style="margin-left: 30px" floating>{{
-                pending_count
-              }}</q-badge>
+              <div class="counter" v-if="pendingService_Marriage > 0">
+                <q-badge color="red" style="margin-left: 30px" floating>{{
+                  pendingService_Marriage
+                }}</q-badge>
+              </div>
             </q-tab>
             <q-tab name="certificate" label="Certificate">
               <q-badge color="red" floating>2</q-badge>
@@ -199,6 +201,10 @@ import SSR_datatable from "src/components/ServicesComponents/SSR_table_component
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
 import {
+  pendingCounter_Marriage,
+  pendingService_Marriage,
+} from "src/composables/counterpendingFee";
+import {
   getSerivce,
   Data,
   paymentSetList,
@@ -212,6 +218,7 @@ export default defineComponent({
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
+      pendingCounter_Marriage(1);
       await paymentSetList(1); // Ensure fetch completes before proceeding
       dataLoaded.value = true; // ✅ Mark as loaded
     });
@@ -361,22 +368,19 @@ export default defineComponent({
     };
     const applyDateTimeFilter = (filters) => {
       console.log("Filtering with:", filters);
-      getSerivce(filters);
+      paymentSetList(filters);
     };
 
     /** Load Counter */
-    let pending_count = ref();
-    const countPendingRequest = () => {
-      getSerivce();
-    };
 
     return {
+      pendingService_Marriage,
       getStatusIcon,
       applyDateTimeFilter,
       getStatusColor,
       columns,
       editForm,
-      pending_count,
+
       tab,
       PaymentList,
       Data,
