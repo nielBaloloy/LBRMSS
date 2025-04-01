@@ -73,4 +73,14 @@ export const menuData2 = [
     label: "Financial Reports",
     icon: "summarize",
   },
+  {
+    label: "Tools",
+    icon: "construction",
+    children: [
+      {
+        to: "/Tools_and_Setup",
+        label: "Service Fee Assignment",
+      },
+    ],
+  },
 ];

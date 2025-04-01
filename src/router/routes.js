@@ -46,6 +46,13 @@ const routes = [
         "../pages/SecretaryDashboard.vue/FinanceModule/ServiceFeePayment.vue"
       ),
   },
+  {
+    path: "/Tools_and_Setup",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/Tools/Service_Fee_Assignment.vue"
+      ),
+  },
   //ServicePayment
   // Always leave this as last one,
   // but you can also remove it

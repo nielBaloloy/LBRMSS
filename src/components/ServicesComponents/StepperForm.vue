@@ -4308,35 +4308,66 @@ export default defineComponent({
             formData.value.Service == "1" &&
             formData.value.Type == "Special"
           ) {
-            sendEventCeremonyData(
-              formData.value.Service,
-              formData.value,
-              marriageData.value
-            );
-            console.log(msg.value);
-            $q.notify({
-              message: msg,
-              color: msgColor.value,
-              position: "bottom-right",
-            });
+            api
+              .post("MarriageAPI.php", {
+                eventData: formData.value,
+                MarriageData: marriageData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message:
+                      "Hallelujah! Your info is officially in the Book of Records! ",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  msg.value =
+                    "Hmm... looks like we hit a small snag. Refresh and retry!";
+                  msgColor.value = "red-5";
+                }
+
+                console.log(msg.value, msgColor.value);
+              })
+              .catch((error) => {
+                msg.value = "an error occured";
+                msgColor.value = "red-5";
+                reject(error);
+              });
           }
 
           if (
             formData.value.Service == "2" &&
             formData.value.Type == "Special"
           ) {
-            sendEventCeremonyData(
-              formData.value.Service,
-              formData.value,
-              BaptismFormData.value
-            );
-            // console.log(formData.value, BaptismFormData.value);
-            console.log(msg.value);
-            $q.notify({
-              message: msg,
-              color: msgColor.value,
-              position: "bottom-right",
-            });
+            api
+              .post("BaptismApi.php", {
+                eventData: formData.value,
+                BaptismData: BaptismFormData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message:
+                      "Hallelujah! Your info is officially in the Book of Records! ",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  msg.value =
+                    "Hmm... looks like we hit a small snag. Refresh and retry!";
+                  msgColor.value = "red-5";
+                }
+
+                console.log(msg.value, msgColor.value);
+              })
+              .catch((error) => {
+                msg.value = "an error occured";
+                msgColor.value = "red-5";
+                reject(error);
+              });
           }
           if (
             formData.value.Service == "3" &&
@@ -4355,13 +4386,15 @@ export default defineComponent({
               .then((response) => {
                 if (response.data.Status == "Success") {
                   $q.notify({
-                    message: "Information saved Successfully",
+                    message:
+                      "Hallelujah! Your info is officially in the Book of Records! ",
                     color: "green-6",
                     position: "bottom-right",
                   });
                   getSerivce(0);
                 } else {
-                  msg.value = "It's not you, its me";
+                  msg.value =
+                    "Hmm... looks like we hit a small snag. Refresh and retry!";
                   msgColor.value = "red-5";
                 }
 
@@ -4441,32 +4474,18 @@ export default defineComponent({
               });
           }
           // sendclose(false);
-          $q.notify({
-            message: OS_msg,
-            color: OS_msgColor.value,
-            position: "bottom-right",
-          });
 
           if (formData.value.Service == "Blessing") {
             formData.value.EventScheduleID = randnum.value;
             send_blessing(formData.value);
           }
-          // sendclose(false);
-          $q.notify({
-            message: OS_msg,
-            color: OS_msgColor.value,
-            position: "bottom-right",
-          });
+
           if (formData.value.Service == "Misa") {
             formData.value.EventScheduleID = randnum.value;
             send_mass(formData.value);
           }
           // sendclose(false);
-          $q.notify({
-            message: OS_msg,
-            color: OS_msgColor.value,
-            position: "bottom-right",
-          });
+
           break;
       }
     }

@@ -240,9 +240,9 @@ export default defineComponent({
       selectedService.value = data;
 
       var id = data["all"]["service_id"];
-
+      var type = data["all"]["type"];
       api
-        .get("request_fee.php", { params: { serviceId: id } })
+        .get("request_fee.php", { params: { serviceId: id, type: type } })
         .then((response) => {
           if (response.data.Status === "Success") {
             console.log("feelist", response.data.fee);

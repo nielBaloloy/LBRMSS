@@ -38,7 +38,8 @@
             /**get current date and time*/
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
-            
+        $dtyOne = $dt->format('Y-m-d');
+        $cleanDate = str_replace("-", "", $dtyOne);
             // event array
        $ClientData = Array(
               "cid" => '',
@@ -186,7 +187,29 @@
                             "confession" => $BaptismData['Requirement']['Confession'] ?? 'no',
                             "remark" => 1 // Default to show (1) based on previous schema
                         );
+                        
+                            // Fee per service
+                                $dateofEvent = $Event['Date'];
+                                $oneWeekBefore = date("Y-m-d", strtotime($dateofEvent . " -1 week"));
+                                    $EventFeeData = array(
+                                    "event_fee_id" => '', 
+                                    "event_id" => $new_eventId, // Foreign key reference to event
+                                    "service_id" =>  $Event['Service'],
+                                    "reference_no" => "REFBP-".$cleanDate.$new_eventId, // Unique reference number
+                                    "payment_type" =>'0',
+                                    "amount_total" =>'', // Total amount for the event
+                                    "payment" => '', // Initial payment
+                                    "balance" => '', // Remaining balance
+                                    "due_date" => $oneWeekBefore, // Payment due date 1 week before event
+                                    "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+                                    "created_at" => $dty, // Timestamp of creation
+                                    "updated_at" => '', // Timestamp of last update
+                                    "created_by" =>'1', // User who created the record
+                                    "updated_by" => '', // User who last updated the record
+                                    "remark" => '1' // 1 = Show, 0 = Hide
+                                );
 
+                        $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
 
                         $insert_baptism_data = $this->db->insert('lbrmss_baptism_main', $BaptismAssignment);
                         $insert_assignment_info = $this->db->insert('lbrmss_bapt_person', $baptismData);
@@ -194,7 +217,7 @@
                         $insertedIds = $this->db->insertMulti($tableName, $multiInsertData);
                         $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
                        
-                        if($insert_baptism_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement){
+                        if($insert_baptism_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement && $insertFeeTemplate){
                             echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
                           } else{
                             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));

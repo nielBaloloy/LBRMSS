@@ -28,8 +28,9 @@
         $datas = json_encode($payload);
         $request = json_decode($datas, true);
          
-
         $serviceRequest_ID = $request['serviceId'];
+        $serviceRequest_Type = $request['type'];
+                $this->db->where("ServiceType", $serviceRequest_Type); 
                 $this->db->where("remark", '1'); 
                 $this->db->where("service_fee_id", $serviceRequest_ID); 
         $getFee = $this->db->get('lbrmss_event_fee_assignment');

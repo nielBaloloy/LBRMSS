@@ -135,7 +135,7 @@ console.log(props.feeRows);
 const fees = ref(
   props.feeRows.reduce(
     (acc, row) => {
-      acc[row.model] = row.amount;
+      acc[row.model] = parseFloat(row.amount) || 0; // Convert amount to a proper number
       return acc;
     },
     { paymentStatus: "Pending" }
@@ -146,8 +146,8 @@ const fees = ref(
 const totalFees = computed(() => {
   return parseFloat(
     Object.values(fees.value)
-      .filter((val) => typeof val === "number") // Only sum numeric values
-      .reduce((sum, val) => sum + val, 0)
+      .filter((val) => typeof val === "number" && !isNaN(val)) // Ensure it's a valid number
+      .reduce((sum, val) => sum + val, 0) // Sum up values
       .toFixed(2)
   );
 });

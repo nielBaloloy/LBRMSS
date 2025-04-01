@@ -37,7 +37,8 @@
         
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
-
+        $dtyOne = $dt->format('Y-m-d');
+        $cleanDate = str_replace("-", "", $dtyOne);
         $ClientData = Array(
           "cid" => '',
           "name" => $Event['Client'],
@@ -182,6 +183,30 @@
           "remark" => 1 // Default to show (1) based on previous schema
       );
 
+         // Fee per service
+         $dateofEvent = $Event['Date'];
+         $oneWeekBefore = date("Y-m-d", strtotime($dateofEvent . " -1 week"));
+             $EventFeeData = array(
+             "event_fee_id" => '', 
+             "event_id" => $new_eventId, // Foreign key reference to event
+             "service_id" =>  $Event['Service'],
+             "reference_no" => "REFC-".$cleanDate.$new_eventId, // Unique reference number
+             "payment_type" =>'0',
+             "amount_total" =>'', // Total amount for the event
+             "payment" => '', // Initial payment
+             "balance" => '', // Remaining balance
+             "due_date" => $oneWeekBefore, // Payment due date 1 week before event
+             "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+             "created_at" => $dty, // Timestamp of creation
+             "updated_at" => '', // Timestamp of last update
+             "created_by" =>'1', // User who created the record
+             "updated_by" => '', // User who last updated the record
+             "remark" => '1' // 1 = Show, 0 = Hide
+         );
+
+        $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
+
+
       
           $insert_confirmation_data = $this->db->insert('lbrmss_confirmation_main', $ConfirmationAssignment);
           $insert_assignment_info = $this->db->insert('lbrmss_con_person', $ConfirmationDatas);
@@ -189,7 +214,7 @@
           $insertedIds = $this->db->insertMulti($tableName, $multiInsertData);
           $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
         
-        if($insert_confirmation_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement){
+        if($insert_confirmation_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement && $insertFeeTemplate){
             echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
           } else{
             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
