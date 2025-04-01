@@ -95,6 +95,7 @@ import { api } from "../../../boot/axios";
 const props = defineProps({
   modelValue: Boolean,
   requestData: { type: Object, default: () => ({}) },
+  feeRows: { type: Array, default: () => [] },
 });
 
 const emit = defineEmits([
@@ -127,22 +128,12 @@ const columns = [
 ];
 
 // ✅ Fee rows with default amounts
-const feeRows = [
-  { name: "Marriage Ceremony Fee", amount: 500, model: "marriageCeremonyFee" },
-  { name: "Marriage Seminar Fee", amount: 500, model: "seminarFee" },
-  { name: "Documentation Fee", amount: 500, model: "documentationFee" },
-  { name: "Church Reservation Fee", amount: 500, model: "reservationFee" },
-  {
-    name: "Stipend for Officiating Priest",
-    amount: 500,
-    model: "priestStipend",
-  },
-];
-console.log(props.requestData.all);
+
+console.log(props.feeRows);
 
 // ✅ Initialize fees dynamically from feeRows
 const fees = ref(
-  feeRows.reduce(
+  props.feeRows.reduce(
     (acc, row) => {
       acc[row.model] = row.amount;
       return acc;

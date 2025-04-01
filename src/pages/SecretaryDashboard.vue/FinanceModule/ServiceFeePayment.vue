@@ -183,6 +183,7 @@
                 <OpenRequestModal
                   :requestData="selectedService"
                   @closeDialog="dialog = false"
+                  :feeRows="feeRows"
                 />
               </q-card-section>
             </q-card>
@@ -195,7 +196,7 @@
 
 <script>
 import { ref, defineComponent, nextTick, onMounted, watchEffect } from "vue";
-import { useQuasar, SessionStorage } from "quasar";
+import { useQuasar, SessionStorage, QSpinnerFacebook } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import SSR_datatable from "src/components/ServicesComponents/SSR_table_component_v3.vue";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
@@ -212,6 +213,7 @@ import {
 } from "src/composables/SeviceData.js";
 import { getMarriage, MarraigeData } from "src/composables/Marriage.js";
 import OpenRequestModal from "src/pages/SecretaryDashboard.vue/FinanceModule/ServiceFee_open_request.vue";
+import { api } from "src/boot/axios";
 export default defineComponent({
   components: { SidebarMenu, SSR_datatable, OpenRequestModal },
   setup() {
@@ -230,10 +232,43 @@ export default defineComponent({
     const selectedService = ref(null);
     const dialog = ref(false);
 
+    let feeRows = ref([]); // ✅ Makes feeRows reactive
+
     function editForm(data) {
-      console.log(data);
+      let timer;
+      console.log("data", data);
       selectedService.value = data;
-      dialog.value = true;
+
+      var id = data["all"]["service_id"];
+
+      api
+        .get("request_fee.php", { params: { serviceId: id } })
+        .then((response) => {
+          if (response.data.Status === "Success") {
+            console.log("feelist", response.data.fee);
+            feeRows.value = response.data.fee; // ✅ Use `.value`
+            console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
+          } else {
+            console.log("No fee data found");
+            feeRows.value = [];
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching fee list:", error);
+        });
+      $q.loading.show({
+        spinner: QSpinnerFacebook,
+        spinnerColor: "yellow",
+        spinnerSize: 100,
+        backgroundColor: "white",
+        message: "Hold tight! Summoning the Holy Calculator... 📖✝️",
+        messageColor: "black",
+      });
+      timer = setTimeout(() => {
+        $q.loading.hide();
+        timer = void 0;
+        dialog.value = true;
+      }, 2000);
     }
     let myObject = ref();
     let sessionkey = SessionStorage.getItem("log");
@@ -380,7 +415,7 @@ export default defineComponent({
       getStatusColor,
       columns,
       editForm,
-
+      feeRows,
       tab,
       PaymentList,
       Data,
