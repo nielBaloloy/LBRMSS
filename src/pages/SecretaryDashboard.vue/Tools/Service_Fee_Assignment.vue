@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> LBRMSS-Dashboard </q-toolbar-title>
+        <q-toolbar-title> Tools </q-toolbar-title>
         <div class="account">
           <q-avatar>
             <img src="../../../assets/quasar-logo-vertical.svg" />
@@ -102,7 +102,105 @@
       <SidebarMenu :menuItems="menuData2" />
     </q-drawer>
 
-    <q-page-container class="calendar-container"> code here </q-page-container>
+    <q-page-container class="q-pa-md">
+      <div class="panel q-pa-lg">
+        <q-banner inline-actions class="text-black bg-grey-4">
+          <p class="text-subtitle1">Service Fee Assignment</p>
+          <template v-slot:action>
+            <q-btn unelevated color="amber-5" no-caps @click="prompt = true">
+              <q-icon left name="assignment_add" />
+              <div>Assign Fee</div>
+            </q-btn>
+            <q-dialog v-model="prompt">
+              <ServiceDialog @close-dialog="prompt = false" />
+            </q-dialog>
+          </template>
+        </q-banner>
+      </div>
+      <div class="panel q-px-lg">
+        <q-tabs
+          v-model="tab"
+          dense
+          class="text-grey-9"
+          active-color="primary"
+          indicator-color="primary"
+          inline-label
+          align="left"
+        >
+          <q-tab
+            name="marriage"
+            icon="wc"
+            label="Marriage"
+            @click="loadFee(1)"
+          ></q-tab>
+          <q-tab
+            name="bapt"
+            icon="water_drop"
+            label="Baptism"
+            @click="loadFee(2)"
+          />
+          <q-tab
+            name="conf"
+            icon="person1"
+            label="Confirmation"
+            @click="loadFee(3)"
+          />
+          <q-tab
+            name="burial"
+            icon="church"
+            label="Burial"
+            @click="loadFee(4)"
+          />
+          <q-tab
+            name="others"
+            icon="assignment"
+            label="Others"
+            @click="loadFee(8)"
+          />
+        </q-tabs>
+        <q-separator />
+
+        <q-tab-panels v-model="tab" animated>
+          <q-tab-panel name="marriage">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+
+          <q-tab-panel name="bapt">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+
+          <q-tab-panel name="conf">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+          <q-tab-panel name="burial">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+          <q-tab-panel name="others">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
+      </div>
+    </q-page-container>
   </q-layout>
 </template>
 <script setup>
@@ -111,12 +209,13 @@ import { api } from "src/boot/axios";
 import { ref, onMounted } from "vue";
 import { menuData2 } from "src/data/menuData";
 import { useRouter, useRoute } from "vue-router";
+import ServiceDialog from "src/pages/SecretaryDashboard.vue/Tools/Service_Fee_Assignment_Add.vue";
 import SidebarMenu from "src/components/DashboardComponents/navigation_left.vue";
-
+import SSR_table_tools from "src/components/ServicesComponents/SSR_table_component_tools.vue";
 const $q = useQuasar();
 const leftDrawerOpen = ref(false);
 const router = useRouter();
-
+let prompt = ref(false);
 let myObject = ref();
 let sessionkey = SessionStorage.getItem("log");
 if (sessionkey === null || "") {
@@ -152,5 +251,48 @@ const Logout = () => {
       // console.log('I am triggered on both OK and Cancel')
     });
 };
+let fee_list = ref([]);
+let loadFee = (payload) => {
+  api
+    .get("tools_setup_loadfee.php", { params: { serviceId: payload } })
+    .then((response) => {
+      if (response.data.Status == "Success") {
+        fee_list.value = response.data.fee;
+        console.log(response.data.fee);
+      } else {
+        fee_list.value = [];
+      }
+    });
+};
+const tab = ref("marriage");
+
+onMounted(async () => {
+  loadFee(1);
+});
+
+const columns = [
+  {
+    name: "name",
+    label: "Fee Title",
+    field: "name",
+    sortable: true,
+    align: "center",
+  },
+  {
+    name: "amount",
+    label: "Amount",
+    field: "amount",
+    sortable: true,
+    align: "center",
+  },
+
+  {
+    name: "Action",
+    label: "Action",
+    field: "Action",
+    sortable: false,
+    align: "center",
+  },
+];
 </script>
 <style scoped></style>

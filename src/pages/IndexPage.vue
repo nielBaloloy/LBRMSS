@@ -143,7 +143,7 @@ import {
 } from "../composables/login";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
-
+import Swal from "sweetalert2";
 export default defineComponent({
   setup() {
     const $q = useQuasar();
@@ -171,7 +171,8 @@ export default defineComponent({
       //loading function'
       let loadData = () => {
         $q.loading.show({
-          message: "Verifying Credentials...",
+          message:
+            "Verifying Credentials, Searching the sacred archives for your account",
         });
 
         timer = setTimeout(() => {
@@ -179,9 +180,15 @@ export default defineComponent({
             if (position.value == "Secretary" || position.value == "Admin") {
               let accDetails = JSON.stringify(account.value);
               SessionStorage.set("log", accDetails);
-              setTimeout(() =>
-                router.push({
-                  path: "/dashboard",
+              setTimeout(
+                () =>
+                  router.push({
+                    path: "/dashboard",
+                  }),
+                Swal.fire({
+                  title: "Hallelujah! You're in!",
+                  text: new Date().toLocaleString(),
+                  icon: "success",
                 })
               );
             }
@@ -190,9 +197,19 @@ export default defineComponent({
               SessionStorage.set("log", accDetails);
 
               setTimeout(
-                () => sendlogs(payload),
-                router.push({
-                  path: "/dashboard",
+                () =>
+                  // sendlogs(payload),
+                  router.push({
+                    path: "/dashboard",
+                  }),
+                Swal.fire({
+                  title: "Hallelujah! You're in!",
+                  text: new Date().toLocaleString(),
+                  // imageUrl: "https://i.imgur.com/O5l5SgN.png", // Use a custom icon (e.g., angel, halo, cross)
+                  // imageWidth: 100,
+                  // imageHeight: 100,
+                  // imageAlt: "Angel Icon",
+                  icon: "success",
                 }),
                 1000
               );
@@ -201,10 +218,20 @@ export default defineComponent({
               SessionStorage.set("log", accDetails);
 
               setTimeout(
-                () => sendlogs(payload),
-                router.push({
-                  path: "/dashboard",
+                () =>
+                  router.push({
+                    path: "/dashboard",
+                  }),
+                Swal.fire({
+                  title: "Hallelujah! You're in!",
+                  text: new Date().toLocaleString(),
+                  // imageUrl: "https://i.imgur.com/O5l5SgN.png", // Use a custom icon (e.g., angel, halo, cross)
+                  // imageWidth: 100,
+                  // imageHeight: 100,
+                  // imageAlt: "Angel Icon",
+                  icon: "success",
                 }),
+
                 1000
               );
             }

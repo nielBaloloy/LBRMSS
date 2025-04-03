@@ -30,7 +30,14 @@ const LoginPayload = (payload) => {
         }
       })
       .catch((error) => {
-        reject(error);
+        setTimeout(() => {
+          Swal.fire({
+            title: "Unable to connect!",
+            text: "Login request failed due to a server error. Please contact support. ",
+            error,
+            icon: "error",
+          });
+        }, 2000);
       });
   });
 };
