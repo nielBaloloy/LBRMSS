@@ -241,21 +241,60 @@ export default defineComponent({
 
       var id = data["all"]["service_id"];
       var type = data["all"]["type"];
-      api
-        .get("request_fee.php", { params: { serviceId: id, type: type } })
-        .then((response) => {
-          if (response.data.Status === "Success") {
-            console.log("feelist", response.data.fee);
-            feeRows.value = response.data.fee; // ✅ Use `.value`
-            console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
-          } else {
-            console.log("No fee data found");
-            feeRows.value = [];
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching fee list:", error);
-        });
+      var category = data["burial_option"]["burial_option"]
+        ? data["burial_option"]["burial_option"]
+        : "";
+
+      if (id == 4 && category == 2) {
+        api
+          .get("request_fee.php", { params: { serviceId: id, type: 3 } })
+          .then((response) => {
+            if (response.data.Status === "Success") {
+              console.log("feelist", response.data.fee);
+              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
+            } else {
+              console.log("No fee data found");
+              feeRows.value = [];
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching fee list:", error);
+          });
+      } else if (id == 4 && category == 1) {
+        api
+          .get("request_fee.php", { params: { serviceId: id, type: 4 } })
+          .then((response) => {
+            if (response.data.Status === "Success") {
+              console.log("feelist", response.data.fee);
+              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
+            } else {
+              console.log("No fee data found");
+              feeRows.value = [];
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching fee list:", error);
+          });
+      } else {
+        api
+          .get("request_fee.php", { params: { serviceId: id, type: type } })
+          .then((response) => {
+            if (response.data.Status === "Success") {
+              console.log("feelist", response.data.fee);
+              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
+            } else {
+              console.log("No fee data found");
+              feeRows.value = [];
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching fee list:", error);
+          });
+      }
+
       $q.loading.show({
         spinner: QSpinnerFacebook,
         spinnerColor: "yellow",

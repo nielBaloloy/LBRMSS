@@ -61,6 +61,17 @@
             $icon = "check_circle"; // ✅ Done
             $color = "green";
         }
+
+
+        $burialid = $event['service_id'];
+       
+        if($burialid == '4' ){
+         $a = $event['event_id'];
+          $getBurialOptions = $this->db->rawQuery("SELECT b.burial_option FROM lbrmss_burial AS a
+                                                  LEFT JOIN lbrmss_burial_person 
+                                                  AS b ON a.event_id = b.event_id 
+                                                  WHERE a.remark ='1' AND b.event_id = '$a' LIMIT 1 ;");
+       
           $pendingEvents[] = [
             "all" => $event,
             "E_ID" => $event['event_id'],
@@ -76,7 +87,27 @@
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
+            "burial_option" => $getBurialOptions[0],
               ];
+            }else{
+              $pendingEvents[] = [
+                "all" => $event,
+                "E_ID" => $event['event_id'],
+                "EventServiceID" => $event['service_id'],
+                "Service" => $event['event_name'],
+                "Client" => $event['name'],
+                "Type" => ($event['type'] == '1') ? "Mass" : "Special",
+                "Date" => $event['date'],
+                "Venue" => $event['venue_name'], 
+                'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
+                "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
+                "EventProgress" => ($event['payStatus'] == '1') ? "Pending" :(($event['payStatus'] == '2') ? "Partial" :"Paid"),
+                "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
+                "icon" =>$icon,
+                "color" =>$color,
+                "burial_option" =>'',
+                  ];
+            }
         
         }
        

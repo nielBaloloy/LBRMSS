@@ -1646,8 +1646,8 @@
                 v-model="BurialData.Burial_Arrangement"
                 toggle-color="primary"
                 :options="[
-                  { label: 'Cremation', value: 'Cremation' },
-                  { label: 'Traditional', value: 'Traditional' },
+                  { label: 'Cremation', value: '1' },
+                  { label: 'Traditional', value: '2' },
                 ]"
                 @update:model-value="
                   setBurialOptions(BurialData.Burial_Arrangement, BurialData)

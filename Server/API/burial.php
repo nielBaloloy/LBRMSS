@@ -103,11 +103,11 @@
             "remark" => '1'
         );
 
-        $getConf_id = $this->db->getMaxId('lbrmss_confirmation_main','con_id')+1;
+        $getburial_id = $this->db->getMaxId('lbrmss_burial','burial_id')+1;
 
         $burialRecord = array(
           'bpid' => null, // Auto-increment ID (not provided in image)
-          'event_id' => $BurialData['EventScheduleID'], 
+          'event_id' => $new_eventId, 
           'bu_lname' => $BurialData['Last_Name'],
           'bu_mname' => $BurialData['Middle_Name'],
           'bu_fname' => $BurialData['First_Name'],
