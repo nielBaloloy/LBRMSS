@@ -101,12 +101,12 @@
             "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
             "remark" => '1'
         );
-        $getConf_id = $this->db->getMaxId('lbrmss_confirmation_main','con_id')+1;
+        // $getConf_id = $this->db->getMaxId('lbrmss_confirmation_main','con_id')+1;
 
 
           $ConfirmationDatas = array(
             "con_person_id" => '',
-            "con_event_id" => $getConf_id,
+            "con_event_id" => $new_eventId,
             "con_lname" => $ConfirmationData['Last_Name'],
             "con_mname" => $ConfirmationData['Middle_Name'],
             "con_fname" => $ConfirmationData['First_Name'],

@@ -109,7 +109,7 @@
                     /** insert into lbrmss_bapt_person */
                     $baptismData = array(
                         "bapt_person_id" => '', // Assuming this is auto-incremented
-                        "bapt_event_id" => $getBapt_id, // Link to event ID
+                        "bapt_event_id" => $new_eventId, // Link to event ID
                         "bapt_lname" => $BaptismData['Last_Name'] ?? '',
                         "bapt_mname" => $BaptismData['Middle_Name'] ?? '',
                         "bapt_fname" => $BaptismData['First_Name'] ?? '',

@@ -242,14 +242,22 @@
         </q-td>
       </template>
     </q-table>
+    /** Open Edit Dialog */
+
+    <q-dialog v-model="Editdialog" style="width: 950px">
+      <div class="q-gutter-y-md" style="max-width: 90vw">
+        <editDialogPanel :editables="editObject" />
+      </div>
+    </q-dialog>
   </div>
 </template>
 
 <script>
-import { ref, computed, watch, defineEmits } from "vue";
+import { ref, computed, watch, defineEmits, defineComponent } from "vue";
 import { FilterRange } from "src/composables/SeviceData";
+import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confirmation_edit.vue";
 
-export default {
+export default defineComponent({
   props: {
     title: { type: String, default: "Table" },
     columns: { type: Array, required: true },
@@ -258,10 +266,12 @@ export default {
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
   emits: ["filterData", "FilterRanges"],
+  components: { editDialogPanel },
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
+    let Editdialog = ref(false);
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -269,8 +279,11 @@ export default {
       rowsPerPage: 10,
       rowsNumber: props.rowsData.length,
     });
+    const editObject = ref([]);
     function editRow(row) {
       console.log("Edit row:", row);
+      editObject.value.push(row);
+      Editdialog.value = true;
     }
 
     function deleteRow(row) {
@@ -375,7 +388,9 @@ export default {
       filteredRows,
       filters,
       fixed: ref(false),
+      editObject,
+      Editdialog,
     };
   },
-};
+});
 </script>

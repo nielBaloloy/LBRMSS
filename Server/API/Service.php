@@ -62,11 +62,8 @@
             $icon = "check_circle"; // ✅ Done
             $color = "green";
         }
-        $event_ids = $event['event_id'];
-        $this->db->where('remark', '1');
-        $this->db->where('event_id', $event_ids);
-        $getPayment = $this->db->get("lbrmss_event_fee");
-        
+        $ev_id = $event['event_id'];
+       
           $pendingEvents[] = [
             "all" => $event,
             "E_ID" => $event['event_id'],
@@ -82,9 +79,85 @@
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
-            "payment" => !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [],
               ];
-        
+              $lastIndex = count($pendingEvents) - 1; 
+              switch ($event['event_id']) {
+                case 1:
+                    // Add multiple keys for event_id == 1
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                    $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
+                    $pendingEvents[$lastIndex]['groom'] = !empty($getGroom) ? $getGroom : [];
+                    $pendingEvents[$lastIndex]['bride'] = !empty($getBride) ? $getBride : [];
+                    $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
+                    $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
+                    break;
+            
+                case 2:
+                    // Handle event_id == 2: Baptism
+                    $this->db->where('remark', '1');
+                    $this->db->where('event_id', $ev_id);
+                    $hasbapt = $this->db->has('lbrmss_baptism_main');
+            
+                    if ($hasbapt) {
+                        $this->db->where('remark', '1');
+                        $this->db->where('bapt_event_id', $ev_id);
+                        $getbapt = $this->db->get("lbrmss_bapt_person");
+                    } else {
+                        $getbapt = [];
+                    }
+            
+                    // Add multiple keys for event_id == 2
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                    $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
+                    $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
+                    $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
+                    $pendingEvents[$lastIndex]['baptismperson'] = !empty($getbapt) ? $getbapt : [];
+                    break;
+            
+                case 3:
+                    // Handle event_id == 3: Confirmation
+                    $this->db->where('remark', '1');
+                    $this->db->where('event_id', $ev_id);
+                    $hascon = $this->db->has('lbrmss_confirmation_main');
+            
+                    if ($hascon) {
+                      
+                        $this->db->where('remark', '1');
+                        $this->db->where('con_event_id', $ev_id);
+                        $getcon = $this->db->get("lbrmss_con_person");
+                    } else {
+                        $getcon = [];
+                    }
+            
+                    // Add multiple keys for event_id == 3
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                    $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
+                    $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
+                    $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
+                    $pendingEvents[$lastIndex]['confirmation'] = !empty($getcon) ? $getcon : [];
+                    break;
+                case 4:
+                  $this->db->where('remark', '1');
+                  $this->db->where('event_id' ,$ev_id);
+                  $hasburial  =$this->db->has('lbrmss_burial_person');
+                  if($hasburial){
+                    $this->db->where('remark', '1');
+                    $this->db->where('event_id', $ev_id);
+                    $getBurial = $this->db->get("lbrmss_burial_person");
+                  }else{
+                    $getBurial = [];
+                  }
+          
+                  // Add multiple keys for event_id == 3
+                  $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                  $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
+                  $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
+                  $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
+                  $pendingEvents[$lastIndex]['burial'] = !empty($getBurial) ? $getBurial : [];
+                default:
+                    // You can handle the case where event_id is not 1, 2, or 3
+                    break;
+            }
         }
        
         
