@@ -203,40 +203,28 @@ export default defineComponent({
     // Table columns
     const columns = [
       {
+        name: "payment",
+        label: "Reference Number #",
+        field: "payment",
+        sortable: true,
+        align: "center",
+      },
+      {
         name: "name",
         label: "Client",
         field: "Client",
         sortable: true,
         align: "center",
       },
+
       {
-        name: "Service",
-        label: "Service",
-        field: "Service",
+        name: "details",
+        label: "Details",
+        field: "details",
         sortable: true,
         align: "center",
       },
-      {
-        name: "Type",
-        label: "Type",
-        field: "Type",
-        sortable: true,
-        align: "center",
-      },
-      {
-        name: "Date",
-        label: "Date",
-        field: "Date",
-        sortable: true,
-        align: "center",
-      },
-      {
-        name: "Venue",
-        label: "Venue",
-        field: "Venue",
-        sortable: true,
-        align: "center",
-      },
+
       {
         name: "Assigned Priest",
         label: "Assigned Priest",
@@ -248,6 +236,14 @@ export default defineComponent({
         name: "Status",
         label: "Status",
         field: "EventProgress",
+        sortable: true,
+        align: "center",
+        icon: "pause",
+      },
+      {
+        name: "Requirements",
+        label: "Requirement Status",
+        field: "RequirementStatus",
         sortable: true,
         align: "center",
         icon: "pause",

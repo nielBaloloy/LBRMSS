@@ -62,6 +62,11 @@
             $icon = "check_circle"; // ✅ Done
             $color = "green";
         }
+        $event_ids = $event['event_id'];
+        $this->db->where('remark', '1');
+        $this->db->where('event_id', $event_ids);
+        $getPayment = $this->db->get("lbrmss_event_fee");
+        
           $pendingEvents[] = [
             "all" => $event,
             "E_ID" => $event['event_id'],
@@ -77,6 +82,7 @@
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
+            "payment" => !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [],
               ];
         
         }

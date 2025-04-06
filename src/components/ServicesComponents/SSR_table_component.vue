@@ -207,6 +207,7 @@
           </q-btn-dropdown>
         </q-td>
       </template>
+
       <template v-slot:body-cell="props">
         <q-td :props="props">
           <template v-if="props.col.name === 'Status'">
@@ -224,6 +225,20 @@
           <template v-else>
             {{ props.row[props.col.field] }}
           </template>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-details="{ row }">
+        <q-td>
+          <div>
+            <div><strong>Service:</strong>{{ row.Service }}</div>
+            <div><strong>Venue:</strong>{{ row.all.venue_name }}</div>
+            <div><strong>Date : </strong>{{ row.all.date }}</div>
+            <div>
+              <strong>Time : </strong>{{ row.all.time_from }} to
+              {{ row.all.time_to }}
+            </div>
+            <div><strong>Event Type : </strong>{{ row.Type }}</div>
+          </div>
         </q-td>
       </template>
     </q-table>
