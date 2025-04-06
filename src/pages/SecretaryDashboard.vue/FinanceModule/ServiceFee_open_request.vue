@@ -89,7 +89,14 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed, ref, watch } from "vue";
+import {
+  defineProps,
+  defineEmits,
+  computed,
+  ref,
+  watch,
+  watchEffect,
+} from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { api } from "../../../boot/axios";
 const props = defineProps({
@@ -168,6 +175,12 @@ const balanceAfterPayment = computed(
 );
 
 const paymentStatusOptions = ["Pending", "Partial", "Paid"];
+
+watch(isDownPayment, (newValue) => {
+  paymentType.value = newValue ? 2 : 1; // 2 if checked, 1 if unchecked
+  console.log("Payment Type:", paymentType.value);
+});
+
 const payment_info = ref({
   event_fee_id: null,
   event_id: props.requestData.all.event_id, // Foreign key reference to event
@@ -185,6 +198,22 @@ const payment_info = ref({
   updated_by: null, // User who last updated the record
   remark: "1", // 1 = Show, 0 = Hide
 });
+
+watchEffect(() => {
+  payment_info.value.payment_type = paymentType.value;
+  payment_info.value.amount_total = totalFees.value;
+  payment_info.value.balance = remainingBalance.value;
+});
+watch(balanceAfterPayment, (newBalance) => {
+  if (newBalance <= 0) {
+    payment_info.value.status = "3"; // Paid
+  } else if (payment_info.value.payment > 0) {
+    payment_info.value.status = "2"; // Partially Paid
+  } else {
+    payment_info.value.status = "1"; // Pending
+  }
+});
+/** ========== SAVE ================================= */
 const submitForm = () => {
   if (!isDownPayment.value) {
     //check if the type of payment is full payment must be equal to total fees else remaining bal
@@ -244,7 +273,7 @@ const submitForm = () => {
       });
     }
   } else {
-    if ((payment_info.value.payment = downPayment.value)) {
+    if (payment_info.value.payment == downPayment.value) {
       $q.dialog({
         dark: false,
         title: "Confirm Payment",
@@ -313,10 +342,6 @@ const resetForm = () => {
   isDownPayment.value = false;
   payment_info.value.payment = null;
 };
-watch(isDownPayment, (newValue) => {
-  paymentType.value = newValue ? 2 : 1; // 2 if checked, 1 if unchecked
-  console.log("Payment Type:", paymentType.value);
-});
 </script>
 
 <style scoped>

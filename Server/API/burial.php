@@ -75,8 +75,8 @@
           "client" => $new_cid,
           "date" =>  $Event['Date'],
           "date_to" =>  $Event['Date'],
-          "time_from"           => $Event['TimeTo'],
-          "time_to"             => $Event['TimeFrom'],
+          "time_from"           => $Event['TimeFrom'],
+          "time_to"             => $Event['TimeTo'],
           "venue_name"          => $Event['Venue'],
           "duration"            => $Event['Duration'],
           "type"                => $type,
@@ -174,6 +174,20 @@
             "remark" => '1' // 1 = Show, 0 = Hide
         );
 
+        //INSERT PRIEST
+        $priestAssigned = array(
+          "sched_id" => '',
+          "priest_id"=>$Event['Assigned_Priest']['priest_id'],
+          "sched_event_id"=>$new_eventId,
+          "date_from" =>$Event['Date'],
+          "date_to" =>$Event['Date'],
+          "sched_status"   =>'0',
+          "time_from" =>$Event['TimeFrom'],
+          "time_to"=>$Event['TimeTo'],
+          "created_at" =>$dty,
+          "remark"=>'1'
+        );
+      $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
        $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
 
       $insert_Burial_data = $this->db->insert('lbrmss_burial', $BurialAssignment);
@@ -181,7 +195,7 @@
       
       $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
       
-      if($insert_Burial_data && $insert_assignment_info  && $insertRequirement &&  $insertFeeTemplate){
+      if($insert_Burial_data && $insert_assignment_info  && $insertRequirement &&  $insertFeeTemplate && $insertPriestSchedule){
         echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
       } else{
         echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));

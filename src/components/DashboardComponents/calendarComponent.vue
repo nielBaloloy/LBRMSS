@@ -40,7 +40,7 @@ const calendarOptions = ref({
     props.viewEventFunction(info.event); // Call the function prop with the clicked event
   },
   eventDidMount: (info) => {
-    info.el.style.backgroundColor = "green"; // Change event background dynamically
+    info.el.style.backgroundColor = "#FFBF00"; // Change event background dynamically
     info.el.style.borderRadius = "5px"; // Optional: Rounded corners
     info.el.style.padding = "5px"; // Optional: Add spacing
     info.el.style.color = "white"; // Optional: Add spacing

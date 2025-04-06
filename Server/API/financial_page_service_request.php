@@ -54,7 +54,7 @@
           if ($event['payStatus'] == '0') {
             $icon = "hourglass_empty"; // ⏳ Pending
             $color = "-yellow-8"; 
-        } elseif ($event['payStatus'] == '1') {
+        } elseif ($event['payStatus'] == '1' ) {
             $icon = "event"; // 📅 Scheduled
             $color = "blue";
         } else {

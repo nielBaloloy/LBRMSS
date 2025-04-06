@@ -141,6 +141,9 @@ const loadScheduleData = () => {
 
 //function to view event information
 const viewEvent = (info) => {
+  let seminarList = info._def.extendedProps.seminar || [];
+  let paymentList = info._def.extendedProps.payment || [];
+
   let eventData = info._def.extendedProps.all;
   let priest =
     eventData.pos_prefix +
@@ -150,40 +153,80 @@ const viewEvent = (info) => {
     eventData.mname.substr(0, 1) +
     ". " +
     eventData.lname;
+
+  const seminarRows = seminarList
+    .map((seminar, index) => {
+      return `
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ccc;">${index + 1}</td>
+         <td style="padding: 8px; border: 1px solid #ccc;">${
+           seminar.seminar_title
+         }</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">${
+          seminar.date_from
+        }</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">${
+          seminar.time_from
+        } - ${seminar.time_to}</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">${
+          seminar.seminar_venue
+        }</td>
+       
+      </tr>
+    `;
+    })
+    .join("");
+
+  /** */
+
+  const payyment = paymentList
+    .map((payment, index) => {
+      return `
+      <tr>
+        <td style="padding: 8px; border: 1px solid #ccc;">${index + 1}</td>
+         <td style="padding: 8px; border: 1px solid #ccc;">${
+           payment.reference_no
+         }</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">  ${
+          payment.status == 2
+            ? "Partially Paid"
+            : payment.status == 3
+            ? "Fully Paid"
+            : "Pending"
+        }</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">${
+          payment.due_date
+        }</td>
+       
+       
+      </tr>
+    `;
+    })
+    .join("");
   $q.dialog({
     title: `Event Details`,
-    message: ` <form style="
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 10px;
-      font-family: Arial, sans-serif;
-    ">
+    message: `
+    <form style="display: flex; flex-direction: column;  padding: 10px; font-family: Arial, sans-serif;">
       <div style="display: flex; flex-direction: column;">
         <label style="font-weight: bold; color: #333;">Event Name</label>
         <input type="text" value="${eventData.event_name}" readonly
           style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
       </div>
-      
 
-      <div style="display: flex; flex-direction: column;">
-        <label style="font-weight: bold; color: #333;">Date</label>
-        <input type="text" value="${eventData.date}" readonly
-          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
-      </div>
+      <div style="display:flex;flex-direction:row;" class="q-gutter-sm">
+        <div>
+          <label style="font-weight: bold; color: #333;">Date</label>
+          <input type="text" value="${eventData.date}" readonly
+            style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+        </div>
 
-      <div style="display: flex; flex-direction: column;">
-        <label style="font-weight: bold; color: #333;">Priest Assigned</label>
-        <input type="text" value="${priest}" readonly
-          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
-      </div>
-
-      <div style="display: flex; flex-direction: column;">
-        <label style="font-weight: bold; color: #333;">Time</label>
-        <input type="text" value="${eventData.time_from} - ${
+        <div>
+          <label style="font-weight: bold; color: #333;">Time</label>
+          <input type="text" value="${eventData.time_from} - ${
       eventData.time_to
     }" readonly
-          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+            style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+        </div>
       </div>
 
       <div style="display: flex; flex-direction: column;">
@@ -195,12 +238,64 @@ const viewEvent = (info) => {
       </div>
 
       <div style="display: flex; flex-direction: column;">
+        <label style="font-weight: bold; color: #333;">Priest Assigned</label>
+        <input type="text" value="${priest}" readonly
+          style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
+      </div>
+
+      <div style="display: flex; flex-direction: column;">
         <label style="font-weight: bold; color: #333;">Requirement Status</label>
         <input type="text" value="${
           eventData.requirement_status ? "Completed" : "Pending"
         }" readonly
           style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
       </div>
+
+      <!-- Dynamic Seminar Section -->
+     <div>
+       <h5 style="font-weight: bold; color: #333;">Seminar</h5>
+       <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="background-color: #f0f0f0;">
+              
+              <th style="padding: 8px; border: 1px solid #ccc;">#</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Title</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Date</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Time</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Venue</th>
+              
+            </tr>
+          </thead>
+          <tbody>
+            ${seminarRows}
+          </tbody>
+        </table>
+      </div>
+       </div>
+     
+           <!-- Dynamic payment Section -->
+     <div>
+       <h5 style="font-weight: bold; color: #333;">Payment Info</h5>
+       <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="background-color: #f0f0f0;">
+              
+              <th style="padding: 8px; border: 1px solid #ccc;">#</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Reference</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Status</th>
+              <th style="padding: 8px; border: 1px solid #ccc;">Due date</th>
+             
+              
+            </tr>
+          </thead>
+          <tbody>
+            ${payyment}
+          </tbody>
+        </table>
+      </div>
+       </div>
     </form>
   `,
     html: true,
@@ -225,5 +320,8 @@ onMounted(async () => {
   height: 100vh; /* Full viewport height */
   overflow-y: auto; /* Enable vertical scrolling */
   padding: 10px; /* Optional padding */
+}
+.q-dialog__inner > div {
+  min-width: 600px;
 }
 </style>

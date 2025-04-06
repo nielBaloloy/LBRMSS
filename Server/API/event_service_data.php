@@ -32,11 +32,11 @@
                                                 LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
-                                                WHERE a.remark = '1' AND a.event_progress =1
+                                                WHERE a.remark = '1' AND a.event_progress =1 
                                                 ORDER BY a.created_at");
      
      if(count($Display_Schedule) > 0){
-
+       
         foreach ($Display_Schedule as $event) {
           if ($event['event_progress'] == '0') {
             $icon = "hourglass_empty"; // ⏳ Pending
@@ -46,15 +46,26 @@
             $color = "blue";
         } else {
             $icon = "check_circle"; // ✅ Done
-            $color = "green";
+            $color = "yellow";
         }
+        $ev_id = $event['event_id'];
+        /** get seminar */
+        $this->db->where('remark', '1');
+        $this->db->where('event_id', $ev_id);
+        $seminarDetails  = $this->db->get('lbrmss_seminar');
+        /** get payment  info */
+        $this->db->where('remark', '1');
+        $this->db->where('event_id', $ev_id);
+        $paymentdedtails  = $this->db->get('lbrmss_event_fee');
+        
           $pendingEvents[] = [
             "all" => $event,
             "title"=> $event['event_name'],
             "start"=>$event['date']."T".$event['time_from'],
             "end" =>$event['date_to']."T".$event['time_to'],
-            "backgroundColor"=> '#0000'
-        
+            "backgroundColor"=> '#0000',
+            "seminar" => !empty($seminarDetails) ? $seminarDetails : [],
+            "payment" => !empty($paymentdedtails) ? $paymentdedtails : []
               ];
         
         }

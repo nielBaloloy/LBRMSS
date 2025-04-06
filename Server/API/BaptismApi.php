@@ -208,7 +208,22 @@
                                     "updated_by" => '', // User who last updated the record
                                     "remark" => '1' // 1 = Show, 0 = Hide
                                 );
+                                
 
+                                $priestAssigned = array(
+                                    "sched_id" => '',
+                                    "priest_id"=>$Event['Assigned_Priest']['priest_id'],
+                                    "sched_event_id"=>$new_eventId,
+                                    "date_from" =>$Event['Date'],
+                                    "date_to" =>$Event['Date'],
+                                    "sched_status"   =>'0',
+                                    "time_from" =>$Event['TimeFrom'],
+                                    "time_to"=>$Event['TimeTo'],
+                                    "created_at" =>$dty,
+                                    "remark"=>'1'
+                                  );
+                
+                        $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
                         $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
 
                         $insert_baptism_data = $this->db->insert('lbrmss_baptism_main', $BaptismAssignment);
@@ -217,7 +232,7 @@
                         $insertedIds = $this->db->insertMulti($tableName, $multiInsertData);
                         $insertRequirement = $this->db->insert('lbrmss_m_requirements', $RequirementsData);
                        
-                        if($insert_baptism_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement && $insertFeeTemplate){
+                        if($insertPriestSchedule && $insert_baptism_data && $insert_assignment_info && $insertedWitness && $insertedIds && $insertRequirement && $insertFeeTemplate){
                             echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
                           } else{
                             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));

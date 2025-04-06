@@ -55,7 +55,7 @@
                             OR (a.time_to BETWEEN '$timeFrom' AND '$timeTo')  
                         )
                     )
-                    WHERE a.priest_id IS NULL  
+                    WHERE a.priest_id IS NULL OR a.sched_status = '0'
                     AND b.remark = '1'; 
                     ");
 
