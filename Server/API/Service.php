@@ -63,7 +63,48 @@
             $color = "green";
         }
         $ev_id = $event['event_id'];
-       
+        $this->db->where('remark', '1');
+        $this->db->where('event_id' ,$ev_id);
+        $hasfee  =$this->db->has('lbrmss_event_fee');
+        if($hasfee){
+          $this->db->where('remark', '1');
+          $this->db->where('event_id', $ev_id);
+          $getPayment = $this->db->get("lbrmss_event_fee");
+        }else{
+          $getPayment=[];
+        }
+
+        $this->db->where('ServiceID' ,$ev_id);
+        $haswitness  =$this->db->has('witness_testium_tbl');
+        if($haswitness){
+         
+          $this->db->where('ServiceID', $ev_id);
+          $getWitness = $this->db->get("witness_testium_tbl");
+        }else{
+          $getWitness = [];
+        }
+
+        $this->db->where('remark', '1');
+        $this->db->where('event_id' ,$ev_id);
+        $hasrequirement  =$this->db->has('lbrmss_m_requirements');
+        if($hasrequirement){
+          $this->db->where('remark', '1');
+          $this->db->where('event_id', $ev_id);
+          $getRequirement = $this->db->get("lbrmss_m_requirements");
+        }else{
+          $getRequirement = [];
+        }
+
+        $this->db->where('remark', '1');
+        $this->db->where('event_id' ,$ev_id);
+        $hasSeminar  =$this->db->has('lbrmss_seminar');
+        if($hasSeminar){
+          $this->db->where('remark', '1');
+          $this->db->where('event_id', $ev_id);
+          $getSeminar = $this->db->get("lbrmss_seminar");
+        }else{
+          $getSeminar = [];
+        }
           $pendingEvents[] = [
             "all" => $event,
             "E_ID" => $event['event_id'],
@@ -73,16 +114,25 @@
             "Type" => ($event['type'] == '1') ? "Mass" : "Special",
             "Date" => $event['date'],
             "Venue" => $event['venue_name'], 
+            "Venuetype" => $event['venue_type'], 
             'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
             "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
             "EventProgress" => ($event['event_progress'] == '0') ? "Pending" :(($event['event_progress'] == '1') ? "Scheduled" :"Done"),
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
+            "Time_from" =>$event['time_to'],
+            "Time_to"  =>$event['time_from'],
+            
+            "priest_assigned_id" =>$event['priest_assigned_id'],
               ];
+
+
               $lastIndex = count($pendingEvents) - 1; 
               switch ($event['event_id']) {
                 case 1:
+
+                  
                     // Add multiple keys for event_id == 1
                     $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
                     $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
@@ -134,7 +184,7 @@
                     $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
                     $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
                     $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
-                    $pendingEvents[$lastIndex]['confirmation'] = !empty($getcon) ? $getcon : [];
+                    $pendingEvents[$lastIndex]['confirmation'] = !empty($getcon[0]) ? $getcon[0] : [];
                     break;
                 case 4:
                   $this->db->where('remark', '1');

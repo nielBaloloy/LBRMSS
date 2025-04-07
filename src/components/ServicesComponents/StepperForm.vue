@@ -231,9 +231,9 @@
               v-model="formData.Venue_type"
               toggle-color="primary"
               :options="[
-                { label: 'Pastoral Center', value: 'Pastoral' },
-                { label: 'Church', value: 'Church' },
-                { label: 'Outside', value: 'Outside' },
+                { label: 'Pastoral Center', value: '2' },
+                { label: 'Church', value: '1' },
+                { label: 'Outside', value: '3' },
               ]"
               @update:model-value="setAddress(formData.Venue_type, formData)"
             />
