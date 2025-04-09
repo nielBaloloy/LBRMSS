@@ -1,5 +1,5 @@
 <template>
-  <div class="q-gutter-y-md" style="width: 50vw">
+  <div class="q-gutter-y-md" style="width: 70vw">
     <q-card>
       <q-tabs
         v-model="tab"
@@ -17,18 +17,19 @@
       </q-tabs>
 
       <q-separator />
-
+      <!-- Event Details -->
       <q-tab-panels v-model="tab" animated>
         <q-tab-panel name="events">
           <div class="event_container q-pa-md">
             <div
               class="d-flex col align-items-start q-gutter-md"
-              v-for="event in event"
+              v-for="event in events"
               :key="event.event_id"
             >
               <div class="servicfield">
                 Client Name
                 <q-input
+                  readonly
                   outlined
                   v-model="event.Client"
                   :dense="true"
@@ -42,6 +43,7 @@
                 Select Service
                 <div class="q-gutter-md row">
                   <q-select
+                    readonly
                     outlined
                     ref="step1Ref"
                     :dense="true"
@@ -72,14 +74,19 @@
               </div>
 
               <div class="servicfield">
-                Service Type{{ event.Type }}
+                Service Type
                 <div class="q-gutter-sm">
-                  <q-radio v-model="event.Type" val="Special" label="Special" />
-                  <q-radio v-model="event.Type" val="Mass" label="Mass" />
                   <q-radio
+                    disable
                     v-model="event.Type"
-                    val="Certificate"
-                    label="Certification"
+                    val="Special"
+                    label="Special"
+                  />
+                  <q-radio
+                    disable
+                    v-model="event.Type"
+                    val="Mass"
+                    label="Mass"
                   />
                 </div>
               </div>
@@ -239,9 +246,23 @@
                 />
               </div>
             </div>
+            <div class="nav row justify-end">
+              <q-btn
+                unelevated
+                color="primary"
+                @click="() => (tab = 'personaldetails')"
+                >Next</q-btn
+              >
+              <q-btn
+                unelevated
+                color="primary"
+                @click="() => (tab = 'personaldetails')"
+                >Save</q-btn
+              >
+            </div>
           </div>
         </q-tab-panel>
-
+        <!-- Personal Details -->
         <q-tab-panel name="personaldetails">
           <div
             class="event_container q-pa-md"
@@ -482,9 +503,23 @@
                 {{ (personalDetails.Barangay = brgy_g) }}
               </div>
             </div>
+            <br />
+
+            <div class="nav row justify-end q-gutter-sm">
+              <q-btn
+                unelevated
+                color="secondary"
+                text-color="black"
+                @click="() => (tab = 'events')"
+                >Prev</q-btn
+              >
+              <q-btn unelevated color="primary" @click="() => (tab = 'witness')"
+                >Next</q-btn
+              >
+            </div>
           </div>
         </q-tab-panel>
-
+        <!-- Witness -->
         <q-tab-panel name="witness">
           <div
             class="cardwITNESS"
@@ -525,16 +560,25 @@
                   outlined
                 ></q-input>
               </div>
+            </div>
+            <div class="nav row justify-end q-gutter-sm">
               <q-btn
-                outlined
                 unelevated
-                @click="removeCard_B"
-                size="sm"
-                icon="delete"
-              ></q-btn>
+                color="secondary"
+                text-color="black"
+                @click="() => (tab = 'personaldetails')"
+                >Prev</q-btn
+              >
+              <q-btn
+                unelevated
+                color="primary"
+                @click="() => (tab = 'seminarReq')"
+                >Next</q-btn
+              >
             </div>
           </div>
         </q-tab-panel>
+        <!-- Requirements -->
         <q-tab-panel name="seminarReq">
           <div class="header justify-between">
             <h6 class="q-mb-md q-mt-sm">Documentary Requirements Checklist</h6>
@@ -554,7 +598,7 @@
                         v-model="C_requirementsList.Baptismal"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -568,7 +612,7 @@
                         v-model="C_requirementsList.Marriage_License"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -582,7 +626,7 @@
                         v-model="C_requirementsList.Confirmation"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -596,7 +640,7 @@
                         v-model="C_requirementsList.LiveBirthCert"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -610,7 +654,7 @@
                         v-model="C_requirementsList.Cenomar"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -624,7 +668,7 @@
                         v-model="C_requirementsList.Confession"
                         color="amber"
                         true-value="true"
-                        false-value="false"
+                        false-value="no"
                         @update:model-value="
                           C_checkAllPropertiesTrue(C_requirementsList)
                         "
@@ -803,6 +847,18 @@
                 </div>
               </div>
             </div>
+            <div class="nav row justify-end q-gutter-sm">
+              <q-btn
+                unelevated
+                color="secondary"
+                text-color="black"
+                @click="() => (tab = 'witness')"
+                >Prev</q-btn
+              >
+              <q-btn unelevated color="primary" @click="saveEditDetails(event)"
+                >Save</q-btn
+              >
+            </div>
           </div>
         </q-tab-panel>
       </q-tab-panels>
@@ -810,8 +866,9 @@
   </div>
 </template>
 <script>
-import { QSlideItem } from "quasar";
+import { useQuasar } from "quasar";
 import moment from "moment";
+import { api } from "src/boot/axios";
 import philippineData from "src/AddressPH/philippine_provinces_cities_municipalities_and_barangays_2019v2.json";
 import { NationalityList } from "src/data/nationality";
 import {
@@ -828,17 +885,19 @@ export default defineComponent({
     editables: { type: Array, default: () => [] },
   },
   setup(props) {
+    const emit = defineEmits(["closeDialog"]);
+
     let regionOptions = ref([]);
     let provinceOptions = ref([]);
     let cityOptions = ref([]);
     let barangayOptions = ref([]);
-    let event = ref([props.editables[0]]);
+    let events = ref([props.editables[0]]);
     let personaldetails = ref([props.editables[0].confirmation]);
     let witness = ref([props.editables[0].witness]);
     let Requirement = ref([props.editables[0].Requirement]);
     let seminar = ref([props.editables[0].seminar]);
-
-    console.log("event:", event.value);
+    let $q = useQuasar();
+    console.log("event:", events.value);
     console.log("personaldetails:", personaldetails.value);
     console.log("witness:", witness.value);
     console.log("Requirement:", Requirement.value);
@@ -846,11 +905,11 @@ export default defineComponent({
 
     /**===================================================================== */
     // Convert event.Date to a Date object for manipulation
-    let formattedDate = ref(event.value.Date); // Initialize formattedDate with the string date
+    let formattedDate = ref(events.value.Date); // Initialize formattedDate with the string date
 
     // Watch the formattedDate and update event.Date when it changes
     watch(formattedDate, (newDate) => {
-      event.value.Date = newDate; // Update event.Date when formattedDate changes
+      events.value.Date = newDate; // Update event.Date when formattedDate changes
     });
 
     /** ============================ Input functions  =================================*/
@@ -889,7 +948,7 @@ export default defineComponent({
         } else {
           const needle = val.toLowerCase();
           filterOptions.value = stringOptions.value.filter((v) =>
-            v.event_name.toLowerCase().includes(needle)
+            v.events_name.toLowerCase().includes(needle)
           );
         }
       });
@@ -929,15 +988,15 @@ export default defineComponent({
       }
     };
     const eventDetails = computed(() => ({
-      date: event.value.Date,
-      timeFrom: event.value.Time_from,
-      timeTo: event.value.Time_to,
+      date: events.value.Date,
+      timeFrom: events.value.Time_from,
+      timeTo: events.value.Time_to,
     }));
     watch(
-      () => [event.value.Date, event.value.Time_from, event.value.Time_to],
+      () => [events.value.Date, events.value.Time_from, events.value.Time_to],
       ([newDate, newTimeFrom, newTimeTo]) => {
         if (newDate && newTimeFrom && newTimeTo) {
-          event.value.Assigned_Priest = null;
+          events.value.Assigned_Priest = null;
           getAvailablePriest(eventDetails.value);
           // Pass event details to function
         }
@@ -1054,6 +1113,7 @@ export default defineComponent({
 
     /** requirement */
     let C_requirementsList = ref({
+      req_id: "",
       Baptismal: "false",
       LiveBirthCert: "false",
       Cenomar: "false",
@@ -1066,21 +1126,13 @@ export default defineComponent({
       const data = Requirement.value[0];
       console.log("df", data[0]);
       // Map backend fields to local checkbox fields
+      C_requirementsList.value.req_id = data[0].req_id;
       C_requirementsList.value.Baptismal = data[0].baptismal_certificate;
       C_requirementsList.value.LiveBirthCert = data[0].birth_certificate;
       C_requirementsList.value.Cenomar = data[0].cenomar;
       C_requirementsList.value.Confession = data[0].confession;
       C_requirementsList.value.Confirmation = data[0].confirmation;
       C_requirementsList.value.Marriage_License = data[0].marriage_license;
-    });
-
-    C_requirementsList = ref({
-      Baptismal: "false",
-      LiveBirthCert: "false",
-      Cenomar: "false",
-      Confession: "false",
-      Confirmation: "false",
-      Marriage_License: "false",
     });
 
     // seminar
@@ -1091,6 +1143,7 @@ export default defineComponent({
       const raw = props.editables[0].seminar;
 
       Schedulecards.value = raw.map((item) => ({
+        field0: item.seminar_id,
         field1: item.seminar_title, // Title
         field2: item.date_from, // Date
         field3: item.time_from, // Time Start
@@ -1103,6 +1156,7 @@ export default defineComponent({
 
     function addScheduleCard() {
       Schedulecards.value.push({
+        field0: "",
         field1: "",
         field2: "",
         field3: "",
@@ -1131,7 +1185,67 @@ export default defineComponent({
       }
     };
 
+    /** ================= edit variables ================================ */
+    let event = ref([
+      {
+        event_id: null,
+        Client: "",
+        Service: null,
+        Type: "",
+        Date: "",
+        Time_from: "",
+        Time_to: "",
+        Venuetype: null,
+        Venue: "",
+        Assigned_Priest: null,
+        all: {
+          duration: "",
+        },
+      },
+    ]);
+    /**  ==================== Save Edit Details  ============================= */
+    const saveEditDetails = () => {
+      console.log("Updated Event Info:", events.value);
+      console.log("Updated Requirements:", C_requirementsList.value);
+      console.log("Updated Seminar", Schedulecards.value);
+
+      // Optional: combine them for submission
+      const payload = {
+        event: events.value[0],
+        requirements: C_requirementsList.value,
+        seminar: Schedulecards.value,
+      };
+
+      console.log("Final Payload:", payload);
+
+      //== save api======
+      $q.dialog({
+        title: "Save Changes?",
+        message:
+          "You're about to make some divine changes, Data will be saved to the database",
+        cancel: true,
+        persistent: true,
+        icon: "check_circle",
+      })
+        .onOk(() => {
+          api
+            .put("Confirmation.php", { payload })
+            .then((response) => {
+              console.log(response);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          emit("closeDialog");
+        })
+        .onCancel(() => {
+          emit("closeDialog");
+        });
+    };
+
     return {
+      events,
+      saveEditDetails,
       durationSeminar,
       durationInMinutesSeminar,
       Schedulecards,

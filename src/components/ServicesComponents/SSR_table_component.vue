@@ -242,11 +242,10 @@
         </q-td>
       </template>
     </q-table>
-    /** Open Edit Dialog */
 
     <q-dialog v-model="Editdialog" style="width: 950px">
       <div class="q-gutter-y-md" style="max-width: 90vw">
-        <editDialogPanel :editables="editObject" />
+        <editDialogPanel :editables="editObject" @close-dialog="closeDialog" />
       </div>
     </q-dialog>
   </div>
@@ -279,6 +278,9 @@ export default defineComponent({
       rowsPerPage: 10,
       rowsNumber: props.rowsData.length,
     });
+    const closeDialog = () => {
+      Editdialog.value = false; // Close the dialog
+    };
     const editObject = ref([]);
     function editRow(row) {
       console.log("Edit row:", row);
@@ -373,7 +375,9 @@ export default defineComponent({
     let FilterData = (filterpayload) => {
       emit("FilterRanges", filterpayload.value);
     };
+
     return {
+      closeDialog,
       FilterData,
       statusOptions,
       emitFilterEvent,
