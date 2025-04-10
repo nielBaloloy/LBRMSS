@@ -129,9 +129,15 @@
 
 
               $lastIndex = count($pendingEvents) - 1; 
-              switch ($event['event_id']) {
+              switch ($event['service_id']) {
                 case 1:
-
+                  $this->db->where('remark', '1');
+                  $this->db->where('b_event_id', $ev_id);
+                  $getBride = $this->db->get("lbrmss_m_bride");
+        
+                  $this->db->where('remark', '1');
+                  $this->db->where('g_event_id', $ev_id);
+                  $getGroom = $this->db->get("lbrmss_m_groom");
                   
                     // Add multiple keys for event_id == 1
                     $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];

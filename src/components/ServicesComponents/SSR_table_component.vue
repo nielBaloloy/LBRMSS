@@ -248,6 +248,14 @@
         <editDialogPanel :editables="editObject" @close-dialog="closeDialog" />
       </div>
     </q-dialog>
+    <q-dialog v-model="MrriageDialog" style="width: 950px">
+      <div class="q-gutter-y-md" style="max-width: 90vw">
+        <editMrriageDialog
+          :editables="editObject"
+          @close-dialog="closeDialog"
+        />
+      </div>
+    </q-dialog>
   </div>
 </template>
 
@@ -255,6 +263,7 @@
 import { ref, computed, watch, defineEmits, defineComponent } from "vue";
 import { FilterRange } from "src/composables/SeviceData";
 import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confirmation_edit.vue";
+import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMariageEdit.vue";
 
 export default defineComponent({
   props: {
@@ -265,12 +274,13 @@ export default defineComponent({
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
   emits: ["filterData", "FilterRanges"],
-  components: { editDialogPanel },
+  components: { editDialogPanel, editMrriageDialog },
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
     let Editdialog = ref(false);
+    let MrriageDialog = ref(false);
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -284,8 +294,22 @@ export default defineComponent({
     const editObject = ref([]);
     function editRow(row) {
       console.log("Edit row:", row);
-      editObject.value.push(row);
-      Editdialog.value = true;
+
+      var service = row.all.service_id;
+      switch (service) {
+        case 1:
+          editObject.value = [];
+          editObject.value.push(row);
+          MrriageDialog.value = true;
+          break;
+        case 3:
+          editObject.value = [];
+          editObject.value.push(row);
+          Editdialog.value = true;
+          break;
+        default:
+          break;
+      }
     }
 
     function deleteRow(row) {
@@ -394,6 +418,7 @@ export default defineComponent({
       fixed: ref(false),
       editObject,
       Editdialog,
+      MrriageDialog,
     };
   },
 });

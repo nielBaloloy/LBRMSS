@@ -327,7 +327,172 @@
      
       public function httpPut($payload)
       {
+        $datas = json_encode($payload);
+        $arr = json_decode($datas, true);
+
+        $dt = new DateTime();
+        $dty = $dt->format('Y-m-d H:i:s');
         
+        $event = $arr['payload']['event']['all'];
+        $groom = $arr['payload']['groom'];
+        $bride = $arr['payload']['bride'];
+        
+        $witness = $arr['payload']['event']['witness'];
+        $requirements = $arr['payload']['requirements'];
+        $seminar = $arr['payload']['seminar'];
+
+        $event_id =$event['event_id'];
+        // echo var_dump("event",$Event);
+        //update event
+        // $UpdateEvent = Array (
+         
+        // );
+        // $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
+
+        $UpdateEvent = Array(
+         "event_id"            => $event['event_id'],
+          "service_id"          => $event['service_id'],
+          "client"              => $event['client'],
+          "date"                => $event['date'],
+          "date_to"             => $event['date_to'],
+          "time_from"           => $event['time_from'],
+          "time_to"             => $event['time_to'],
+          "venue_name"          => $event['venue_name'],
+          "duration"            => $event['duration'] ?? '', // If not present
+          "type"                => $event['type'],
+          "days"                => $event['days'],
+          "venue_type"          => $event['venue_type'],
+          "priest_assigned_id"  => $event['priest_assigned_id'],
+          "event_progress"      => $event['event_progress'],
+          "requirement_status"  => $event['requirement_status'],
+          "created_at"          => $event['created_at'],
+          "created_by"          => $event['created_by'],
+          "remark"              => $event['remark']
+        );
+        $this->db->where('event_id',$event_id);
+        $updateEvents = $this->db->update('lbrmss_event_table_main',$UpdateEvent);
+
+        $update_main =Array(
+          "mid" => '',
+          "event_id" =>   $event['event_id'],
+          "assigned_priest" => $event['priest_id'],
+          "remark" => '1'
+        );
+        $this->db->where('event_id',$event_id);
+        $updateConMain = $this->db->update('lbrmss_mariage_main',$update_main);
+        $updateGroom = array(
+          "g_id"           => $groom['g_id'],
+          "g_event_id"     => $groom['g_event_id'],
+          "groom_lname"    => $groom['groom_lname'],
+          "groom_mname"    => $groom['groom_mname'],
+          "groom_fname"    => $groom['groom_fname'],
+          "groom_suffix"   => $groom['groom_suffix'], // could be null
+          "age"            => $groom['age'],
+          "dob"            => $groom['dob'],
+          "g_region"       => $groom['g_region'],
+          "g_province"     => $groom['g_province'],
+          "g_city"         => $groom['g_city'],
+          "g_brgy"         => $groom['g_brgy'],
+          "g_civil_status" => $groom['g_civil_status'],
+          "g_father"       => $groom['g_father'],
+          "g_mother"       => $groom['g_mother'],
+          "created_at"     => $groom['created_at'],
+          "created_by"     => $groom['created_by'],
+          "updated_at"     => $groom['updated_at'],
+          "updated_by"     => $groom['updated_by'],
+          "remark"         => $groom['remark']
+      );
+      
+        $this->db->where('g_event_id',$event_id);
+        $grooms = $this->db->update('lbrmss_m_groom',$updateGroom);
+        $updateBride = array(
+          "b_id"           => $bride['b_id'],
+          "b_event_id"     => $bride['b_event_id'],
+          "bride_lname"    => $bride['bride_lname'],
+          "bride_mname"    => $bride['bride_mname'],
+          "bride_fname"    => $bride['bride_fname'],
+          
+          "age"            => $bride['age'],
+          "dob"            => $bride['dob'],
+          "b_region"       => $bride['b_region'],
+          "b_province"     => $bride['b_province'],
+          "b_city"         => $bride['b_city'],
+          "b_brgy"         => $bride['b_brgy'],
+          "b_civil_status" => $bride['b_civil_status'],
+          "b_father"       => $bride['b_father'],
+          "b_mother"       => $bride['b_mother'],
+          "created_at"     => $bride['created_at'],
+          "created_by"     => $bride['created_by'],
+          "updated_at"     => $bride['updated_at'],
+          "updated_by"     => $bride['updated_by'],
+          "remark"         => $bride['remark']
+      );
+      
+      
+        $this->db->where('b_event_id',$event_id);
+        $brides = $this->db->update('lbrmss_m_bride',$updateBride);
+
+            for ($x = 0; $x < count($witness); $x++) {
+              $multiUpdateDataW = array(
+                  "w_id" => $witness[$x]['w_id'],
+                  "ServiceID" => $witness[$x]['ServiceID'],
+                  "Ninong" => $witness[$x]['Ninong'],
+                  "Ninong_Address" => $witness[$x]['Ninong_Address'],
+                  "Ninang" => $witness[$x]['Ninang'],
+                  "Ninang_Address" => $witness[$x]['Ninang_Address'],
+              );
+              $this->db->where('w_id', $witness[$x]['w_id']);
+              $updateWitness = $this->db->update('witness_testium_tbl',$multiUpdateDataW);
+          }
+          
+
+          for ($s = 0; $s < count($seminar); $s++) {
+            $multiInsertData = array(
+              "seminar_id"        => $seminar[$s]['field0'],
+              "event_id"        => $event_id,
+                "seminar_title"   => $seminar[$s]['field1'],       // Title
+                "date_from"       => $seminar[$s]['field2'],       // Date
+                "date_to"         => $seminar[$s]['field2'],       // Assuming same day
+                "time_from"       => $seminar[$s]['field3'],       // Start Time
+                "time_to"         => $seminar[$s]['field4'],       // End Time
+                "status"          => $seminar[$s]['field5'],       // Status (1 = active?)
+                "duration"        => $seminar[$s]['field6'],       // Duration in mins?
+                "days"            => '1',                            // Can be derived if needed
+                "seminar_Venue"   => $seminar[$s]['field7'],       // Venue
+                "remark"          => '1'                             // Default
+            );
+
+            $this->db->where('seminar_id', $seminar[$s]['field0']);
+            $updateSeminar= $this->db->update('lbrmss_seminar',$multiInsertData);
+        }
+      
+
+          /** requirements */
+         
+          $RequirementsData = array(
+            "req_id"                 => isset($requirements['req_id']) ? $requirements['req_id'] : null,
+            "baptismal_certificate"  => (isset($requirements['Baptismal']) && $requirements['Baptismal'] === 'true') ? 'true' : 'no',
+              "marriage_license"       => (isset($requirements['Marriage_License']) && $requirements['Marriage_License'] === 'true') ? 'true' : 'no',
+              "confirmation"           => (isset($requirements['Confirmation']) && $requirements['Confirmation'] === 'true') ? 'true' : 'no',
+              "birth_certificate"      => (isset($requirements['LiveBirthCert']) && $requirements['LiveBirthCert'] === 'true') ? 'true' : 'no',
+              "cenomar"                => (isset($requirements['Cenomar']) && $requirements['Cenomar'] === 'true') ? 'true' : 'no',
+              "interrogation"          => (isset($requirements['Interogation']) && $requirements['Interogation'] === 'true') ? 'true' : 'no',
+              "precana_seminar"        => (isset($requirements['PreCana']) && $requirements['PreCana'] === 'true') ? 'true' : 'no',
+              "confession"             => (isset($requirements['Confession']) && $requirements['Confession'] === 'true') ? 'true' : 'no',
+              "family_consent"         => (isset($requirements['Family_Consent']) && $requirements['Family_Consent'] === 'true') ? 'true' : 'no',
+              "cremation_authorization"=> (isset($requirements['Cremation_Authorization']) && $requirements['Cremation_Authorization'] === 'true') ? 'true' : 'no',
+              "death_certificate"      => (isset($requirements['Death_Certificate']) && $requirements['Death_Certificate'] === 'true') ? 'true' : 'no',
+              "remark"                 => 1 // Default show
+                    
+        );
+
+        $req_id = $requirements['req_id'];
+                
+        echo var_dump($RequirementsData);
+        $this->db->where('req_id',$req_id);
+        $insertRequirement = $this->db->update('lbrmss_m_requirements', $RequirementsData);
+        
+
   
 
     }
