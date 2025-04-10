@@ -256,6 +256,14 @@
         />
       </div>
     </q-dialog>
+    <q-dialog v-model="Baptism" style="width: 950px">
+      <div class="q-gutter-y-md" style="max-width: 90vw">
+        <editBaptismDialog
+          :editables="editObject"
+          @close-dialog="closeDialog"
+        />
+      </div>
+    </q-dialog>
   </div>
 </template>
 
@@ -264,6 +272,7 @@ import { ref, computed, watch, defineEmits, defineComponent } from "vue";
 import { FilterRange } from "src/composables/SeviceData";
 import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confirmation_edit.vue";
 import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMariageEdit.vue";
+import editBaptismDialog from "src/components/ServicesComponents/popUpDialogBaptismEdit.vue";
 
 export default defineComponent({
   props: {
@@ -274,13 +283,14 @@ export default defineComponent({
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
   emits: ["filterData", "FilterRanges"],
-  components: { editDialogPanel, editMrriageDialog },
+  components: { editDialogPanel, editMrriageDialog, editBaptismDialog },
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
     let Editdialog = ref(false);
     let MrriageDialog = ref(false);
+    let Baptism = ref(false);
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -301,6 +311,11 @@ export default defineComponent({
           editObject.value = [];
           editObject.value.push(row);
           MrriageDialog.value = true;
+          break;
+        case 2:
+          editObject.value = [];
+          editObject.value.push(row);
+          Baptism.value = true;
           break;
         case 3:
           editObject.value = [];
@@ -419,6 +434,7 @@ export default defineComponent({
       editObject,
       Editdialog,
       MrriageDialog,
+      Baptism,
     };
   },
 });
