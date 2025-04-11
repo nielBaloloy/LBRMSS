@@ -167,7 +167,7 @@
                     $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
                     $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
                     $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
-                    $pendingEvents[$lastIndex]['baptismperson'] = !empty($getbapt) ? $getbapt : [];
+                    $pendingEvents[$lastIndex]['baptismperson'] = !empty($getbapt[0]) ? $getbapt[0] : [];
                     break;
             
                 case 3:
@@ -193,23 +193,17 @@
                     $pendingEvents[$lastIndex]['confirmation'] = !empty($getcon[0]) ? $getcon[0] : [];
                     break;
                 case 4:
-                  $this->db->where('remark', '1');
-                  $this->db->where('event_id' ,$ev_id);
-                  $hasburial  =$this->db->has('lbrmss_burial_person');
-                  if($hasburial){
-                    $this->db->where('remark', '1');
+                 
+                    
                     $this->db->where('event_id', $ev_id);
                     $getBurial = $this->db->get("lbrmss_burial_person");
-                  }else{
-                    $getBurial = [];
-                  }
-          
+
                   // Add multiple keys for event_id == 3
                   $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
-                  $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
+                 
                   $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
-                  $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
-                  $pendingEvents[$lastIndex]['burial'] = !empty($getBurial) ? $getBurial : [];
+                  $pendingEvents[$lastIndex]['Additional'] = !empty($getSeminar) ? $getSeminar : [];
+                  $pendingEvents[$lastIndex]['burial'] = !empty($getBurial[0]) ? $getBurial[0] : [];
                 default:
                     // You can handle the case where event_id is not 1, 2, or 3
                     break;

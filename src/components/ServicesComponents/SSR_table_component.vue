@@ -264,6 +264,11 @@
         />
       </div>
     </q-dialog>
+    <q-dialog v-model="Burial" style="width: 950px">
+      <div class="q-gutter-y-md" style="max-width: 90vw">
+        <editBurialDialog :editables="editObject" @close-dialog="closeDialog" />
+      </div>
+    </q-dialog>
   </div>
 </template>
 
@@ -273,7 +278,7 @@ import { FilterRange } from "src/composables/SeviceData";
 import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confirmation_edit.vue";
 import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMariageEdit.vue";
 import editBaptismDialog from "src/components/ServicesComponents/popUpDialogBaptismEdit.vue";
-
+import editBurialDialog from "src/components/ServicesComponents/popUpDialog_Burial_edit.vue";
 export default defineComponent({
   props: {
     title: { type: String, default: "Table" },
@@ -283,7 +288,12 @@ export default defineComponent({
     getStatusIcon: Function, // ✅ Pass an array of objects
   },
   emits: ["filterData", "FilterRanges"],
-  components: { editDialogPanel, editMrriageDialog, editBaptismDialog },
+  components: {
+    editDialogPanel,
+    editMrriageDialog,
+    editBaptismDialog,
+    editBurialDialog,
+  },
   setup(props, { emit }) {
     const tableRef = ref();
     const filter = ref("");
@@ -291,6 +301,7 @@ export default defineComponent({
     let Editdialog = ref(false);
     let MrriageDialog = ref(false);
     let Baptism = ref(false);
+    let Burial = ref(false);
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -321,6 +332,11 @@ export default defineComponent({
           editObject.value = [];
           editObject.value.push(row);
           Editdialog.value = true;
+          break;
+        case 4:
+          editObject.value = [];
+          editObject.value.push(row);
+          Burial.value = true;
           break;
         default:
           break;
@@ -416,6 +432,7 @@ export default defineComponent({
     };
 
     return {
+      Burial,
       closeDialog,
       FilterData,
       statusOptions,

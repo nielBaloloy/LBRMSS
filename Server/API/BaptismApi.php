@@ -389,7 +389,7 @@
 
         $req_id = $requirements['req_id'];
                 
-        echo var_dump($RequirementsData);
+    
         $this->db->where('req_id',$req_id);
         $insertRequirement = $this->db->update('lbrmss_m_requirements', $RequirementsData);
         
