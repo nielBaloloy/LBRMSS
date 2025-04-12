@@ -364,6 +364,12 @@
             {{ (formData.Event_City = CityA) }}
             {{ (formData.Event_Barangay = BrgyA) }}
           </div>
+
+          <div style="max-width: 100%" v-show="Description_Field">
+            Description
+            <q-input v-model="text" outlined type="textarea" />
+          </div>
+
           <!-- Assigned Priest -->
           <div class="servicefield" v-show="Preffered_Priest">
             Assigned Priest
@@ -4497,15 +4503,17 @@ export default defineComponent({
       date: formData.value.Date,
       timeFrom: formData.value.TimeFrom,
       timeTo: formData.value.TimeTo,
+      venuetype: formData.value.Venue_type,
     }));
     watch(
       () => [
         formData.value.Date,
         formData.value.TimeFrom,
         formData.value.TimeTo,
+        formData.value.Venue_type,
       ],
-      ([newDate, newTimeFrom, newTimeTo]) => {
-        if (newDate && newTimeFrom && newTimeTo) {
+      ([newDate, newTimeFrom, newTimeTo, newVenue]) => {
+        if (newDate && newTimeFrom && newTimeTo && newVenue) {
           formData.value.Assigned_Priest = null;
           getAvailablePriest(eventDetails.value);
           // Pass event details to function

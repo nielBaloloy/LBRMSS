@@ -34,4 +34,36 @@ const getAvailablePriest = (eventDate) => {
   });
 };
 
-export { getAvailablePriest, availablePriest };
+let getAvailablePriestV2 = ref([]);
+
+const getAvailablePriestver2 = (date, timefrom, timeto) => {
+  return new Promise((resolve, reject) => {
+    api
+      .get("loadPriestv2.php", {
+        params: {
+          date: date,
+          timefrom: timefrom,
+          timeto: timeto,
+        },
+      })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          console.log(response.data.availablePriest);
+          getAvailablePriestV2.value = response.data.availablePriest;
+        } else {
+          console.log(response.data.availablePriest);
+          getAvailablePriestV2.value = [];
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export {
+  getAvailablePriest,
+  availablePriest,
+  getAvailablePriestver2,
+  getAvailablePriestV2,
+};

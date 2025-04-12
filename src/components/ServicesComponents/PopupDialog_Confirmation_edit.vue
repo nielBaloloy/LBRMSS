@@ -879,7 +879,12 @@ import {
   defineComponent,
   onMounted,
 } from "vue";
-import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
+import {
+  getAvailablePriest,
+  availablePriest,
+  getAvailablePriestver2,
+  getAvailablePriestV2,
+} from "src/composables/getPriest";
 export default defineComponent({
   props: {
     editables: { type: Array, default: () => [] },
@@ -998,10 +1003,14 @@ export default defineComponent({
         if (newDate && newTimeFrom && newTimeTo) {
           events.value.Assigned_Priest = null;
           getAvailablePriest(eventDetails.value);
+          console.log("changed:", availablePriest);
           // Pass event details to function
         }
       }
     );
+
+    //trackrequirements
+
     // Get ADDRESS Groom
     let selectedRegion = ref(null);
     let grEGION = ref();
@@ -1242,6 +1251,23 @@ export default defineComponent({
           emit("closeDialog");
         });
     };
+    watch(
+      () => [
+        events.value[0].Date,
+        events.value[0].Time_from,
+        events.value[0].Time_to,
+      ],
+      (
+        [newDate, newTimeFrom, newTimeTo],
+        [oldDate, oldTimeFrom, oldTimeTo]
+      ) => {
+        console.log("Date changed from", oldDate, "to", newDate);
+        console.log("Time From changed from", oldTimeFrom, "to", newTimeFrom);
+        console.log("Time To changed from", oldTimeTo, "to", newTimeTo);
+
+        getAvailablePriestver2(newDate, newTimeFrom, newTimeTo);
+      }
+    );
 
     return {
       events,

@@ -26,48 +26,31 @@
       {
         $data = json_encode($payload);
         $arr = json_decode($data, true);
-       
-        if(isset($arr['clientSchedule'])){
-            $timeFrom   =  date("H:i:s", strtotime($arr['clientSchedule']['timeFrom']));
-            $timeTo     =   date("H:i:s", strtotime($arr['clientSchedule']['timeTo']));
-            $date       =  $arr['clientSchedule']['date'];
-            $venuetype     =   $arr['clientSchedule']['venuetype'];
         
-        }else{
-            $timeFrom   =  date("H:i:s");
-            $timeTo     =  date("H:i:s");
-            $date       =  date("Y-m-d");
-            $venuetype     =   '';
-        }
-         $getAvailablePriest = $this->db->rawQuery("SELECT DISTINCT
-                      b.*,
-                     pos.*,
-                    evt.venue_type
-                    FROM 
-                      lbrmss_priest_main AS b
-                    LEFT JOIN 
-                      lbrmss_position AS pos 
-                        ON b.position = pos.pos_id
-                    LEFT JOIN 
-                      lbrmss_priest_schedule AS a 
-                        ON a.priest_id = b.priest_id 
-                    LEFT JOIN 
-                      lbrmss_event_table_main AS evt 
-                        ON evt.priest_assigned_id = a.priest_id
-                        AND a.remark = '1'
-                        AND (
-                          ('$date' BETWEEN a.date_from AND a.date_to)
-                          AND (
-                            ('$timeFrom' BETWEEN a.time_from AND a.time_to AND evt.venue_type = 1) OR
-                            ('$timeTo' BETWEEN a.time_from AND a.time_to AND evt.venue_type = 1) OR
-                            (a.time_from BETWEEN '$timeFrom' AND '$timeTo' AND evt.venue_type = 1) OR
-                            (a.time_to BETWEEN '$timeFrom' AND '$timeTo' AND evt.venue_type = 1)
-                          )
-                        )
-                    WHERE 
-                      (a.priest_id IS NULL OR a.sched_status = '0')
-                      AND b.remark = '1';
+        $date   =  date("H:i:s", strtotime($arr['date']));
+        $timefrom   =  date("H:i:s", strtotime($arr['timefrom']));
+        $timeto   =  date("H:i:s", strtotime($arr['timeto']));
 
+   
+         $getAvailablePriest = $this->db->rawQuery("SELECT b.*,
+                        pos.*
+                    FROM lbrmss_priest_main AS b
+                    LEFT JOIN lbrmss_position AS pos ON b.position = pos_id
+                    LEFT JOIN lbrmss_priest_schedule AS a 
+                    ON a.priest_id = b.priest_id 
+                    AND a.remark = '1'  
+                    AND (
+                        
+                        ('$date' BETWEEN a.date_from AND a.date_to)
+                        AND (
+                            ('$timefrom' BETWEEN a.time_from AND a.time_to)  
+                            OR ('$timeto' BETWEEN a.time_from AND a.time_to)  
+                            OR (a.time_from BETWEEN '$timefrom' AND '$timeto')  
+                            OR (a.time_to BETWEEN '$timefrom' AND '$timeto')  
+                        )
+                    )
+                    WHERE a.priest_id IS NULL OR a.sched_status = '0'
+                    AND b.remark = '1'; 
                     ");
 
 
