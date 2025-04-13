@@ -32,7 +32,7 @@
         $timeto   =  date("H:i:s", strtotime($arr['timeto']));
 
    
-         $getAvailablePriest = $this->db->rawQuery("SELECT b.*,
+         $getAvailablePriest = $this->db->rawQuery("SELECT DISTINCT b.*,
                         pos.*
                     FROM lbrmss_priest_main AS b
                     LEFT JOIN lbrmss_position AS pos ON b.position = pos_id

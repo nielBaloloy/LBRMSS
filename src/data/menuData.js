@@ -18,6 +18,7 @@ export const menuData = [
     children: [
       { to: "/EventSchedule", label: "Scheduled Events" },
       { to: "/SecretaryDashboard", label: "Priest Schedule" },
+      { to: "/MassManagement", label: "Mass" },
     ],
   },
   {
@@ -50,7 +51,7 @@ export const menuData = [
     icon: "dvr",
   },
 ];
-
+/** Financial Module */
 export const menuData2 = [
   {
     to: "/Dashboard",
@@ -64,12 +65,17 @@ export const menuData2 = [
     icon: "point_of_sale",
   },
   {
-    to: "/Services",
+    to: "/Donations",
     label: "Donations",
     icon: "account_balance_wallet",
   },
   {
-    to: "/Services",
+    to: "/FinancialRecords",
+    label: "Financial Records",
+    icon: "summarize",
+  },
+  {
+    to: "/FinancialReport",
     label: "Financial Reports",
     icon: "summarize",
   },

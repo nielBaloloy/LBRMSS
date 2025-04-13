@@ -53,6 +53,32 @@ const routes = [
         "../pages/SecretaryDashboard.vue/Tools/Service_Fee_Assignment.vue"
       ),
   },
+  {
+    path: "/Donations",
+    component: () =>
+      import("../pages/SecretaryDashboard.vue/FinanceModule/DonationPage.vue"),
+  },
+  {
+    path: "/FinancialRecords",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/FinanceModule/FinancialRecord.vue"
+      ),
+  },
+  {
+    path: "/FinancialReport",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/FinanceModule/FinancialReport.vue"
+      ),
+  },
+  {
+    path: "/MassManagement",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/EventScheduler/MassManagement.vue"
+      ),
+  },
   //ServicePayment
   // Always leave this as last one,
   // but you can also remove it

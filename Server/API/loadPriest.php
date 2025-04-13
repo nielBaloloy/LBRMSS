@@ -66,7 +66,7 @@
                         )
                     WHERE 
                       (a.priest_id IS NULL OR a.sched_status = '0')
-                      AND b.remark = '1';
+                      AND b.remark = '1' GROUP BY a.priest_id;
 
                     ");
 

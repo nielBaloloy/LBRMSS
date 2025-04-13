@@ -303,6 +303,23 @@
                       
                         $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
                       }
+                      if($Event['Service'] == '7'){ //insert to mass
+                      //   $AnnointingData = array(
+                      //     "a_id" => '',
+                      //     "event_id" =>   $new_eventId,
+                      //     "region"   =>   $Event['Event_Region'],
+                      //     "province" =>    $Event['Event_Province'],
+                      //     "city"     =>  $Event['Event_City'],
+                      //     "brgy"    =>  $Event['Event_Barangay'],
+                      //     "description"  =>"",
+                      //     "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                      //     "created_at"    => $dty,
+                      //     "created_by" => '1',
+                      //     "remark" => '1'
+                      // );
+                      
+                      //   $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
+                      }
                 
                       
                       $ScheduleData = array(

@@ -35,19 +35,21 @@
         </div>
 
         <!-- ✅ Down Payment Checkbox -->
-        <div class="row justify-end">
-          <q-checkbox
-            v-model="isDownPayment"
-            color="primary"
-            label="Do you prefer to pay a downpayment first?"
-          />
-        </div>
+        <div class="downpaymentCon" v-show="downpaymentCon">
+          <div class="row justify-end">
+            <q-checkbox
+              v-model="isDownPayment"
+              color="primary"
+              label="Do you prefer to pay a downpayment first?"
+            />
+          </div>
 
-        <!-- ✅ Down Payment Input (Auto-Filled) -->
-        <div class="row justify-end" v-if="isDownPayment">
-          <p class="text-subtitle">
-            Down Payment (50%): <strong>₱{{ downPayment }}</strong>
-          </p>
+          <!-- ✅ Down Payment Input (Auto-Filled) -->
+          <div class="row justify-end" v-if="isDownPayment">
+            <p class="text-subtitle">
+              Down Payment (50%): <strong>₱{{ downPayment }}</strong>
+            </p>
+          </div>
         </div>
 
         <!-- ✅ Remaining Balance Calculation -->
@@ -96,6 +98,7 @@ import {
   ref,
   watch,
   watchEffect,
+  onMounted,
 } from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { api } from "../../../boot/axios";
@@ -135,7 +138,7 @@ const columns = [
 ];
 
 // ✅ Fee rows with default amounts
-
+let downpaymentCon = ref(false);
 console.log(props.feeRows);
 
 // ✅ Initialize fees dynamically from feeRows
@@ -213,6 +216,7 @@ watch(balanceAfterPayment, (newBalance) => {
     payment_info.value.status = "1"; // Pending
   }
 });
+
 /** ========== SAVE ================================= */
 const submitForm = () => {
   if (!isDownPayment.value) {
@@ -249,7 +253,7 @@ const submitForm = () => {
               if (response.data.message == "") {
                 $q.notify({
                   type: "positive",
-                  message: "Marriage fees submitted successfully!",
+                  message: "Payments submitted successfully!",
                 });
               }
             })
@@ -305,7 +309,7 @@ const submitForm = () => {
               if (response.data.message == "") {
                 $q.notify({
                   type: "positive",
-                  message: "Marriage fees submitted successfully!",
+                  message: "Payments submitted successfully!",
                 });
               }
             })
@@ -342,6 +346,16 @@ const resetForm = () => {
   isDownPayment.value = false;
   payment_info.value.payment = null;
 };
+
+watch(
+  () => props.feeRows,
+  (newVal) => {
+    if (newVal[0].service_fee_id == 1 || newVal[0].service_fee_id == 4) {
+      downpaymentCon.value = true;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <style scoped>

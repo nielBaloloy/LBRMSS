@@ -100,6 +100,36 @@
               class="input-field"
             />
           </div>
+          <q-dialog
+            v-model="massDialog"
+            persistent
+            transition-show="scale"
+            transition-hide="scale"
+          >
+            <q-card style="min-width: 800px; max-width: 95vw">
+              <q-card-section>
+                <div class="text-h6">Select Mass Schedule</div>
+              </q-card-section>
+
+              <q-separator />
+
+              <q-card-section>
+                <q-table
+                  :rows="massSchedules"
+                  :columns="massColumns"
+                  row-key="name"
+                  @row-click="selectMassSchedule"
+                />
+              </q-card-section>
+
+              <q-separator />
+
+              <q-card-actions align="right">
+                <q-btn flat label="Close" color="primary" v-close-popup />
+              </q-card-actions>
+            </q-card>
+          </q-dialog>
+          <div class="servicfield" v-show="field2"></div>
 
           <div class="servicfield" v-show="field3">
             Specific Service
@@ -217,7 +247,12 @@
                 </template>
               </q-input>
             </div>
-
+            <q-btn
+              color="primary"
+              icon="list"
+              @click="massDialog = true"
+              class="q-mt-md"
+            />
             <div class="timeDurat hidden">
               {{ (formData.Duration = timeDurationEvent) }}
             </div>
@@ -2766,7 +2801,9 @@
           <q-btn
             @click="onContinueStep"
             color="primary"
-            :label="step === 5 ? 'Finish' : 'Continue'"
+            :label="
+              step === 5 || formData.Service === 6 ? 'Finish' : 'Continue'
+            "
           />
           <!-- <q-btn v-if="step > 1" flat color="positive" @click="$refs.stepper.previous()" label="Back" class="q-ml-sm" />
         -->
@@ -2786,7 +2823,7 @@
           <q-btn
             @click="CertButton()"
             color="primary"
-            :label="step === 5 ? 'Finish' : 'Submit'"
+            :label="step === 5 || formData.Service === 6 ? 'Finish' : 'Submit'"
           />
           <q-btn
             v-if="step == 5"
@@ -2810,6 +2847,7 @@ import {
   onMounted,
   onBeforeUnmount,
   computed,
+  reactive,
 } from "vue";
 import { useQuasar } from "quasar";
 import philippineData from "../../AddressPH/philippine_provinces_cities_municipalities_and_barangays_2019v2.json";
@@ -4265,6 +4303,12 @@ export default defineComponent({
     const step3 = ref("");
     const step4 = ref("");
     const step5 = ref("");
+    const massData = ref({
+      Date: "",
+      TimeFrom: "",
+      TimeTo: "",
+      // ... other fields
+    });
     let randnum = ref();
     function onContinueStep() {
       switch (step.value) {
@@ -4479,6 +4523,39 @@ export default defineComponent({
                 reject(error);
               });
           }
+          if (formData.value.Service == "7") {
+            console.log(massData.value);
+            console.log(formData.value);
+            // api
+            //   .post("Service.php", {
+            //     eventData: formData.value,
+            //   })
+            //   .then((response) => {
+            //     if (response.data.Status == "Success") {
+            //       $q.notify({
+            //         message: "Information saved Successfully",
+            //         color: "green-6",
+            //         position: "bottom-right",
+            //       });
+            //       getSerivce(0);
+            //     } else {
+            //       $q.notify({
+            //         message:
+            //           "This schedule is already taken! Please choose another date or time.",
+            //         color: "red-6",
+            //         position: "bottom-right",
+            //       });
+            //     }
+            //   })
+            //   .catch((error) => {
+            //     $q.notify({
+            //       message: "Server Error",
+            //       color: "red-6",
+            //       position: "bottom-right",
+            //     });
+            //     reject(error);
+            //   });
+          }
           // sendclose(false);
 
           if (formData.value.Service == "Blessing") {
@@ -4539,7 +4616,65 @@ export default defineComponent({
     const onRejected = (files) => {
       console.warn("Rejected files:", files);
     };
+
+    const massSchedules = ref([
+      {
+        id: 1,
+        date: "2025-04-14",
+        timeFrom: "06:00",
+        timeTo: "07:00",
+        priest: "Fr. John Dela Cruz",
+        language: "English",
+      },
+      {
+        id: 2,
+        date: "2025-04-15",
+        timeFrom: "08:00",
+        timeTo: "09:00",
+        priest: "Fr. Pedro Santos",
+        language: "Bicol",
+      },
+      {
+        id: 3,
+        date: "2025-04-15",
+        timeFrom: "17:00",
+        timeTo: "18:00",
+        priest: "Fr. Mario Alonzo",
+        language: "English",
+      },
+    ]);
+
+    const massColumns = [
+      { name: "date", label: "Date", align: "left", field: "date" },
+      { name: "timeFrom", label: "From", align: "center", field: "timeFrom" },
+      { name: "timeTo", label: "To", align: "center", field: "timeTo" },
+      {
+        name: "priest",
+        label: "Officiating Priest",
+        align: "left",
+        field: "priest",
+      },
+      {
+        name: "language",
+        label: "Language",
+        align: "center",
+        field: "language",
+      },
+    ];
+    const selectMassSchedule = (evt, rowData, index) => {
+      formData.value.Date = rowData.date;
+      formData.value.TimeTo = rowData.timeTo;
+      formData.value.TimeFrom = rowData.timeFrom;
+      console.log(rowData);
+    };
+    const massDialog = ref(false);
+
     return {
+      massData,
+      massDialog,
+      selectMassSchedule,
+      massColumns,
+      massSchedules,
       uploadFiles,
       onRejected,
       // Stepper
