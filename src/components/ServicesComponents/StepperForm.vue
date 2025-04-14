@@ -115,11 +115,20 @@
 
               <q-card-section>
                 <q-table
-                  :rows="massSchedules"
+                  :rows="massrows"
                   :columns="massColumns"
                   row-key="name"
                   @row-click="selectMassSchedule"
-                />
+                >
+                  <template v-slot:body-cell-priest="props">
+                    <q-td :props="props">
+                      <span v-if="props.row.priest_id">
+                        {{ props.row.lname }}, {{ props.row.fname }}
+                      </span>
+                      <span v-else> Not yet assigned </span>
+                    </q-td>
+                  </template></q-table
+                >
               </q-card-section>
 
               <q-separator />
@@ -2880,6 +2889,7 @@ import {
   send_blessing,
   send_mass,
 } from "../../composables/OtherService.js";
+import { loadScheduleTable, massrows } from "src/composables/loadMassSchedule";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 
 import { api } from "src/boot/axios";
@@ -3546,6 +3556,7 @@ export default defineComponent({
     let selectedBarangayEvent = ref(null);
 
     onMounted(() => {
+      loadScheduleTable();
       getAvailablePriest();
       console.log(philippineData);
       regionOptions.value = Object.keys(philippineData)
@@ -4646,13 +4657,13 @@ export default defineComponent({
 
     const massColumns = [
       { name: "date", label: "Date", align: "left", field: "date" },
-      { name: "timeFrom", label: "From", align: "center", field: "timeFrom" },
-      { name: "timeTo", label: "To", align: "center", field: "timeTo" },
+      { name: "timeFrom", label: "From", align: "center", field: "time_from" },
+      { name: "timeTo", label: "To", align: "center", field: "time_to" },
       {
         name: "priest",
         label: "Officiating Priest",
         align: "left",
-        field: "priest",
+        field: "priest_id",
       },
       {
         name: "language",
@@ -4661,15 +4672,17 @@ export default defineComponent({
         field: "language",
       },
     ];
+    const massDialog = ref(false);
     const selectMassSchedule = (evt, rowData, index) => {
       formData.value.Date = rowData.date;
-      formData.value.TimeTo = rowData.timeTo;
-      formData.value.TimeFrom = rowData.timeFrom;
+      formData.value.TimeTo = rowData.time_to;
+      formData.value.TimeFrom = rowData.time_from;
       console.log(rowData);
+      massDialog.value = false;
     };
-    const massDialog = ref(false);
 
     return {
+      massrows,
       massData,
       massDialog,
       selectMassSchedule,

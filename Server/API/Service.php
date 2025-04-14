@@ -321,21 +321,24 @@
                       //   $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
                       }
                 
-                      
-                      $ScheduleData = array(
-                        "sched_id" => '',
-                        "priest_id" => $Event['Assigned_Priest']['priest_id'],
-                        "sched_event_id" => $new_eventId,
-                        "date_from" => $Event['Date'],
-                        "date_to" =>$Event['Date'],
-                        "time_from" => $Event['TimeTo'],
-                        "time_to"       => $Event['TimeFrom'],
-                        "created_at" => $dty,
-                        "remark" => '1' // 1 = show, 0 = hide
-                    );
+                      if(!empty($Event['Assigned_Priest']['priest_id'])){
+                          $ScheduleData = array(
+                            "sched_id" => '',
+                            "priest_id" => $Event['Assigned_Priest']['priest_id'],
+                            "sched_event_id" => $new_eventId,
+                            "date_from" => $Event['Date'],
+                            "date_to" =>$Event['Date'],
+                            "time_from" => $Event['TimeTo'],
+                            "time_to"       => $Event['TimeFrom'],
+                            "created_at" => $dty,
+                            "remark" => '1' // 1 = show, 0 = hide
+                        );
+                        $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
+                      }
+                     
 
 
-                    $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
+                   
                     
                       echo json_encode(array("Status" => "Success", "Message" => "Application Successfully Added"));
                       //logs here

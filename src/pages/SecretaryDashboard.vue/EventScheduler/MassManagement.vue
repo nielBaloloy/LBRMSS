@@ -108,6 +108,42 @@
           <q-btn label="Add" color="primary" @click="openModal = true" />
         </div>
       </div>
+      <div class="q-pa-md">
+        <q-table
+          flat
+          title="Mass Schedules"
+          :rows="massrows"
+          :columns="masscolumns"
+          row-key="name"
+        >
+          <template v-slot:body-cell-actions="props">
+            <q-td align="center">
+              <q-btn
+                color="primary"
+                flat
+                dense
+                icon="edit"
+                @click="editMass(props.row)"
+              />
+              <q-btn
+                color="negative"
+                flat
+                dense
+                icon="delete"
+                @click="removeMassEntry(props.row)"
+              />
+            </q-td>
+          </template>
+          <template v-slot:body-cell-priest="props">
+            <q-td :props="props">
+              <span v-if="props.row.priest_id">
+                {{ props.row.lname }}, {{ props.row.fname }}
+              </span>
+              <span v-else> Not yet assigned </span>
+            </q-td>
+          </template></q-table
+        >
+      </div>
       <q-dialog v-model="openModal" style="width: 900px">
         <div style="width: 1000px; max-width: 70vw">
           <q-card class="q-pa-md" style="width: auto">
@@ -238,7 +274,7 @@
                   />
                 </div>
                 <div class="servicefield">
-                  Assigned Priest
+                  Preffered Priest
                   <q-select
                     :dense="true"
                     outlined
@@ -343,7 +379,7 @@ import SidebarMenu from "../../../components/DashboardComponents/navigation_left
 import { menuData } from "src/data/menuData";
 import { api } from "src/boot/axios";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
-
+import { loadScheduleTable, massrows } from "src/composables/loadMassSchedule";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
@@ -372,23 +408,7 @@ export default defineComponent({
       myObject.value = JSON.parse(sessionkey);
       console.log(myObject.value);
     }
-    function loadScheduleTable() {
-      api
-        .get("mass_schedule.php")
-        .then((response) => {
-          console.log(response);
-          if (response.data.Status == "Success") {
-            console.log(response.data.data);
-          }
-        })
-        .catch((error) => {
-          reject(error);
-          $q.notify({
-            type: "negative",
-            message: "Network Error",
-          });
-        });
-    }
+
     const mmassData = ref({
       mass_id: null,
       mass_title: null,
@@ -421,7 +441,7 @@ export default defineComponent({
                   type: "positive",
                   message: "Saved Successfully",
                 });
-
+                openModal.value = false;
                 loadScheduleTable();
               }
             })
@@ -551,13 +571,73 @@ export default defineComponent({
         sortable: false,
       },
     ];
+
+    //main table
+    const masscolumns = [
+      { name: "mass_title", label: "Mass Title", field: "mass_title" },
+      { name: "language", label: "Language", field: "language" },
+      { name: "venue", label: "Venue", field: "venue" },
+      { name: "date", label: "Date", field: "date" },
+      { name: "time_from", label: "From", field: "time_from" },
+      { name: "time_to", label: "To", field: "time_to" },
+      {
+        name: "priest",
+        label: "Priest",
+        field: "priest",
+        align: "center",
+        sortable: false,
+      },
+      {
+        name: "actions",
+        label: "Actions",
+        field: "actions",
+        align: "center",
+        sortable: false,
+      },
+    ];
+
     const submitAllSchedule = () => {
       console.log("Submitting entire mass schedule:", massList.value);
+      $q.dialog({
+        title: "Confirm",
+        message: "Would you like to turn on the wifi?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => {
+          api
+            .post("mass_schedule.php", massList.value)
+            .then((response) => {
+              console.log(response);
+              if (response.data.Status == "Success") {
+                $q.notify({
+                  type: "positive",
+                  message: "Saved Successfully",
+                });
+
+                openModal.value = false;
+                loadScheduleTable();
+              }
+            })
+            .catch((error) => {
+              reject(error);
+              $q.notify({
+                type: "negative",
+                message: "Network Error",
+              });
+            });
+        })
+
+        .onCancel(() => {
+          // console.log('>>>> Cancel')
+        });
     };
     const removeMassEntry = (row) => {
       massList.value = massList.value.filter((mass) => mass !== row);
     };
     return {
+      massrows,
+      masscolumns,
       removeMassEntry,
       submitAllSchedule,
       addMassEntry,

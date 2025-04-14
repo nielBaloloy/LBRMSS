@@ -25,12 +25,16 @@
       {
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
-                       $this->db->where('remark','1');
-        $getSchedule = $this->db->get('lbrmss_mass_schedules');
+
+                    
+        $getSchedule = $this->db->rawQuery("SELECT a.*, b.lname, b.mname, b.fname
+                                            FROM lbrmss_mass_schedules a
+                                            LEFT JOIN lbrmss_priest_main b ON b.priest_id = a.priest_id
+                                            WHERE a.remark = '1';");
         if($getSchedule){
             echo json_encode(array("Status"=>"Success", "data"=>$getSchedule));
         }else{
-            echo json_encode(array("Status"=>"Failed", "data"=>[]));
+            echo json_encode(array("Status"=>"Failed". $this->db->getLastError(), "data"=>[]));
           }
       }
       public function httpPost($payload)
@@ -42,20 +46,25 @@
        
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
+        $c = count($arr);
+  
+        for($i = 0; $i < $c; $i++){
+            $priestId = isset($arr[$i]['assigned_priest']['priest_id']) ? $arr[$i]['assigned_priest']['priest_id'] : null;
+
         $eventData = Array(
             "event_id" => '',
             "service_id" => '7',
             "client" => '',
-            "date" =>  $arr['date'],
-            "date_to" =>  $arr['date'],
-            "time_from"           => $arr['time_from'],
-            "time_to"             => $arr['time_to'],
-            "venue_name"            => $arr['Venue'],
+            "date"                =>  $arr[$i]['date'],
+            "date_to"             =>  $arr[$i]['date'],
+            "time_from"           => $arr[$i]['time_from'],
+            "time_to"             => $arr[$i]['time_to'],
+            "venue_name"            => $arr[$i]['venue'],
             "duration"            => 60,
             "type"                => 2,
             "days"                => 1,
-            "venue_type"          => $arr['Venue_type'],
-            "priest_assigned_id"  => $arr['Assigned_Priest']['priest_id'],
+            "venue_type"          => $arr[$i]['venue_type'],
+            "priest_assigned_id"  => $priestId,
             "event_progress"      => 1,
             "requirement_status"  => 1,
             "created_at"          => $dty,
@@ -66,43 +75,49 @@
 
            $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
            $eventId = $this->db->getMaxId('lbrmss_event_table_main','event_id');
-        $massSchedule = array(
-            "mass_id" => null,
-            "mass_title" => $arr['mass_title'],
-            "date" => $arr['date'],
-            "time_from" => $arr['time_from'],
-            "time_to" => $arr['time_to'],
-            "language" => $arr['language'],
-            "VenueType" =>$arr['Venue_type'],
-             "venue" =>$arr['Venue'],
-             "priest_id" =>$arr['Assigned_Priest']['priest_id'],
-            "created_at" => $dty ,
-            "created_by" =>1,
-            "remark" => "1"
-        );
-        
-        if(isset($arr)){
-            $insertMass = $this->db->insert('lbrmss_mass_schedules', $massSchedule);
-            $ScheduleData = array(
-                "sched_id" => '',
-                "priest_id" => $arr['Assigned_Priest']['priest_id'],
-                "sched_event_id" => $new_eventId,
-                "date_from" => $Event['Date'],
-                "date_to" =>$Event['Date'],
-                "time_from" => $Event['TimeTo'],
-                "time_to"       => $Event['TimeFrom'],
-                "created_at" => $dty,
-                "remark" => '1' // 1 = show, 0 = hide
+
+           $massSchedule = array(
+                "mass_id" => null,
+                "mass_event_id"     => $eventId,
+                "mass_title"        => $arr[$i]['mass_title'],
+                
+                "date"              => $arr[$i]['date'],
+                "time_from"         => $arr[$i]['time_from'],
+                "time_to"           => $arr[$i]['time_to'],
+                "language"          => $arr[$i]['language'],
+                "VenueType"         =>$arr[$i]['venue_type'],
+                 "venue"            =>$arr[$i]['venue'],
+                 "priest_id"        =>$priestId,
+                "created_at"        => $dty ,
+                "created_by"        =>1,
+                "remark"            => "1"
             );
+           
+            $insertMass = $this->db->insert('lbrmss_mass_schedules', $massSchedule);
+            //schedule for priest
 
-
-            $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
-            if( $insertMass){
-                echo json_encode(array("Status"=>"Success"));
-            }else{
-                echo json_encode(array("Status"=>"Failed"));
+            if(!empty($arr[$i]['assigned_priest']['priest_id'])){
+                $ScheduleData = array(
+                    "sched_id" => '',
+                    "priest_id"         => $priestId,
+                    "sched_event_id"    => $eventId,
+                    "date_from"         => $arr[$i]['date'],
+                    "date_to"           => $arr[$i]['date'],
+                    "time_from"         => $arr[$i]['time_to'],
+                    "time_to"           => $arr[$i]['time_from'],
+                    "created_at"        => $dty,
+                    "remark"            => '1' // 1 = show, 0 = hide
+                );
+                $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
             }
+           
+          
         }
+       
+            echo json_encode(array("Status"=>"Success"));
+       
+
+       
 
     }
  

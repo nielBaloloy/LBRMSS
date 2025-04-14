@@ -2,11 +2,10 @@ import { ref, readonly } from "vue";
 
 import { api } from "../boot/axios";
 
-const serviceList = ref([]);
+const status = ref();
 const position = ref();
 const account = ref([]);
 const isActive = ref();
-
 /**
  * This function accepts parameters of an array then
  * set the passed array to unitWork data.
@@ -31,7 +30,14 @@ const LoginPayload = (payload) => {
         }
       })
       .catch((error) => {
-        reject(error);
+        setTimeout(() => {
+          Swal.fire({
+            title: "Unable to connect!",
+            text: "Login request failed due to a server error. Please contact support. ",
+            error,
+            icon: "error",
+          });
+        }, 2000);
       });
   });
 };
