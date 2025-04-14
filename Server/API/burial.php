@@ -23,7 +23,44 @@
 
       public function httpGet($payload)
       {
-       
+        $burial = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
+        LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
+        LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+        LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
+        LEFT JOIN lbrmss_burial mm ON mm.event_id =a.event_id
+        LEFT JOIN lbrmss_burial_person mg ON mg.con_event_id = mm.event_id 
+      
+        LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
+        WHERE a.remark = '1' AND a.service_id = '4' AND a.event_progress = '2' GROUP BY a.event_id
+        ORDER BY a.created_at");
+
+          if(count($burial) > 0){
+
+          foreach ($burial as $event) {
+          $person = $event['bu_lname']." ".$event['bu_mname']." ".$event['bu_fname']." ".$event['bu_suffix'];
+         
+          $pendingEvents[] = [
+          "all" => $event,
+          "E_ID" => $event['event_id'],
+          "EventServiceID" => $event['service_id'],
+          "Service" => $event['event_name'],
+          "Client" => $person,
+          "Type" => ($event['type'] == '1') ? "Mass" : "Special",
+          "Date" => $event['date'],
+          "Venue" => $event['venue_name'], 
+          'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
+          "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
+
+          ];
+
+          }
+
+
+          echo json_encode(array("Status"=>"Success", "data"=>$pendingEvents));
+          }else{
+          echo json_encode(array("Status"=>"Failed", "data"=>[]));
+          }
+
 
       }
       public function httpPost($payload)

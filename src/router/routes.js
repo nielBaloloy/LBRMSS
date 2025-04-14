@@ -38,7 +38,27 @@ const routes = [
         "../pages/SecretaryDashboard.vue/CannonicalRecords/MarriageMain.vue"
       ),
   },
-
+  {
+    path: "/Baptism",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/CannonicalRecords/BaptismMain.vue"
+      ),
+  },
+  {
+    path: "/Confirmation",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/CannonicalRecords/ConfirmationMain.vue"
+      ),
+  },
+  {
+    path: "/Burial",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/CannonicalRecords/BurialMain.vue"
+      ),
+  },
   {
     path: "/ServicePayment",
     component: () =>
@@ -78,6 +98,11 @@ const routes = [
       import(
         "../pages/SecretaryDashboard.vue/EventScheduler/MassManagement.vue"
       ),
+  },
+  {
+    path: "/PriestSetup",
+    component: () =>
+      import("../pages/SecretaryDashboard.vue/Tools/PriestSetup.vue"),
   },
   //ServicePayment
   // Always leave this as last one,

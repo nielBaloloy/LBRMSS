@@ -48,8 +48,9 @@
                                                 LEFT JOIN lbrmss_m_groom mg ON mg.g_event_id = mm.event_id 
                                                 LEFT JOIN lbrmss_m_bride mb ON mb.b_event_id = mm.event_id
                                                 LEFT JOIN witness_testium_tbl mw ON mw.ServiceID = mm.event_id
-                                                 LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
-                                                WHERE a.remark = '1' AND a.service_id = 1 GROUP BY a.event_id
+                                                LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
+                                                WHERE a.remark = '1' AND a.service_id = 1   AND a.event_progress = '2' GROUP BY a.event_id
+                                              
                                                 ORDER BY a.created_at");
 
       if(count($Marriage) > 0){

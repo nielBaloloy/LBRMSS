@@ -30,14 +30,14 @@ export const menuData = [
         label: "Marriage Records",
       },
       {
-        to: "/SecretaryDashboard/Account-Management",
+        to: "/Baptism",
         label: "Baptismal Records",
       },
       {
-        to: "/SecretaryDashboard/Account-Management",
+        to: "/Burial",
         label: "Burial Records",
       },
-      { to: "/SecretaryDashboard", label: "Confirmation Records" },
+      { to: "/Confirmation", label: "Confirmation Records" },
     ],
   },
   {
@@ -49,6 +49,11 @@ export const menuData = [
     to: "/SecretaryDashboard/Account-Management",
     label: "Logs and Audit Trails",
     icon: "dvr",
+  },
+  {
+    to: "/PriestSetup",
+    label: "Priest Setup",
+    icon: "settings",
   },
 ];
 /** Financial Module */
