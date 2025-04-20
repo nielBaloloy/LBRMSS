@@ -128,12 +128,35 @@ const paymentSetList = (load) => {
   console.log(load);
   return new Promise((resolve, reject) => {
     api
-      .get("financial_page_service_request.php", { params: { type: load } })
+      .get("financial_page_service_request.php", {
+        params: { type: load, feeType: 0 },
+      })
       .then((response) => {
         if (response.data.Status == "Success") {
           PaymentList.value = response.data.data;
         } else {
           PaymentList.value = response.data.data;
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+const certPaymentList = ref([]);
+const certpaymentSetList = (load) => {
+  console.log(load);
+  return new Promise((resolve, reject) => {
+    api
+      .get("financial_page_service_request_cert.php", {
+        params: { type: load, feeType: 1 },
+      })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          certPaymentList.value = response.data.data;
+        } else {
+          certPaymentList.value = response.data.data;
         }
       })
       .catch((error) => {
@@ -151,4 +174,6 @@ export {
   FilterRange,
   paymentSetList,
   PaymentList,
+  certpaymentSetList,
+  certPaymentList,
 };

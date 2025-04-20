@@ -26,6 +26,7 @@
         $apiParameter = (isset($arr['type']['status']) ? $arr['type']['status'] : "1" );
         
         $filter  = (isset($arr['type']) ? $arr['type'] :"");
+        $feeType  = (isset($arr['feeType']) ? $arr['feeType'] :"0");
        
         $filterRange = "";
         if (!empty($filter['dateFrom']) && !empty($filter['dateTo'])) {
@@ -45,7 +46,7 @@
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client
                                                  LEFT JOIN lbrmss_event_fee ef ON ef.event_id = a.event_id
-                                                WHERE a.remark = '1' AND ef.status = '$apiParameter' $filterRange 
+                                                WHERE a.remark = '1' AND fee_type = '$feeType'  AND ef.status = '$apiParameter' $filterRange 
                                                 ORDER BY ef.reference_no DESC");
 
       if(count($Display_Pending) > 0){

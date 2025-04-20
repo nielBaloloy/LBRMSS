@@ -187,6 +187,18 @@
                 </q-item-section>
                 <q-item-section>Request Print</q-item-section>
               </q-item>
+              <q-item clickable v-close-popup @click="changeRecord(row)">
+                <q-item-section avatar>
+                  <q-icon name="restore_page" color="print" />
+                </q-item-section>
+                <q-item-section>Change of Record</q-item-section>
+              </q-item>
+              <q-item clickable v-close-popup @click="goodMoral(row)">
+                <q-item-section avatar>
+                  <q-icon name="description" color="print" />
+                </q-item-section>
+                <q-item-section>Print Good Moral</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup @click="deleteRow(row)">
                 <q-item-section avatar>
                   <q-icon name="delete" color="negative" />
@@ -198,12 +210,32 @@
         </q-td>
       </template>
     </q-table>
+    <q-dialog v-model="showPdf">
+      <q-card style="width: 90vw; max-width: 900px; height: 90vh">
+        <q-bar>
+          <div class="text-h6">PDF Preview</div>
+          <q-space />
+          <q-btn dense flat icon="close" @click="showPdf = false" />
+        </q-bar>
+        <q-separator />
+        <q-card-section class="q-pa-none" style="height: 100%">
+          <iframe
+            :src="pdfUrl"
+            width="100%"
+            height="100%"
+            style="border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </div>
 </template>
 
 <script>
 import { ref, computed, watch, defineEmits } from "vue";
+import { useQuasar } from "quasar";
 import { FilterRange } from "src/composables/SeviceData";
+import { baseUrl } from "src/data/menuData.js";
 import { api } from "src/boot/axios";
 export default {
   props: {
@@ -216,6 +248,9 @@ export default {
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
+    const showPdf = ref(false);
+    const pdfUrl = ref("");
+    const $q = useQuasar();
     const pagination = ref({
       sortBy: "Client", // Default sorting field
       descending: false,
@@ -227,7 +262,322 @@ export default {
       emit("edit", row);
     }
     function print(x) {
-      const eventId = x["all"].event_id;
+      $q.dialog({
+        title: "Print Certificate",
+        message: "Proceed to the Cashier to settle the payments?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => {
+          var id = x.EventServiceID;
+          var date = x["Date"];
+          //mariiage
+          var fullname =
+            x["all"]["groom_fname"] +
+            " " +
+            x["all"]["groom_mname"] +
+            " " +
+            x["all"]["groom_lname"] +
+            " and " +
+            x["all"]["bride_fname"] +
+            " " +
+            x["all"]["bride_mname"] +
+            " " +
+            x["all"]["bride_lname"];
+          //baptism
+          var baptismfullname =
+            x["all"]["bapt_fname"] +
+            " " +
+            x["all"]["bapt_mname"] +
+            " " +
+            x["all"]["bapt_lname"];
+          //confirmation
+          var confirmationfullname =
+            x["all"]["con_fname"] +
+            " " +
+            x["all"]["con_mname"] +
+            " " +
+            x["all"]["con_lname"];
+          //burial
+          var Burialfullname =
+            x["all"]["bu_fname"] +
+            " " +
+            x["all"]["bu_mname"] +
+            " " +
+            x["all"]["bu_lname"];
+          var priest = x["Assigned_Priest"];
+          var Service = x["Service"];
+          //setup payment request
+          api
+            .post("certificationpayment.php", { x })
+            .then((response) => {
+              console.log(response);
+              if (response.data.Status == "Success") {
+                $q.notify({
+                  type: "positive",
+                  message: "Payment Request Sent!",
+                });
+              }
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+          switch (id) {
+            case 1:
+              console.log(baseUrl);
+              pdfUrl.value =
+                baseUrl +
+                "ChangeofRecordPrint.php?date=" +
+                encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+                "&name=" +
+                encodeURIComponent(fullname) +
+                "&priest=" +
+                encodeURIComponent(priest) +
+                "&service=" +
+                encodeURIComponent(Service); // Encoding the fullname
+              showPdf.value = true;
+              break;
+            case 2:
+              pdfUrl.value =
+                baseUrl +
+                "baptismalCertificate.php?date=" +
+                encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+                "&name=" +
+                encodeURIComponent(baptismfullname) +
+                "&priest=" +
+                encodeURIComponent(priest) +
+                "&service=" +
+                encodeURIComponent(Service); // Encoding the fullname
+              showPdf.value = true;
+              break;
+            case 3:
+              console.log(confirmationfullname);
+              pdfUrl.value =
+                baseUrl +
+                "confirmationCertificate.php?date=" +
+                encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+                "&name=" +
+                encodeURIComponent(confirmationfullname) +
+                "&priest=" +
+                encodeURIComponent(priest) +
+                "&service=" +
+                encodeURIComponent(Service); // Encoding the fullname
+              showPdf.value = true;
+              break;
+            case 4:
+              pdfUrl.value =
+                "http://localhost/LBRMSS/Server/API/BurialCert.php?date=" +
+                encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+                "&name=" +
+                encodeURIComponent(Burialfullname) +
+                "&priest=" +
+                encodeURIComponent(priest) +
+                "&service=" +
+                encodeURIComponent(Service); // Encoding the fullname
+              showPdf.value = true;
+              break;
+          }
+        })
+
+        .onCancel(() => {
+          // console.log('>>>> Cancel')
+        });
+    }
+
+    function changeRecord(x) {
+      console.log(x);
+      var id = x.EventServiceID;
+      var date = x["Date"];
+      //mariiage
+      var fullname =
+        x["all"]["groom_fname"] +
+        " " +
+        x["all"]["groom_mname"] +
+        " " +
+        x["all"]["groom_lname"] +
+        " and " +
+        x["all"]["bride_fname"] +
+        " " +
+        x["all"]["bride_mname"] +
+        " " +
+        x["all"]["bride_lname"];
+      //baptism
+      var baptismfullname =
+        x["all"]["bapt_fname"] +
+        " " +
+        x["all"]["bapt_mname"] +
+        " " +
+        x["all"]["bapt_lname"];
+      //confirmation
+      var confirmationfullname =
+        x["all"]["con_fname"] +
+        " " +
+        x["all"]["con_mname"] +
+        " " +
+        x["all"]["con_lname"];
+      //burial
+      var Burialfullname =
+        x["all"]["bu_fname"] +
+        " " +
+        x["all"]["bu_mname"] +
+        " " +
+        x["all"]["bu_lname"];
+      var priest = x["Assigned_Priest"];
+      var Service = x["Service"];
+
+      switch (id) {
+        case 1:
+          pdfUrl.value =
+            baseUrl +
+            "ChangeofRecordPrint.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(fullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 2:
+          pdfUrl.value =
+            baseUrl +
+            "ChangeofRecordPrint.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(baptismfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 3:
+          console.log(confirmationfullname);
+          pdfUrl.value =
+            baseUrl +
+            "ChangeofRecordPrint.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(confirmationfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 4:
+          pdfUrl.value =
+            baseUrl +
+            "BurialCert.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(Burialfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+      }
+    }
+
+    // good mmoral
+    function goodMoral(x) {
+      console.log(x);
+      var id = x.EventServiceID;
+      var date = x["Date"];
+      //mariiage
+      var fullname =
+        x["all"]["groom_fname"] +
+        " " +
+        x["all"]["groom_mname"] +
+        " " +
+        x["all"]["groom_lname"] +
+        " and " +
+        x["all"]["bride_fname"] +
+        " " +
+        x["all"]["bride_mname"] +
+        " " +
+        x["all"]["bride_lname"];
+      //baptism
+      var baptismfullname =
+        x["all"]["bapt_fname"] +
+        " " +
+        x["all"]["bapt_mname"] +
+        " " +
+        x["all"]["bapt_lname"];
+      //confirmation
+      var confirmationfullname =
+        x["all"]["con_fname"] +
+        " " +
+        x["all"]["con_mname"] +
+        " " +
+        x["all"]["con_lname"];
+      //burial
+      var Burialfullname =
+        x["all"]["bu_fname"] +
+        " " +
+        x["all"]["bu_mname"] +
+        " " +
+        x["all"]["bu_lname"];
+      var priest = x["Assigned_Priest"];
+      var Service = x["Service"];
+
+      switch (id) {
+        case 1:
+          pdfUrl.value =
+            baseUrl +
+            "goodMoral.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(fullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 2:
+          pdfUrl.value =
+            baseUrl +
+            "goodMoral.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(baptismfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 3:
+          console.log(confirmationfullname);
+          pdfUrl.value =
+            baseUrl +
+            "goodMoral.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(confirmationfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+          break;
+        case 4:
+          pdfUrl.value =
+            baseUrl +
+            "goodMoral.php?date=" +
+            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+            "&name=" +
+            encodeURIComponent(Burialfullname) +
+            "&priest=" +
+            encodeURIComponent(priest) +
+            "&service=" +
+            encodeURIComponent(Service); // Encoding the fullname
+          showPdf.value = true;
+      }
     }
     function deleteRow(row) {
       // $q.dialog({
@@ -331,6 +681,10 @@ export default {
       print,
       filters,
       fixed: ref(false),
+      showPdf,
+      pdfUrl,
+      changeRecord,
+      goodMoral,
     };
   },
 };

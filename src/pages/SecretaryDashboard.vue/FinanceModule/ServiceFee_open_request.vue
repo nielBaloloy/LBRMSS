@@ -350,6 +350,7 @@ const resetForm = () => {
 watch(
   () => props.feeRows,
   (newVal) => {
+    // console.log(newVal[0]);
     if (newVal[0].service_fee_id == 1 || newVal[0].service_fee_id == 4) {
       downpaymentCon.value = true;
     }

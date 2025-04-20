@@ -111,6 +111,13 @@ const routes = [
         "../pages/SecretaryDashboard.vue/EventScheduler/PriestSchedule_mian.vue"
       ),
   },
+  // {
+  //   path: "/Request_Certificate",
+  //   component: () =>
+  //     import(
+  //       "../pages/SecretaryDashboard.vue/ServiceModule/CertificationRequest.vue"
+  //     ),
+  // },
   //ServicePayment
   // Always leave this as last one,
   // but you can also remove it

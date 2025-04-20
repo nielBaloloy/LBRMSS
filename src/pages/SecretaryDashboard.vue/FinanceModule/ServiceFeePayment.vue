@@ -129,7 +129,7 @@
                 }}</q-badge>
               </div>
             </q-tab>
-            <q-tab name="certificate" label="Certificate">
+            <q-tab name="certificate" label="Certificate" @click="loadCert">
               <q-badge color="red" floating>2</q-badge>
             </q-tab>
           </q-tabs>
@@ -152,8 +152,14 @@
             </q-tab-panel>
 
             <q-tab-panel name="certificate">
-              <div class="text-h6">Alarms</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+              <SSR_datatable
+                :columns="columns"
+                :rowsData="certPaymentList"
+                :getStatusColor="getStatusColor"
+                :getStatusIcon="getStatusIcon"
+                @filterData="applyDateTimeFilter"
+                @openReq="editForm"
+              />
             </q-tab-panel>
 
             <q-tab-panel name="movies">
@@ -210,6 +216,8 @@ import {
   Data,
   paymentSetList,
   PaymentList,
+  certpaymentSetList,
+  certPaymentList,
 } from "src/composables/SeviceData.js";
 import { getMarriage, MarraigeData } from "src/composables/Marriage.js";
 import OpenRequestModal from "src/pages/SecretaryDashboard.vue/FinanceModule/ServiceFee_open_request.vue";
@@ -240,6 +248,7 @@ export default defineComponent({
       selectedService.value = data;
 
       var id = data["all"]["service_id"];
+      var feeType = data["all"]["fee_type"];
       var type = data["all"]["type"];
       var category = data["burial_option"]["burial_option"]
         ? data["burial_option"]["burial_option"]
@@ -446,8 +455,13 @@ export default defineComponent({
     };
 
     /** Load Counter */
-
+    function loadCert() {
+      certpaymentSetList(1);
+    }
     return {
+      loadCert,
+      certpaymentSetList,
+      certPaymentList,
       pendingService_Marriage,
       getStatusIcon,
       applyDateTimeFilter,

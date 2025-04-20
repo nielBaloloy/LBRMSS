@@ -9,7 +9,7 @@ export const menuData = [
     icon: "event",
     children: [
       { to: "/Services", label: "Ceremonial Services" },
-      { to: "/Dashboard", label: "Certification Request" },
+      // { to: "/Request_Certificate", label: "Certification Request" },
     ],
   },
   {
@@ -95,3 +95,4 @@ export const menuData2 = [
     ],
   },
 ];
+export const baseUrl = "http://localhost/LBRMSS/Server/API/";
