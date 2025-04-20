@@ -17,7 +17,7 @@ export const menuData = [
     icon: "event",
     children: [
       { to: "/EventSchedule", label: "Scheduled Events" },
-      { to: "/SecretaryDashboard", label: "Priest Schedule" },
+      { to: "/Priest_Schedule", label: "Priest Schedule" },
       { to: "/MassManagement", label: "Mass" },
     ],
   },

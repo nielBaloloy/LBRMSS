@@ -28,7 +28,7 @@
         LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
         LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
         LEFT JOIN lbrmss_burial mm ON mm.event_id =a.event_id
-        LEFT JOIN lbrmss_burial_person mg ON mg.con_event_id = mm.event_id 
+        LEFT JOIN lbrmss_burial_person mg ON mg.event_id = mm.event_id 
       
         LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
         WHERE a.remark = '1' AND a.service_id = '4' AND a.event_progress = '2' GROUP BY a.event_id
@@ -54,8 +54,6 @@
           ];
 
           }
-
-
           echo json_encode(array("Status"=>"Success", "data"=>$pendingEvents));
           }else{
           echo json_encode(array("Status"=>"Failed", "data"=>[]));

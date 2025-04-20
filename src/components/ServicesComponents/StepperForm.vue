@@ -257,6 +257,7 @@
               </q-input>
             </div>
             <q-btn
+              v-show="openPriestList"
               color="primary"
               icon="list"
               @click="massDialog = true"
@@ -411,7 +412,7 @@
 
           <div style="max-width: 100%" v-show="Description_Field">
             Description
-            <q-input v-model="text" outlined type="textarea" />
+            <q-input v-model="formData.Description" outlined type="textarea" />
           </div>
 
           <!-- Assigned Priest -->
@@ -3044,7 +3045,7 @@ export default defineComponent({
     let stepTitle2 = ref();
     let Address_A = ref(false);
     let Description_Field = ref(false);
-
+    let openPriestList = ref(false);
     let customField = (res) => {
       console.log(res);
       // change this according to selected services
@@ -3110,6 +3111,7 @@ export default defineComponent({
         MassUpload.value = false;
         stepper2panel.value = false;
         Cfor.value = false;
+        openPriestList.value = true;
         Description_Field.value = true;
         Preffered_Priest.value = true;
         venue.value = true;
@@ -3297,13 +3299,13 @@ export default defineComponent({
     };
 
     let setAddress = (venueType, formData) => {
-      if (venueType == "Church") {
+      if (venueType == "1") {
         formData.Venue = "St Raphael Church";
         Address_A.value = false;
-      } else if (venueType == "Pastoral") {
+      } else if (venueType == "2") {
         formData.Venue = "Pastoral Center";
         Address_A.value = false;
-      } else if (venueType === "Outside") {
+      } else if (venueType === "3") {
         formData.Venue = null;
         Address_A.value = true;
       } else {
@@ -4294,6 +4296,7 @@ export default defineComponent({
       Barangay: null,
       Requirements: null,
     });
+
     let Interment = ref([
       "Legazpi Cemetery",
       "Church Cemetery",
@@ -4569,9 +4572,36 @@ export default defineComponent({
           }
           // sendclose(false);
 
-          if (formData.value.Service == "Blessing") {
-            formData.value.EventScheduleID = randnum.value;
-            send_blessing(formData.value);
+          if (formData.value.Service == "6") {
+            api
+              .post("BlessingAPI.php", {
+                eventData: formData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message:
+                      "This schedule is already taken! Please choose another date or time.",
+                    color: "red-6",
+                    position: "bottom-right",
+                  });
+                }
+              })
+              .catch((error) => {
+                $q.notify({
+                  message: "Server Error",
+                  color: "red-6",
+                  position: "bottom-right",
+                });
+                reject(error);
+              });
           }
 
           if (formData.value.Service == "Misa") {
@@ -4628,33 +4658,6 @@ export default defineComponent({
       console.warn("Rejected files:", files);
     };
 
-    const massSchedules = ref([
-      {
-        id: 1,
-        date: "2025-04-14",
-        timeFrom: "06:00",
-        timeTo: "07:00",
-        priest: "Fr. John Dela Cruz",
-        language: "English",
-      },
-      {
-        id: 2,
-        date: "2025-04-15",
-        timeFrom: "08:00",
-        timeTo: "09:00",
-        priest: "Fr. Pedro Santos",
-        language: "Bicol",
-      },
-      {
-        id: 3,
-        date: "2025-04-15",
-        timeFrom: "17:00",
-        timeTo: "18:00",
-        priest: "Fr. Mario Alonzo",
-        language: "English",
-      },
-    ]);
-
     const massColumns = [
       { name: "date", label: "Date", align: "left", field: "date" },
       { name: "timeFrom", label: "From", align: "center", field: "time_from" },
@@ -4687,7 +4690,7 @@ export default defineComponent({
       massDialog,
       selectMassSchedule,
       massColumns,
-      massSchedules,
+
       uploadFiles,
       onRejected,
       // Stepper
@@ -4813,6 +4816,7 @@ export default defineComponent({
       B_requirementsList,
       B_reqstats,
       B_checkAllPropertiesTrue,
+      openPriestList,
       // =========================Confirmation Data=========================//
       ConfirmationData,
       NationalityList,

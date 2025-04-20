@@ -104,6 +104,13 @@ const routes = [
     component: () =>
       import("../pages/SecretaryDashboard.vue/Tools/PriestSetup.vue"),
   },
+  {
+    path: "/Priest_Schedule",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/EventScheduler/PriestSchedule_mian.vue"
+      ),
+  },
   //ServicePayment
   // Always leave this as last one,
   // but you can also remove it

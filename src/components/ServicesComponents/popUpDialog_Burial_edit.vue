@@ -669,6 +669,7 @@ import {
   onMounted,
 } from "vue";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
+import { getSerivce, Data } from "src/composables/SeviceData.js";
 export default defineComponent({
   props: {
     editables: { type: Array, default: () => [] },
@@ -969,6 +970,13 @@ export default defineComponent({
             .put("BaptismApi.php", { payload })
             .then((response) => {
               console.log(response);
+              if (response.data.Status == "Success") {
+                $q.notify({
+                  type: "positive",
+                  message: "Updated successfully!",
+                });
+              }
+              getSerivce(1);
             })
             .catch((error) => {
               console.log(error);

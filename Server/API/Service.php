@@ -40,7 +40,7 @@
 
 
 
-        $Display_Pending = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
+        $Display_Pending = $this->db->rawQuery("SELECT  *, a.service_id as mainid,a.event_id as maineventid FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
                                                 LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
@@ -62,7 +62,7 @@
             $icon = "check_circle"; // ✅ Done
             $color = "green";
         }
-        $ev_id = $event['event_id'];
+        $ev_id = $event['maineventid'];
         $this->db->where('remark', '1');
         $this->db->where('event_id' ,$ev_id);
         $hasfee  =$this->db->has('lbrmss_event_fee');
@@ -105,10 +105,11 @@
         }else{
           $getSeminar = [];
         }
+       
           $pendingEvents[] = [
             "all" => $event,
             "E_ID" => $event['event_id'],
-            "EventServiceID" => $event['service_id'],
+            "EventServiceID" => $event['mainid'],
             "Service" => $event['event_name'],
             "Client" => $event['name'],
             "Type" => ($event['type'] == '1') ? "Mass" : "Special",
@@ -129,7 +130,7 @@
 
 
               $lastIndex = count($pendingEvents) - 1; 
-              switch ($event['service_id']) {
+              switch ($event['mainid']) {
                 case 1:
                   $this->db->where('remark', '1');
                   $this->db->where('b_event_id', $ev_id);
@@ -204,6 +205,14 @@
                   $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
                   $pendingEvents[$lastIndex]['Additional'] = !empty($getSeminar) ? $getSeminar : [];
                   $pendingEvents[$lastIndex]['burial'] = !empty($getBurial[0]) ? $getBurial[0] : [];
+                  break;
+                  case 6:
+                 
+                
+                    $this->db->where('event_id', $ev_id);
+                    $getBlessing = $this->db->get("blessing_requests");
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : "N/A";
+                  $pendingEvents[$lastIndex]['blessing'] = !empty($getBlessing[0]) ? $getBlessing[0] : [];
                 default:
                     // You can handle the case where event_id is not 1, 2, or 3
                     break;

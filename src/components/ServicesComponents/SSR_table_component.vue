@@ -196,7 +196,17 @@
                 </q-item-section>
                 <q-item-section>Edit</q-item-section>
               </q-item>
-
+              <q-item
+                v-if="row.EventProgress == 'Scheduled'"
+                clickable
+                v-close-popup
+                @click="deleteRow(row)"
+              >
+                <q-item-section avatar>
+                  <q-icon name="cancel" color="warning" />
+                </q-item-section>
+                <q-item-section>Cancel</q-item-section>
+              </q-item>
               <q-item clickable v-close-popup @click="deleteRow(row)">
                 <q-item-section avatar>
                   <q-icon name="delete" color="negative" />
@@ -269,6 +279,14 @@
         <editBurialDialog :editables="editObject" @close-dialog="closeDialog" />
       </div>
     </q-dialog>
+    <q-dialog v-model="Blessing" style="width: 950px">
+      <div class="q-gutter-y-md" style="max-width: 90vw">
+        <editBlessingDialog
+          :editables="editObject"
+          @close-dialog="closeDialog"
+        />
+      </div>
+    </q-dialog>
   </div>
 </template>
 
@@ -279,6 +297,7 @@ import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confi
 import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMariageEdit.vue";
 import editBaptismDialog from "src/components/ServicesComponents/popUpDialogBaptismEdit.vue";
 import editBurialDialog from "src/components/ServicesComponents/popUpDialog_Burial_edit.vue";
+import editBlessingDialog from "src/components/ServicesComponents/popUpDialog_Blessing_edit.vue";
 export default defineComponent({
   props: {
     title: { type: String, default: "Table" },
@@ -293,6 +312,7 @@ export default defineComponent({
     editMrriageDialog,
     editBaptismDialog,
     editBurialDialog,
+    editBlessingDialog,
   },
   setup(props, { emit }) {
     const tableRef = ref();
@@ -302,6 +322,7 @@ export default defineComponent({
     let MrriageDialog = ref(false);
     let Baptism = ref(false);
     let Burial = ref(false);
+    let Blessing = ref(false);
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -316,7 +337,7 @@ export default defineComponent({
     function editRow(row) {
       console.log("Edit row:", row);
 
-      var service = row.all.service_id;
+      var service = row.all.mainid;
       switch (service) {
         case 1:
           editObject.value = [];
@@ -337,6 +358,11 @@ export default defineComponent({
           editObject.value = [];
           editObject.value.push(row);
           Burial.value = true;
+          break;
+        case 6:
+          editObject.value = [];
+          editObject.value.push(row);
+          Blessing.value = true;
           break;
         default:
           break;
@@ -452,6 +478,7 @@ export default defineComponent({
       Editdialog,
       MrriageDialog,
       Baptism,
+      Blessing,
     };
   },
 });

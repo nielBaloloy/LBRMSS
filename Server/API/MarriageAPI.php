@@ -333,7 +333,8 @@
 
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
-        
+        $requirementStatus = $arr['payload']['statusReq'];
+      
         $event = $arr['payload']['event']['all'];
         $groom = $arr['payload']['groom'];
         $bride = $arr['payload']['bride'];
@@ -343,13 +344,7 @@
         $seminar = $arr['payload']['seminar'];
 
         $event_id =$event['event_id'];
-        // echo var_dump("event",$Event);
-        //update event
-        // $UpdateEvent = Array (
-         
-        // );
-        // $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
-
+    
         $UpdateEvent = Array(
          "event_id"            => $event['event_id'],
           "service_id"          => $event['service_id'],
@@ -365,7 +360,7 @@
           "venue_type"          => $event['venue_type'],
           "priest_assigned_id"  => $event['priest_assigned_id'],
           "event_progress"      => $event['event_progress'],
-          "requirement_status"  => $event['requirement_status'],
+          "requirement_status"  => ($requirementStatus == "complete") ? 1 : 0 ,
           "created_at"          => $event['created_at'],
           "created_by"          => $event['created_by'],
           "remark"              => $event['remark']
@@ -374,13 +369,14 @@
         $updateEvents = $this->db->update('lbrmss_event_table_main',$UpdateEvent);
 
         $update_main =Array(
-          "mid" => '',
+          
           "event_id" =>   $event['event_id'],
           "assigned_priest" => $event['priest_id'],
           "remark" => '1'
         );
         $this->db->where('event_id',$event_id);
         $updateConMain = $this->db->update('lbrmss_mariage_main',$update_main);
+
         $updateGroom = array(
           "g_id"           => $groom['g_id'],
           "g_event_id"     => $groom['g_event_id'],
@@ -489,11 +485,11 @@
 
         $req_id = $requirements['req_id'];
                 
-        echo var_dump($RequirementsData);
+        // echo var_dump($RequirementsData);
         $this->db->where('req_id',$req_id);
         $insertRequirement = $this->db->update('lbrmss_m_requirements', $RequirementsData);
         
-
+        echo json_encode(array("msg"=>""));
   
 
     }

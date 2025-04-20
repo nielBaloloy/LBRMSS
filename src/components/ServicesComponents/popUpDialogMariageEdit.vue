@@ -141,7 +141,10 @@
                         transition-show="scale"
                         transition-hide="scale"
                       >
-                        <q-time v-model="event.Time_from">
+                        <q-time
+                          v-model="event.Time_from"
+                          @update:model-value="durationInMinutesEvent(event)"
+                        >
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
@@ -175,8 +178,8 @@
                         transition-hide="scale"
                       >
                         <q-time
-                          v-model="event.TimeTo"
-                          @update:model-value="durationInMinutesEvent(formData)"
+                          v-model="event.Time_to"
+                          @update:model-value="durationInMinutesEvent(event)"
                         >
                           <div class="row items-center justify-end">
                             <q-btn
@@ -193,7 +196,7 @@
                 </q-input>
               </div>
 
-              <div class="timeDurat hidden">
+              <div class="timeDurat">
                 <!-- {{ event.all.duration }} -->
                 {{ (event.all.duration = timeDurationEvent) }}
               </div>
@@ -805,9 +808,14 @@
                 </tbody>
               </table>
             </div>
+
+            <q-banner class="q-mt-md" dense>
+              Requirements Status: {{ RequirementStatus }}
+            </q-banner>
             <!-- <div class="Status" style="display: none">
                   {{ C_requirementsList }}
                   {{ C_reqstats }}
+                   
                   {{ (ConfirmationData.Requirement = C_requirementsList) }}
   
                   <div class="status" v-if="C_reqstats == 0">
@@ -1087,12 +1095,12 @@ export default defineComponent({
     const durationInMinutesEvent = (payload) => {
       console.log(payload);
       setTimeout(() => {
-        if (payload.TimeFrom == null || payload.TimeTo == null) {
+        if (payload.Time_from == null || payload.Time_to == null) {
           timeDurationEvent.value = 0;
           return;
         } else {
-          const start = moment(payload.TimeFrom, "HH:mm");
-          const end = moment(payload.TimeTo, "HH:mm");
+          const start = moment(payload.Time_from, "HH:mm");
+          const end = moment(payload.Time_to, "HH:mm");
           const durationTime = moment.duration(end.diff(start));
           timeDurationEvent.value = durationTime.asMinutes();
           console.log("time in minutes", timeDurationEvent.value);
@@ -1313,6 +1321,18 @@ export default defineComponent({
         seminar.field6 = Math.max(end - start, 0);
       }
     };
+    let RequirementStatus = ref("incomplete");
+    watch(
+      C_requirementsList,
+      (newVal) => {
+        const allChecked = Object.entries(newVal)
+          .filter(([key]) => key !== "req_id") // ignore req_id
+          .every(([, value]) => value === "true");
+
+        RequirementStatus.value = allChecked ? "complete" : "incomplete";
+      },
+      { deep: true }
+    );
 
     /** ================= edit variables ================================ */
     let event = ref([
@@ -1347,6 +1367,7 @@ export default defineComponent({
         bride: bride.value[0],
         requirements: C_requirementsList.value,
         seminar: Schedulecards.value,
+        statusReq: RequirementStatus.value,
       };
 
       console.log("Final Payload:", payload);
@@ -1365,6 +1386,13 @@ export default defineComponent({
             .put("MarriageAPI.php", { payload })
             .then((response) => {
               console.log(response);
+              if (response.data.msg == "") {
+                $q.notify({
+                  type: "positive",
+                  message: "Updated successfully!",
+                });
+                emit("closeDialog");
+              }
             })
             .catch((error) => {
               console.log(error);
@@ -1376,8 +1404,40 @@ export default defineComponent({
           emit("closeDialog");
         });
     };
+    watch(
+      () => [event.value[0].Time_from, event.value[0].Time_to],
+      ([from, to]) => {
+        if (from && to) {
+          const [fromH, fromM] = from.split(":").map(Number);
+          const [toH, toM] = to.split(":").map(Number);
+
+          const fromDate = new Date();
+          fromDate.setHours(fromH, fromM, 0);
+
+          const toDate = new Date();
+          toDate.setHours(toH, toM, 0);
+
+          let duration = (toDate - fromDate) / 60000; // duration in minutes
+
+          if (duration < 0) duration += 1440; // handle overnight time
+
+          const hours = Math.floor(duration / 60);
+          const minutes = duration % 60;
+          const formattedDuration = `${hours}h ${minutes}m`;
+
+          event.value[0].all.duration = formattedDuration;
+
+          // ✅ Log the duration
+          console.log("Duration updated:", formattedDuration);
+        } else {
+          event.value[0].all.duration = "";
+          console.log("Duration reset: Missing time input");
+        }
+      }
+    );
 
     return {
+      RequirementStatus,
       bride,
       groom,
       events,
