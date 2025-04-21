@@ -3,7 +3,7 @@ import { ref, readonly } from "vue";
 import { api } from "../boot/axios";
 
 const pendingService_Marriage = ref([]);
-
+const pendingService_Cert = ref([]);
 /**
  * This function accepts parameters of an array then
  * set the passed array to unitWork data.
@@ -31,4 +31,30 @@ const pendingCounter_Marriage = (serviceId) => {
   });
 };
 
-export { pendingCounter_Marriage, pendingService_Marriage };
+const pendingCounter_Cert = (serviceId) => {
+  return new Promise((resolve, reject) => {
+    api
+      .get("pendingCertificateCounter.php", {
+        params: { service: serviceId },
+      })
+      .then((response) => {
+        if (response.data.Status == "Success") {
+          console.log(response.data.data);
+          pendingService_Cert.value = response.data.data[0].counter;
+        } else {
+          console.log(response.data.data);
+          pendingService_Cert.value = [];
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+};
+
+export {
+  pendingCounter_Marriage,
+  pendingService_Marriage,
+  pendingCounter_Cert,
+  pendingService_Cert,
+};

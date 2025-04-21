@@ -130,7 +130,11 @@
               </div>
             </q-tab>
             <q-tab name="certificate" label="Certificate" @click="loadCert">
-              <q-badge color="red" floating>2</q-badge>
+              <div class="counter" v-if="pendingService_Marriage > 0">
+                <q-badge color="red" style="margin-left: 30px" floating>{{
+                  pendingService_Cert
+                }}</q-badge>
+              </div>
             </q-tab>
           </q-tabs>
 
@@ -201,7 +205,14 @@
 </template>
 
 <script>
-import { ref, defineComponent, nextTick, onMounted, watchEffect } from "vue";
+import {
+  ref,
+  defineComponent,
+  nextTick,
+  onMounted,
+  watch,
+  watchEffect,
+} from "vue";
 import { useQuasar, SessionStorage, QSpinnerFacebook } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import SSR_datatable from "src/components/ServicesComponents/SSR_table_component_v3.vue";
@@ -210,6 +221,8 @@ import { menuData, menuData2 } from "src/data/menuData";
 import {
   pendingCounter_Marriage,
   pendingService_Marriage,
+  pendingCounter_Cert,
+  pendingService_Cert,
 } from "src/composables/counterpendingFee";
 import {
   getSerivce,
@@ -229,7 +242,8 @@ export default defineComponent({
     onMounted(async () => {
       await nextTick();
       pendingCounter_Marriage(1);
-      await paymentSetList(1); // Ensure fetch completes before proceeding
+      pendingCounter_Cert(1);
+      await paymentSetList(1, 1); // Ensure fetch completes before proceeding
       dataLoaded.value = true; // ✅ Mark as loaded
     });
 
@@ -249,6 +263,7 @@ export default defineComponent({
 
       var id = data["all"]["service_id"];
       var feeType = data["all"]["fee_type"];
+
       var type = data["all"]["type"];
       var category = data["burial_option"]["burial_option"]
         ? data["burial_option"]["burial_option"]
@@ -259,8 +274,14 @@ export default defineComponent({
           .get("request_fee.php", { params: { serviceId: id, type: 3 } })
           .then((response) => {
             if (response.data.Status === "Success") {
-              console.log("feelist", response.data.fee);
-              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("feelist", feeType);
+              if (feeType == 1) {
+                feeRows.value = response.data.fee;
+                console.log("feedata", response.data.fee);
+              }
+              feeRows.value = response.data.fee;
+              console.log("feedata", response.data.fee);
+              // ✅ Use `.value`
               console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
             } else {
               console.log("No fee data found");
@@ -275,8 +296,14 @@ export default defineComponent({
           .get("request_fee.php", { params: { serviceId: id, type: 4 } })
           .then((response) => {
             if (response.data.Status === "Success") {
-              console.log("feelist", response.data.fee);
-              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("feelist", feeType);
+              if (feeType == 1) {
+                feeRows.value = response.data.fee;
+                console.log("feedata", response.data.fee);
+              } else {
+                feeRows.value = response.data.fee;
+                console.log("feedata", response.data.fee);
+              }
               console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
             } else {
               console.log("No fee data found");
@@ -291,8 +318,17 @@ export default defineComponent({
           .get("request_fee.php", { params: { serviceId: id, type: type } })
           .then((response) => {
             if (response.data.Status === "Success") {
-              console.log("feelist", response.data.fee);
-              feeRows.value = response.data.fee; // ✅ Use `.value`
+              console.log("feelist", feeType);
+              console.log("feedata", response.data.fee);
+              if (feeType == 1) {
+                feeRows.value = response.data.fee.filter((fee) =>
+                  fee.name.toLowerCase().includes("certificate")
+                );
+                console.log("feedROWata", feeRows.value);
+              } else {
+                feeRows.value = response.data.fee;
+                console.log("feedata", response.data.fee);
+              }
               console.log("Updated feeRows:", feeRows.value); // ✅ Log after assignment
             } else {
               console.log("No fee data found");
@@ -451,7 +487,19 @@ export default defineComponent({
     };
     const applyDateTimeFilter = (filters) => {
       console.log("Filtering with:", filters);
-      paymentSetList(filters);
+
+      watch(
+        () => tab,
+        (newVal) => {
+          console.log("tab", newVal.value);
+          if (newVal.value == "certificate") {
+            paymentSetList(filters, 2);
+          } else {
+            paymentSetList(filters, 1);
+          }
+        },
+        { immediate: true }
+      );
     };
 
     /** Load Counter */
@@ -463,6 +511,7 @@ export default defineComponent({
       certpaymentSetList,
       certPaymentList,
       pendingService_Marriage,
+      pendingService_Cert,
       getStatusIcon,
       applyDateTimeFilter,
       getStatusColor,

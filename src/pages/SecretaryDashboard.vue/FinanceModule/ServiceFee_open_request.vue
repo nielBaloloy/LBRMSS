@@ -6,7 +6,14 @@
 
     <q-form @submit="submitForm" ref="marriageForm">
       <q-card-section>
-        <q-table flat bordered :rows="feeRows" :columns="columns" hide-bottom>
+        <q-table
+          flat
+          bordered
+          :rows="feeRows"
+          :columns="columns"
+          hide-bottom
+          :pagination="pagination"
+        >
           <template v-slot:body="props">
             <q-tr :props="props">
               <q-td>
@@ -303,23 +310,24 @@ const submitForm = () => {
             ...payment_info.value,
             ...fees.value,
           };
-          api
-            .post("ServiceFee_Requset_save.php", payload)
-            .then((response) => {
-              if (response.data.message == "") {
-                $q.notify({
-                  type: "positive",
-                  message: "Payments submitted successfully!",
-                });
-              }
-            })
-            .catch((error) => {
-              reject(error);
-              $q.notify({
-                type: "negative",
-                message: "Network Error",
-              });
-            });
+          console.log(payload);
+          // api
+          //   .post("ServiceFee_Requset_save.php", payload)
+          //   .then((response) => {
+          //     if (response.data.message == "") {
+          //       $q.notify({
+          //         type: "positive",
+          //         message: "Payments submitted successfully!",
+          //       });
+          //     }
+          //   })
+          //   .catch((error) => {
+          //     reject(error);
+          //     $q.notify({
+          //       type: "negative",
+          //       message: "Network Error",
+          //     });
+          //   });
 
           emit("closeDialog");
         })
@@ -350,13 +358,19 @@ const resetForm = () => {
 watch(
   () => props.feeRows,
   (newVal) => {
-    // console.log(newVal[0]);
+    console.log(newVal[0]);
     if (newVal[0].service_fee_id == 1 || newVal[0].service_fee_id == 4) {
       downpaymentCon.value = true;
+    } else {
+      downpaymentCon.value = false;
     }
   },
   { immediate: true }
 );
+
+let pagination = ref({
+  rowsPerPage: 0,
+});
 </script>
 
 <style scoped>

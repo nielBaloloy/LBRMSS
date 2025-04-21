@@ -31,12 +31,12 @@
         $serviceRequest_ID = $request['serviceId'];
         $serviceRequest_Type = $request['type'];
         if($serviceRequest_ID == '4'){
-          $this->db->where("ServiceType", $serviceRequest_Type); 
+         
           $this->db->where("remark", '1'); 
           $this->db->where("service_fee_id", $serviceRequest_ID); 
           $getFee = $this->db->get('lbrmss_event_fee_assignment');
         }else{
-                $this->db->where("ServiceType", $serviceRequest_Type); 
+          
                 $this->db->where("remark", '1'); 
                 $this->db->where("service_fee_id", $serviceRequest_ID); 
                 $getFee = $this->db->get('lbrmss_event_fee_assignment');

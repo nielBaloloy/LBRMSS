@@ -205,7 +205,7 @@ export default defineComponent({
                 Swal.fire({
                   title: "Hallelujah! You're in!",
                   text: new Date().toLocaleString(),
-                  // imageUrl: "https://i.imgur.com/O5l5SgN.png", // Use a custom icon (e.g., angel, halo, cross)
+                  // imageUrl: "https://i.imgur.com/O5l5SgN.png",
                   // imageWidth: 100,
                   // imageHeight: 100,
                   // imageAlt: "Angel Icon",

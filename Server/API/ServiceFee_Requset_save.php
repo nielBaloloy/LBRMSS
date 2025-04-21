@@ -38,7 +38,6 @@
         $dty = $dt->format('Y-m-d H:i:s');
         $dtyOne = $dt->format('Y-m-d');
         $event = array(
-            
             "event_id" => $PaymentData['event_id'],
             "service_id" => $PaymentData['service_id'],
             "reference_no" =>$PaymentData['reference_no'],
@@ -54,6 +53,13 @@
             "updated_by" => $PaymentData['created_by'],
             "remark" => '1'
         );
+
+        if (strpos($PaymentData['reference_no'], 'REFCERT') !== false) {
+          $this->db->where('remark','1');
+          $this->db->where('event_id', $ev_id);
+          $this->db->update('lbrmss_event_fee', $event);
+          echo json_encode(array("message"=>""));
+      }else{
         $this->db->where('remark','1');
         $this->db->where('event_id', $ev_id);
         if ($this->db->update('lbrmss_event_fee', $event)){
@@ -95,7 +101,7 @@
                 echo json_encode(array("message"=>"Error" ));
                }
         
-      
+              }
     }
  
      
