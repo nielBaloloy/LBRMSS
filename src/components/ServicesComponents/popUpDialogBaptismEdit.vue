@@ -140,7 +140,10 @@
                         transition-show="scale"
                         transition-hide="scale"
                       >
-                        <q-time v-model="event.Time_from">
+                        <q-time
+                          v-model="event.Time_from"
+                          @update:model-value="durationInMinutesEvent(event)"
+                        >
                           <div class="row items-center justify-end">
                             <q-btn
                               v-close-popup
@@ -174,8 +177,8 @@
                         transition-hide="scale"
                       >
                         <q-time
-                          v-model="event.TimeTo"
-                          @update:model-value="durationInMinutesEvent(formData)"
+                          v-model="event.Time_to"
+                          @update:model-value="durationInMinutesEvent(event)"
                         >
                           <div class="row items-center justify-end">
                             <q-btn
@@ -899,12 +902,12 @@ export default defineComponent({
     const durationInMinutesEvent = (payload) => {
       console.log(payload);
       setTimeout(() => {
-        if (payload.TimeFrom == null || payload.TimeTo == null) {
+        if (payload.Time_from == null || payload.Time_to == null) {
           timeDurationEvent.value = 0;
           return;
         } else {
-          const start = moment(payload.TimeFrom, "HH:mm");
-          const end = moment(payload.TimeTo, "HH:mm");
+          const start = moment(payload.Time_from, "HH:mm");
+          const end = moment(payload.Time_to, "HH:mm");
           const durationTime = moment.duration(end.diff(start));
           timeDurationEvent.value = durationTime.asMinutes();
           console.log("time in minutes", timeDurationEvent.value);
@@ -943,6 +946,7 @@ export default defineComponent({
         }
       }
     );
+
     // Get ADDRESS Groom
     let selectedRegion = ref(null);
     let grEGION = ref();
