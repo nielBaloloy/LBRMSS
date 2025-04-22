@@ -291,6 +291,7 @@
         $personalDetails   = $arr['payload']['event']['confirmation'];
         $witness = $arr['payload']['event']['witness'];
         $requirements = $arr['payload']['requirements'];
+        $requirementStatus = $arr['payload']['statusReq'];
         $seminar = $arr['payload']['seminar'];
 
         $event_id =$event['event_id'];
@@ -316,7 +317,7 @@
           "venue_type"          => $event['venue_type'],
           "priest_assigned_id"  => $event['priest_assigned_id'],
           "event_progress"      => $event['event_progress'],
-          "requirement_status"  => $event['requirement_status'],
+          "requirement_status"  =>($requirementStatus == "complete") ? 1 : 0 ,
           "created_at"          => $event['created_at'],
           "created_by"          => $event['created_by'],
           "remark"              => $event['remark']

@@ -305,9 +305,9 @@
         $witness = $arr['payload']['event']['witness'];
         $requirements = $arr['payload']['requirements'];
         $seminar = $arr['payload']['seminar'];
-
+        $requirementStatus = $arr['payload']['statusReq'];
         $event_id =$event['event_id'];
-        echo var_dump("event",$personalDetails);
+        
         //update event
         // $UpdateEvent = Array (
          
@@ -329,7 +329,7 @@
           "venue_type"          => $event['venue_type'],
           "priest_assigned_id"  => $event['priest_assigned_id'],
           "event_progress"      => $event['event_progress'],
-          "requirement_status"  => $event['requirement_status'],
+          "requirement_status"  => ($requirementStatus == "complete") ? 1 : 0 ,
           "created_at"          => $event['created_at'],
           "created_by"          => $event['created_by'],
           "remark"              => $event['remark']
@@ -339,7 +339,7 @@
         $updateEvents = $this->db->update('lbrmss_event_table_main',$UpdateEvent);
 
         $updateCon_main =Array(
-          "bapt_id" => '',
+        
           "event_id" =>   $event['event_id'],
           "assigned_priest" => $event['priest_id'],
           "remark" => '1'
