@@ -107,13 +107,24 @@
         :menuItems="menuData2"
         v-if="myObject.AccessLvl === 'Cashier'"
       />
+      <SidebarMenu
+        :menuItems="menuData3"
+        v-if="myObject.AccessLvl === 'priest'"
+      />
     </q-drawer>
 
     <q-page-container class="bg-accent">
-      <div class="banner q-pa-lg">
-        <q-banner class="banner-plate bg-secondary text-dark q-pa-md">
-          <p class="text-h5">Welcome {{ myObject.Name }}</p>
-        </q-banner>
+      <div class="banner q-pa-sm">
+        <div class="welcome-banner q-pa-sm">
+          <q-card class="glass-card q-pa-lg" flat>
+            <div class="text-h5 text-weight-medium q-mb-sm">
+              👋 Welcome Back
+            </div>
+            <div class="text-subtitle2 text-grey-7">
+              Hope you're having a great day!
+            </div>
+          </q-card>
+        </div>
         <EventCard v-if="myObject.AccessLvl === 'Secretary'" />
         <div class="q-pa-sm row q-gutter-lg">
           <div v-if="myObject.AccessLvl === 'Secretary'" class="col-7">
@@ -124,6 +135,9 @@
           </div>
         </div>
         <Graph v-if="myObject.AccessLvl === 'Cashier'" />
+      </div>
+      <div class="mobile q-pa-md">
+        <priestModule v-if="myObject.AccessLvl === 'priest'" />
       </div>
     </q-page-container>
   </q-layout>
@@ -138,13 +152,20 @@ import PreistCard from "../../components/DashboardComponents/priestScheduleCard.
 import event from "../../components/DashboardComponents/eventCalendar.vue";
 import Graph from "../../components/DashboardComponents/MainGraph.vue";
 import SidebarMenu from "../../components/DashboardComponents/navigation_left.vue";
-import { menuData, menuData2 } from "src/data/menuData";
+import { menuData, menuData2, menuData3 } from "src/data/menuData";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 import { getToday, scheduleToday } from "src/composables/getTodaysSchedule";
 import { sched, updateSchedule } from "src/composables/updateEvent";
-
+import priestModule from "src/components/DashboardComponents/iosPage.vue";
 export default defineComponent({
-  components: { EventCard, SidebarMenu, Graph, PreistCard, event },
+  components: {
+    EventCard,
+    SidebarMenu,
+    Graph,
+    PreistCard,
+    event,
+    priestModule,
+  },
   setup() {
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
@@ -195,6 +216,7 @@ export default defineComponent({
     return {
       scheduleToday,
       menuData2,
+      menuData3,
       menuData,
       availablePriest,
       Logout,

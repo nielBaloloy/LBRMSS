@@ -10,7 +10,6 @@
   header("Access-Control-Allow-Headers: Content-Type");
  
   require_once('../MysqlIDb.php');
-  require_once('../model/sessionGet.php');
  
  
   class API
@@ -22,48 +21,25 @@
       }
 
 
-      
       public function httpGet($payload)
       {
+     
        
-
       }
       public function httpPost($payload)
       {
       
         $datas = json_encode($payload);
-        $LoginCredentials = json_decode($datas, true);
-        $username = trim($LoginCredentials['username']);
-        $password = trim($LoginCredentials['password']);
-     
-        $account = $this->db->rawQuery("SELECT *,b.pos_id as mainposid FROM useraccounts as a 
-                                        LEFT JOIN lbrmss_account_person AS b ON a.UID = b.account_id and a.remark = '1' 
-                                        LEFT JOIN lbrmss_position AS c ON b.pos_id = c.pos_id
-                                        WHERE a.Username = '$username'
-                                        AND a.Password = '$password'
-                                        AND a.isActive  = '1'
-                                        AND a.remark = '1'");
-    
-        if($account < 1){
-          echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-          }
-          else{
-           
-            
-            $session = new SessionModel();
-            $session->setSessionData('log', [
-              "UID" => 1,
-              "Name" => "Jay Barcellano",
-              "AccessLvl" => "Secretary",
-              "Username" => "JAY_1",
-              "Password" => "Admins",
-              "isActive" => 1,
-              "remark" => 1
-          ]);
-           
-            echo json_encode(array("Status"=>"Success", "loginData"=>$account));
-          }
+        $arr = json_decode($datas, true);
+        $accountID =  $arr['accountId']
+        
+        $this->db->where('remark','1');
+        $this->db->where('sched_status','1');
+        $this->db->where('priest_id',$accountID);
+        $schedules =$this->db->get('lbrmss_priest_schedule');
       
+
+
     }
  
      

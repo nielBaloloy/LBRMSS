@@ -95,4 +95,28 @@ export const menuData2 = [
     ],
   },
 ];
+//priest
+export const menuData3 = [
+  {
+    to: "/Dashboard",
+    label: "Home",
+    icon: "home",
+  },
+
+  {
+    to: "/My_Schedule",
+    label: "My Schedule",
+    icon: "event_available",
+  },
+  {
+    to: "/Events",
+    label: "Events",
+    icon: "calendar_today",
+  },
+  {
+    to: "/Mass",
+    label: "Mass",
+    icon: "church",
+  },
+];
 export const baseUrl = "http://localhost/LBRMSS/Server/API/";

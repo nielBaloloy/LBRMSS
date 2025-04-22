@@ -16,6 +16,17 @@ const routes = [
     ],
   },
   {
+    path: "/PriestDashboard",
+    component: () => import("layouts/DashboardLayout.vue"),
+    children: [
+      {
+        path: "",
+        component: () =>
+          import("../pages/SecretaryDashboard.vue/PriestDashboard.vue"),
+      },
+    ],
+  },
+  {
     path: "/Services",
     component: () =>
       import(

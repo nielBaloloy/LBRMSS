@@ -176,8 +176,9 @@ export default defineComponent({
         });
 
         timer = setTimeout(() => {
+          console.log(position.value);
           if (status.value === "Success" && isActive.value === 1) {
-            if (position.value == "Secretary" || position.value == "Admin") {
+            if (position.value == 2) {
               let accDetails = JSON.stringify(account.value);
               SessionStorage.set("log", accDetails);
               setTimeout(
@@ -192,7 +193,7 @@ export default defineComponent({
                 })
               );
             }
-            if (position.value == "Assistant Secretary") {
+            if (position.value == 2) {
               let accDetails = JSON.stringify(account.value);
               SessionStorage.set("log", accDetails);
 
@@ -213,7 +214,7 @@ export default defineComponent({
                 }),
                 1000
               );
-            } else if (position.value == "Cashier") {
+            } else if (position.value == 3) {
               let accDetails = JSON.stringify(account.value);
               SessionStorage.set("log", accDetails);
 
@@ -221,6 +222,27 @@ export default defineComponent({
                 () =>
                   router.push({
                     path: "/dashboard",
+                  }),
+                Swal.fire({
+                  title: "Hallelujah! You're in!",
+                  text: new Date().toLocaleString(),
+                  // imageUrl: "https://i.imgur.com/O5l5SgN.png", // Use a custom icon (e.g., angel, halo, cross)
+                  // imageWidth: 100,
+                  // imageHeight: 100,
+                  // imageAlt: "Angel Icon",
+                  icon: "success",
+                }),
+
+                1000
+              );
+            } else if (position.value == 1) {
+              let accDetails = JSON.stringify(account.value);
+              SessionStorage.set("log", accDetails);
+
+              setTimeout(
+                () =>
+                  router.push({
+                    path: "/PriestDashboard",
                   }),
                 Swal.fire({
                   title: "Hallelujah! You're in!",

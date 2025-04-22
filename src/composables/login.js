@@ -20,8 +20,10 @@ const LoginPayload = (payload) => {
         status.value = response.data.Status;
         if (status.value == "Success") {
           account.value = response.data.loginData;
-          position.value = response.data.loginData.AccessLvl;
-          isActive.value = response.data.loginData.isActive;
+
+          position.value = response.data.loginData[0].accessLvl;
+
+          isActive.value = response.data.loginData[0].isActive;
         }
         if (status.value == "Failed") {
           account.value = "";
