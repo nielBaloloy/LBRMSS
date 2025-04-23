@@ -44,6 +44,7 @@
          $getAvailablePriest = $this->db->rawQuery("SELECT DISTINCT
         b.*,
         pos.*,
+        e.*,
         evt.venue_type
     FROM 
         lbrmss_priest_main AS b
@@ -51,6 +52,8 @@
         lbrmss_position AS pos ON b.position = pos.pos_id
     LEFT JOIN 
         lbrmss_priest_schedule AS a ON a.priest_id = b.priest_id
+    LEFT JOIN 
+        lbrmss_account_person AS e ON e.pid = b.acc_id
     LEFT JOIN 
         lbrmss_event_table_main AS evt 
             ON evt.priest_assigned_id = a.priest_id
@@ -80,7 +83,7 @@
                             $AvailablePriest[] = [
                             "priest_id" => $priest['priest_id'],
                             "priest_name" => $priest['pos_prefix']." " .$priest['fname']." ".substr($priest['mname'],0,1)." ".$priest['lname'],
-
+                            
                             ];
                     }
                      echo json_encode(array("Status"=>"Success", "availablePriest"=>$AvailablePriest ,"message"=>""));

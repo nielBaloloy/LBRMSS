@@ -19,7 +19,7 @@ const LoginPayload = (payload) => {
       .then((response) => {
         status.value = response.data.Status;
         if (status.value == "Success") {
-          account.value = response.data.loginData;
+          account.value = response.data.loginData[0];
 
           position.value = response.data.loginData[0].accessLvl;
 

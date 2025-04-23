@@ -19,9 +19,10 @@ let scheduleOnePriest = ref([]);
 const getScheduledIndividualPriest = (accountId) => {
   return new Promise((resolve, reject) => {
     api
-      .post("priestScheduleListOne.php", { accountId })
+      .post("priestScheduleListOne.php", { acc: accountId })
       .then((response) => {
-        schedulePriest.value = response.data;
+        scheduleOnePriest.value = response.data.data;
+        console.log(schedulePriest.value);
       })
       .catch((error) => {
         reject(error);

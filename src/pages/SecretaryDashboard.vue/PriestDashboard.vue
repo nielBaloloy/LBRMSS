@@ -33,11 +33,11 @@
                     >
                       <!-- username -->
 
-                      {{ myObject[0].Username }}
+                      {{ myObject.Username }}
                       <br />
                       <span class="text-amber-6">
                         <!-- Position -->
-                        {{ myObject[0].AccessLvl }}</span
+                        {{ myObject.AccessLvl }}</span
                       >
                     </p>
                     <q-list>
@@ -102,15 +102,32 @@
           class="text-grey-8"
           v-model="tab"
         >
-          <q-tab name="images" label="Images" />
-          <q-tab name="videos" label="Videos" />
-          <q-tab name="articles" label="Articles" />
+          <q-tab name="images" icon="event" label="My Schedule" />
+          <q-tab name="videos" icon="event" label="Events" />
+          <q-tab name="articles" icon="person" label="My Profile" />
         </q-tabs>
       </q-footer>
 
       <q-page-container>
         <q-page class="q-pa-md">
-          <priestModule v-if="myObject[0].AccessLvl === 'priest'" />
+          <q-tab-panels v-model="tab" animated>
+            <q-tab-panel name="images" class="bg-grey-3 q-pa-sm">
+              <priestModule
+                :schedValue="scheduleOnePriest"
+                v-if="myObject.AccessLvl === 'priest'"
+              />
+            </q-tab-panel>
+
+            <q-tab-panel name="videos">
+              <div class="text-h6">Alarms</div>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            </q-tab-panel>
+
+            <q-tab-panel name="articles">
+              <div class="text-h6">Movies</div>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            </q-tab-panel>
+          </q-tab-panels>
         </q-page>
       </q-page-container>
     </q-layout>
@@ -136,7 +153,7 @@ export default defineComponent({
     const $q = useQuasar();
     const router = useRouter();
     onMounted(() => {
-      getScheduledIndividualPriest(myObject.value[0].account_id);
+      getScheduledIndividualPriest(myObject.value.account_id);
     });
     let myObject = ref();
     let sessionkey = SessionStorage.getItem("log");
@@ -175,6 +192,7 @@ export default defineComponent({
     };
 
     return {
+      scheduleOnePriest,
       Logout,
       myObject,
       tab: ref("images"),
