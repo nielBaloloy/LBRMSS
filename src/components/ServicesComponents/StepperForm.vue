@@ -431,7 +431,6 @@
               "
               option-value="priest_id"
               option-label="priest_name"
-              :rules="[(val) => !!val || 'Field is required']"
             />
           </div>
         </div>

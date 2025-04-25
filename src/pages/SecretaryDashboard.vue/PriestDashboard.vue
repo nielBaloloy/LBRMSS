@@ -103,7 +103,12 @@
           v-model="tab"
         >
           <q-tab name="images" icon="event" label="My Schedule" />
-          <q-tab name="videos" icon="event" label="Events" />
+          <q-tab
+            name="videos"
+            icon="event"
+            label="Events"
+            @click="refreshEventList"
+          />
           <q-tab name="articles" icon="person" label="My Profile" />
         </q-tabs>
       </q-footer>
@@ -118,9 +123,11 @@
               />
             </q-tab-panel>
 
-            <q-tab-panel name="videos">
-              <div class="text-h6">Alarms</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-tab-panel name="videos" class="bg-grey-3 q-pa-sm">
+              <priestModule_event_list
+                :schedValue="nopriestEvent"
+                v-if="myObject.AccessLvl === 'priest'"
+              />
             </q-tab-panel>
 
             <q-tab-panel name="articles">
@@ -139,15 +146,19 @@ import { ref, defineComponent, onMounted } from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import priestModule from "src/components/DashboardComponents/iosPage.vue";
+import priestModule_event_list from "src/components/DashboardComponents/iosPage_event_list.vue";
 import {
   getScheduledPriest,
   schedulePriest,
   getScheduledIndividualPriest,
   scheduleOnePriest,
+  getNopriestEvent,
+  nopriestEvent,
 } from "src/composables/getPriestSched";
 export default defineComponent({
   components: {
     priestModule,
+    priestModule_event_list,
   },
   setup() {
     const $q = useQuasar();
@@ -190,8 +201,13 @@ export default defineComponent({
           // console.log('I am triggered on both OK and Cancel')
         });
     };
-
+    let refreshEventList = () => {
+      console.log("refresh eventy list");
+      getNopriestEvent();
+    };
     return {
+      refreshEventList,
+      nopriestEvent,
       scheduleOnePriest,
       Logout,
       myObject,

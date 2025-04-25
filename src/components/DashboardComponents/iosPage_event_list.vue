@@ -1,59 +1,63 @@
 <template>
   <div class="service row">
     <div class="col-sm">
-      <label class="text-h6">My Schedule</label>
-      <div class="content" v-if="schedValue.length > 0">
-        <div class="schedule">
-          <div
-            v-for="sched in schedValue"
-            :key="sched.event_id"
-            class="col-xs-12 col-sm-12 col-md-12 q-mt-md"
+      <label class="text-h6">Upcoming Event</label>
+      <div class="sched" v-if="schedValue.length > 0">
+        <div
+          v-for="sched in schedValue"
+          :key="sched.event_id"
+          class="col-xs-12 col-sm-12 col-md-12 q-mt-md"
+        >
+          <q-card
+            class="q-pa-md rounded-borders bg-grey-1"
+            style="min-width: 340px"
+            flat
           >
-            <q-card
-              class="q-pa-md rounded-borders bg-grey-1"
-              style="min-width: 340px"
-              flat
-            >
-              <div class="row items-center no-wrap q-gutter-md">
-                <!-- Avatar -->
-                <q-avatar size="30" text-color="amber">
-                  <q-icon name="event_note" size="40px" />
-                </q-avatar>
-                <!-- Info -->
-                <div class="column">
-                  <div class="text-subtitle2 text-weight-medium">
-                    {{ sched.event_name }}
-                  </div>
-                  <div class="text-subtitle2 text-weight-light">
-                    {{ sched.venue_name }}
-                  </div>
-                  <div class="text-subtitle2 text-weight-light">
-                    {{ formatDate(sched.date_from) }},
-                    {{ formatTime(sched.time_to) }} -
-                    {{ formatTime(sched.time_from) }}
-                  </div>
-                  <div class="view q-pt-md q-gutter-sm">
-                    <q-btn
-                      size="10px"
-                      unelevated
-                      color="amber-7"
-                      label="Mark as Done"
-                      no-caps
-                    />
-                    <q-btn
-                      size="10px"
-                      unelevated
-                      color="grey-3"
-                      text-color="grey-7"
-                      no-caps
-                      @click="viewEvent(sched)"
-                      label="View"
-                    />
+            <div class="row items-center no-wrap q-gutter-md">
+              <!-- Avatar -->
+              <q-avatar size="30" text-color="green">
+                <q-icon name="event_note" size="40px" />
+              </q-avatar>
+              <!-- Info -->
+              <div class="column">
+                <div class="text-subtitle2 text-weight-medium">
+                  {{ sched.service }}
+                </div>
+                <div class="text-subtitle2 text-color='grey-3'">
+                  <div class="client" v-if="sched.title == 'N/A'"></div>
+                  <div class="client" v-else>
+                    {{ sched.title }}
                   </div>
                 </div>
+                <div class="text-subtitle2 text-weight-light">
+                  {{ sched.venue }}
+                </div>
+                <div class="text-subtitle2 text-weight-light">
+                  {{ formatDate(sched.date) }},
+                  {{ formatTime(sched.time_to) }} -
+                  {{ formatTime(sched.time_from) }}
+                </div>
+                <div class="view q-pt-md q-gutter-sm">
+                  <q-btn
+                    size="10px"
+                    unelevated
+                    color="green-5"
+                    label="Take this Schedule"
+                    no-caps
+                  />
+                  <q-btn
+                    size="10px"
+                    unelevated
+                    color="grey-3"
+                    text-color="grey-7"
+                    no-caps
+                    @click="viewEvent(sched)"
+                    label="View"
+                  />
+                </div>
               </div>
-            </q-card>
-          </div>
+            </div>
+          </q-card>
         </div>
       </div>
       <div class="div" v-else>
@@ -80,7 +84,6 @@
           </div>
         </div>
       </div>
-
       <!--Dialog for viewing-->
       <q-dialog v-model="alert">
         <q-card>
@@ -90,7 +93,7 @@
             class="col-xs-12 col-sm-12 col-md-12 q-mt-md"
           >
             <q-card-section>
-              <div class="text-h6">{{ event.event_name }}</div>
+              <div class="text-h6">{{ event.title }}</div>
               <q-separator></q-separator>
 
               <div class="div">
@@ -124,6 +127,7 @@ export default defineComponent({
     console.log(props.schedValue);
     let alert = ref(false);
     let eventContainer = ref([]);
+
     watch(
       () => props.schedValue,
       (newVal) => {
