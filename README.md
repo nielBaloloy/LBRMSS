@@ -1,6 +1,6 @@
 # Quasar App (lbrmss-project)
 
-A Quasar Project
+A Scheduling and Records Management System  with sms support 
 
 ## Install the dependencies
 ```bash
