@@ -29,8 +29,9 @@
                   </div>
                   <div class="text-subtitle2 text-weight-light">
                     {{ formatDate(sched.date_from) }},
-                    {{ formatTime(sched.time_to) }} -
-                    {{ formatTime(sched.time_from) }}
+
+                    {{ formatTime(sched.time_from) }} -
+                    {{ formatTime(sched.time_to) }}
                   </div>
                   <div class="view q-pt-md q-gutter-sm">
                     <q-btn

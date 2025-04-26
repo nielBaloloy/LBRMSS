@@ -34,8 +34,9 @@
                 </div>
                 <div class="text-subtitle2 text-weight-light">
                   {{ formatDate(sched.date) }},
-                  {{ formatTime(sched.time_to) }} -
-                  {{ formatTime(sched.time_from) }}
+
+                  {{ formatTime(sched.time_from) }} -
+                  {{ formatTime(sched.time_to) }}
                 </div>
                 <div class="view q-pt-md q-gutter-sm">
                   <q-btn
@@ -44,6 +45,7 @@
                     color="green-5"
                     label="Take this Schedule"
                     no-caps
+                    @click="takeSchedule(sched)"
                   />
                   <q-btn
                     size="10px"
@@ -116,7 +118,7 @@
 import { defineComponent, reactive, watch, ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
 import gsap from "gsap";
-import { event } from "quasar";
+import { useQuasar, SessionStorage } from "quasar";
 
 export default defineComponent({
   name: "priestModule",
@@ -124,7 +126,10 @@ export default defineComponent({
     schedValue: { type: Array, default: () => [] },
   },
   setup(props) {
-    console.log(props.schedValue);
+    const $q = useQuasar();
+    let sessionkey = SessionStorage.getItem("log");
+    let UserData = JSON.parse(sessionkey);
+    console.log("Session", UserData);
     let alert = ref(false);
     let eventContainer = ref([]);
 
@@ -164,7 +169,41 @@ export default defineComponent({
           console.log(error);
         });
     }
-    return { formatDate, formatTime, viewEvent, alert, eventContainer };
+    function takeSchedule(sched) {
+      let personId = UserData.person_id;
+      let event = sched.all;
+      console.log(event);
+      $q.dialog({
+        title: "Take this Schedule?",
+        message: "Would you like to take this Schedule?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => {
+          api
+            .post("ios_take_schedule.php", {
+              priestId: personId,
+              event: event,
+            })
+            .then((response) => {
+              console.log(response.data.data);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        })
+        .onCancel(() => {
+          console.log(">>>> Cancel");
+        });
+    }
+    return {
+      formatDate,
+      formatTime,
+      viewEvent,
+      alert,
+      eventContainer,
+      takeSchedule,
+    };
   },
 });
 </script>

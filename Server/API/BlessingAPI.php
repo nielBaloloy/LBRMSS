@@ -62,7 +62,9 @@
            "type"                => 2,
            "days"                => $event['Days'],
            "venue_type"          => 3,
-           "priest_assigned_id"  => $event['Assigned_Priest']['priest_id'],
+           "priest_assigned_id"  => (isset($event['Assigned_Priest']) && isset($event['Assigned_Priest']['priest_id']) 
+           ? $event['Assigned_Priest']['priest_id'] 
+           : null),
            "event_progress"      => 1,
            "requirement_status"  => 1 ,
            "created_at"          => $dty,
@@ -87,7 +89,9 @@
               "needs_certificate"   => $event['needs_certificate'] ?? 0,
               "donation_amount"     => $event['donation_amount'] ?? 0.00,
               "created_at"          => $dty,
-              "priest_id"           =>$event['Assigned_Priest']['priest_id'],
+              "priest_id"           =>(isset($event['Assigned_Priest']) && isset($event['Assigned_Priest']['priest_id']) 
+              ? $event['Assigned_Priest']['priest_id'] 
+              : null),
               "remark"              => '1'
             );
             $insert_ReqEventInfo =$this->db->insert('blessing_requests', $BlessingReqEvent);
@@ -112,7 +116,21 @@
           );
           $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
 
-
+          $priestAssigned = array(
+            "sched_id" => '',
+            "priest_id"=> (isset($event['Assigned_Priest']) && isset($event['Assigned_Priest']['priest_id']) 
+            ? $event['Assigned_Priest']['priest_id'] 
+            : null),
+            "sched_event_id"=>$eve_id,
+            "date_from" =>$event['Date'],
+            "date_to" =>$event['Date'],
+            "sched_status"   =>'0',
+            "time_from" =>$event['TimeFrom'],
+            "time_to"=>$event['TimeTo'],
+            "created_at" =>$dty,
+            "remark"=>'1'
+          );
+        $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
 
 
 

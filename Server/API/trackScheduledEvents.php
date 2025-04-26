@@ -38,7 +38,7 @@
         $setEventToDone =$this->db->rawQuery("UPDATE `lbrmss_event_table_main`
                                                 SET event_progress = '2'
                                                 WHERE `date_to` < CURDATE()
-                                                AND `remark` = 1;
+                                                AND `remark` ='1' AND requirement_status = '1';
                                                 ");
 
     }

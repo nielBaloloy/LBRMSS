@@ -28,7 +28,7 @@
         $arr = json_decode($data, true);
         date_default_timezone_set('Asia/Manila');
 
-        $getNoPriestEvent = $this->db->rawQuery("SELECT a.*, b.*,c.* FROM `lbrmss_event_table_main` AS a LEFT JOIN lbrmss_event_services AS b ON a.service_id = b.etype_id AND a.remark = '1' LEFT JOIN lbrmss_client_list as C ON c.cid = a.client AND a.remark = '1' WHERE a.remark = '1' AND a.priest_assigned_id IS NULL GROUP BY a.event_id ORDER BY a.date ASC;");
+        $getNoPriestEvent = $this->db->rawQuery("SELECT a.*, b.*,c.* FROM `lbrmss_event_table_main` AS a LEFT JOIN lbrmss_event_services AS b ON a.service_id = b.etype_id AND a.remark = '1' LEFT JOIN lbrmss_client_list as C ON c.cid = a.client AND a.remark = '1' WHERE a.remark = '1' AND a.event_progress = '1' AND a.priest_assigned_id IS NULL GROUP BY a.event_id ORDER BY a.date ASC;");
         $arrayEvent  =[];
         foreach ($getNoPriestEvent as $priesEvent) {
             $arrayEvent[]=[
