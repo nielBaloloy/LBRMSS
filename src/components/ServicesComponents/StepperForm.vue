@@ -4537,37 +4537,36 @@ export default defineComponent({
               });
           }
           if (formData.value.Service == "7") {
-            console.log(massData.value);
             console.log(formData.value);
-            // api
-            //   .post("Service.php", {
-            //     eventData: formData.value,
-            //   })
-            //   .then((response) => {
-            //     if (response.data.Status == "Success") {
-            //       $q.notify({
-            //         message: "Information saved Successfully",
-            //         color: "green-6",
-            //         position: "bottom-right",
-            //       });
-            //       getSerivce(0);
-            //     } else {
-            //       $q.notify({
-            //         message:
-            //           "This schedule is already taken! Please choose another date or time.",
-            //         color: "red-6",
-            //         position: "bottom-right",
-            //       });
-            //     }
-            //   })
-            //   .catch((error) => {
-            //     $q.notify({
-            //       message: "Server Error",
-            //       color: "red-6",
-            //       position: "bottom-right",
-            //     });
-            //     reject(error);
-            //   });
+            api
+              .post("massIntention.php", {
+                eventData: formData.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message:
+                      "This schedule is already taken! Please choose another date or time.",
+                    color: "red-6",
+                    position: "bottom-right",
+                  });
+                }
+              })
+              .catch((error) => {
+                $q.notify({
+                  message: "Server Error",
+                  color: "red-6",
+                  position: "bottom-right",
+                });
+                reject(error);
+              });
           }
           // sendclose(false);
 
@@ -4676,10 +4675,15 @@ export default defineComponent({
     ];
     const massDialog = ref(false);
     const selectMassSchedule = (evt, rowData, index) => {
+      formData.value.EventServiceID = rowData.priest_id; // Update priest_id
+
+      formData.value.Venue_type = rowData.VenueType;
+
+      formData.value.E_ID = rowData.mass_event_id;
       formData.value.Date = rowData.date;
       formData.value.TimeTo = rowData.time_to;
       formData.value.TimeFrom = rowData.time_from;
-      console.log(rowData);
+      console.log("mass", rowData);
       massDialog.value = false;
     };
 

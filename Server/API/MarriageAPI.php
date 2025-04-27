@@ -42,7 +42,7 @@
 
         $Marriage = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
-                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.acc_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_mariage_main mm ON mm.event_id =a.event_id
                                                 LEFT JOIN lbrmss_m_groom mg ON mg.g_event_id = mm.event_id 
@@ -141,7 +141,9 @@
               "type"                => $type,
               "days"                => $Event['Days'],
               "venue_type"          => $Event['Venue_type'],
-              "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+              "priest_assigned_id"  => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+              ? $Event['Assigned_Priest']['priest_id'] 
+              : null),
               "event_progress"      => $eventProgress,
               "requirement_status"  => $MarriageData['Status'],
               "created_at"          => $dty,
@@ -206,7 +208,9 @@
                   $marriageAssignment = array(
                     "mid" => '',
                     "event_id" =>   $new_eventId,
-                    "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                    "assigned_priest" => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                    ? $Event['Assigned_Priest']['priest_id'] 
+                    : null),
                     "remark" => '1'
                 );
                 
@@ -290,7 +294,9 @@
 
                   $priestAssigned = array(
                     "sched_id" => '',
-                    "priest_id"=>$Event['Assigned_Priest']['priest_id'],
+                    "priest_id"=>(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                    ? $Event['Assigned_Priest']['priest_id'] 
+                    : null),
                     "sched_event_id"=>$new_eventId,
                     "date_from" =>$Event['Date'],
                     "date_to" =>$Event['Date'],

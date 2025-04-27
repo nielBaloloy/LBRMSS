@@ -42,11 +42,12 @@
 
         $Display_Pending = $this->db->rawQuery("SELECT  *, a.service_id as mainid,a.event_id as maineventid FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
-                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.acc_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client
                                                  LEFT JOIN lbrmss_event_fee ef ON ef.event_id = a.event_id
-                                                WHERE a.remark = '1' AND event_progress = '$apiParameter' $filterRange 
+                                                WHERE a.remark = '1' AND event_progress = '$apiParameter' $filterRange
+                                                GROUP BY maineventid
                                                 ORDER BY a.created_at DESC");
 
       if(count($Display_Pending) > 0){
@@ -246,10 +247,9 @@
               $Event['Date'],
               $Event['TimeTo'],
               $Event['TimeFrom'],
-              $Event['Assigned_Priest']['priest_id'],
               'lbrmss_event_table_main'
             );
-            echo var_dump($validateEvent);
+            
             if(!$validateEvent){
               $ClientData = Array(
                 "cid" => '',
@@ -282,8 +282,10 @@
                   "type"                => $type,
                   "days"                => $Event['Days'],
                   "venue_type"          => $Event['Venue_type'],
-                  "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
-                  "event_progress"      => 1,
+                  "priest_assigned_id"  =>(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                    ? $Event['Assigned_Priest']['priest_id'] 
+                    : null),
+                  "event_progress"      => 0,
                   "requirement_status"  => 1,
                   "created_at"          => $dty,
                   "created_by"          => '1',
@@ -304,7 +306,9 @@
                           "city"     =>  $Event['Event_City'],
                           "brgy"    =>  $Event['Event_Barangay'],
                           "description"  =>"",
-                          "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                          "assigned_priest" => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                          ? $Event['Assigned_Priest']['priest_id'] 
+                          : null),
                           "created_at"    => $dty,
                           "created_by" => '1',
                           "remark" => '1'
@@ -312,28 +316,14 @@
                       
                         $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
                       }
-                      if($Event['Service'] == '7'){ //insert to mass
-                      //   $AnnointingData = array(
-                      //     "a_id" => '',
-                      //     "event_id" =>   $new_eventId,
-                      //     "region"   =>   $Event['Event_Region'],
-                      //     "province" =>    $Event['Event_Province'],
-                      //     "city"     =>  $Event['Event_City'],
-                      //     "brgy"    =>  $Event['Event_Barangay'],
-                      //     "description"  =>"",
-                      //     "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
-                      //     "created_at"    => $dty,
-                      //     "created_by" => '1',
-                      //     "remark" => '1'
-                      // );
-                      
-                      //   $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
-                      }
+                   
                 
-                      if(!empty($Event['Assigned_Priest']['priest_id'])){
+                    
                           $ScheduleData = array(
                             "sched_id" => '',
-                            "priest_id" => $Event['Assigned_Priest']['priest_id'],
+                            "priest_id" => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                            ? $Event['Assigned_Priest']['priest_id'] 
+                            : null),
                             "sched_event_id" => $new_eventId,
                             "date_from" => $Event['Date'],
                             "date_to" =>$Event['Date'],
@@ -343,7 +333,7 @@
                             "remark" => '1' // 1 = show, 0 = hide
                         );
                         $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
-                      }
+                  
                      
 
 

@@ -83,6 +83,22 @@
                 "RequirementStatus"=>'NA',
                 "Description"=>$Event['Description']
                 );
+                $priestAssigned = array(
+                  "sched_id" => '',
+                  "priest_id"=>(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                  ? $Event['Assigned_Priest']['priest_id'] 
+                  : null),
+                  "sched_event_id"=>$new_eventId,
+                  "date_from" =>$Event['Date'],
+                  "date_to" =>$Event['Date'],
+                  "sched_status"   =>'0',
+                  "time_from" =>$Event['TimeFrom'],
+                  "time_to"=>$Event['TimeTo'],
+                  "created_at" =>$dty,
+                  "remark"=>'1'
+                );
+
+              $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
 
         }
           $insert_EventInfo =$this->db->insert('eventstable', $eventData);

@@ -26,6 +26,7 @@
        $pos = $this->db->rawQuery("SELECT * FROM lbrmss_position 
                                               WHERE 
                                                remark = '1' 
+                                              
                                              ");
 
             
@@ -61,10 +62,10 @@
                                                 e.name
                                                 FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
-                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.acc_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
-                                                WHERE a.event_id = '$eventId' and a.remark = '1'
+                                                WHERE a.event_id = '$eventId' and a.remark = '1' GROUP BY a.event_id
                                              
        ");
         

@@ -35,16 +35,31 @@
         $data = []; // initialize array to collect all priest records
     
         foreach ($getPriestSchedule as $priest) {
-                $id =  $priest['priest_id'];
+                $id =  $priest['acc_id'];
                 
-                            $this->db->where('remark','1');
-                            $this->db->where('sched_status','1');
-                            $this->db->where('priest_id',$id);
-                $schedules  =$this->db->get('lbrmss_priest_schedule');
+                //             $this->db->where('remark','1');
+                //             $this->db->where('sched_status','1');
+                //             $this->db->where('priest_id',$id);
+                // $schedules  =$this->db->get('lbrmss_priest_schedule');
+
+                $schedules =$this->db->rawQuery("SELECT 
+                                                    b.*, 
+                                                    a.event_progress
+                                                FROM lbrmss_event_table_main AS a
+                                                INNER JOIN lbrmss_priest_schedule AS b 
+                                                    ON a.priest_assigned_id = b.priest_id 
+                                                        AND a.created_at = b.created_at
+                                                WHERE 
+                                                    b.priest_id = '$id'
+                                                    AND b.sched_status = '1'
+                                                    AND b.remark = '1'
+                                                    AND a.event_progress = 1
+                                                GROUP BY b.sched_id;");
 
 
             $data[] = array(
                 "priest_id"    => $priest['priest_id'],
+                "acc_id"    => $priest['acc_id'],
                 "priest_name"  => $priest['fname'] . " " . substr($priest['mname'], 0, 1) . ". " . $priest['lname'],
                 "position"     => $priest['pos_prefix'],
                 "schedule"     => $schedules,

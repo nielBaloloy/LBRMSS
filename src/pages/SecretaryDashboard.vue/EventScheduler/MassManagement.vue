@@ -126,6 +126,13 @@
                 @click="editMass(props.row)"
               />
               <q-btn
+                color="primary"
+                flat
+                dense
+                icon="visibility"
+                @click="ViewMasses(props.row)"
+              />
+              <q-btn
                 color="negative"
                 flat
                 dense
@@ -341,6 +348,77 @@
           </q-card>
         </div>
       </q-dialog>
+      <q-dialog v-model="massViewDialog" persistent>
+        <q-card style="min-width: 600px; max-width: 90vw">
+          <q-card-section class="text-h6 text-primary">
+            Mass Information
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-section class="q-pt-none">
+            <div class="q-gutter-sm q-mb-md">
+              <q-item>
+                <q-item-section>
+                  <q-item-label
+                    ><strong>Mass Title:</strong>
+                    {{ massData.mass_title }}</q-item-label
+                  >
+                  <q-item-label
+                    ><strong>Date:</strong> {{ massData.date }}</q-item-label
+                  >
+                  <q-item-label
+                    ><strong>Time:</strong> {{ massData.time_from }} -
+                    {{ massData.time_to }}</q-item-label
+                  >
+                  <q-item-label
+                    ><strong>Venue:</strong> {{ massData.venue }}</q-item-label
+                  >
+                  <q-item-label
+                    ><strong>Priest Name:</strong> {{ massData.fname }}
+                    {{ massData.lname }}</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+            </div>
+
+            <div class="text-h6 text-primary q-mb-sm">Details</div>
+
+            <q-table
+              dense
+              bordered
+              :rows="massData.details"
+              :columns="massescolumns"
+              row-key="id"
+              flat
+              :pagination="{ rowsPerPage: 5 }"
+            >
+              <template v-slot:body-cell-intention_type="props">
+                <q-td :props="props">
+                  <q-badge color="green" outline>{{ props.value }}</q-badge>
+                </q-td>
+              </template>
+
+              <template v-slot:body-cell-intention_desc="props">
+                <q-td :props="props">
+                  <q-tooltip>{{ props.value }}</q-tooltip>
+                  {{
+                    props.value.length > 20
+                      ? props.value.slice(0, 20) + "..."
+                      : props.value
+                  }}
+                </q-td>
+              </template>
+            </q-table>
+          </q-card-section>
+
+          <q-separator />
+
+          <q-card-actions align="right">
+            <q-btn flat label="Close" color="primary" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </q-page-container>
   </q-layout>
 </template>
@@ -398,6 +476,7 @@ export default defineComponent({
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
     const router = useRouter();
+    let massViewDialog = ref(false);
     let openModal = ref(false);
 
     let myObject = ref();
@@ -635,7 +714,32 @@ export default defineComponent({
     const removeMassEntry = (row) => {
       massList.value = massList.value.filter((mass) => mass !== row);
     };
+    let massData = ref(null);
+
+    function ViewMasses(mass) {
+      console.log(mass);
+      massData.value = { ...mass };
+      massViewDialog.value = true;
+    }
+    const massescolumns = [
+      {
+        name: "intention_type",
+        label: "Type",
+        field: "intention_type",
+        align: "left",
+      },
+      {
+        name: "intention_desc",
+        label: "Description",
+        field: "intention_desc",
+        align: "left",
+      },
+    ];
     return {
+      massData,
+      massViewDialog,
+      massescolumns,
+      ViewMasses,
       massrows,
       masscolumns,
       removeMassEntry,

@@ -2609,14 +2609,13 @@ class MysqliDb
     }
 
     /** this function will check
-     *  if the given date, time ,venue and priest
+     *  if the given date, time ,venue 
      *  is already exist in the events table 
      * this will return true or false*/
 
-     public function validateEventSchedule($DateFrom, $DateTo, $TimeFrom, $TimeTo, $Priest, $tableName) {
+     public function validateEventSchedule($DateFrom, $DateTo, $TimeFrom, $TimeTo, $tableName) {
        
-       $this->where('priest_assigned_id', $Priest);
-    
+     
         $this->where('(date BETWEEN ? AND ? OR date_to BETWEEN ? AND ? OR ? BETWEEN date AND date_to OR ? BETWEEN date AND date_to)', 
                    array($DateFrom, $DateTo, $DateFrom, $DateTo, $DateFrom, $DateTo));
     

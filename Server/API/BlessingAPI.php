@@ -48,7 +48,7 @@
         );
         $insert =$this->db->insert('lbrmss_client_list', $ClientData);
         $clientId = $this->db->getMaxId('lbrmss_client_list','cid');
-        
+        $priestId = isset($event['Assigned_Priest']['priest_id']) ? $event['Assigned_Priest']['priest_id'] : null;
         $BlessingEvent = Array(
           "event_id"            => '',
            "service_id"          => $event['Service'],
@@ -124,7 +124,7 @@
             "sched_event_id"=>$eve_id,
             "date_from" =>$event['Date'],
             "date_to" =>$event['Date'],
-            "sched_status"   =>'0',
+            "sched_status"   =>($priestId) ? '1' : '0',
             "time_from" =>$event['TimeFrom'],
             "time_to"=>$event['TimeTo'],
             "created_at" =>$dty,

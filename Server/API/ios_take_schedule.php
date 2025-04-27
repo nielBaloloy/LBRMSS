@@ -59,11 +59,14 @@
             }
             if (!empty($checkifannointingExists[0]['exist'])) {
                 $this->db->rawQuery("UPDATE lbrmss_annointing SET assigned_priest = '$priestid' WHERE remark = '1' AND event_id = '$eventID';");
+                $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE remark = '1' AND event_id = '$eventID';");
+        
                 echo json_encode(array("msg" =>""));
             }
             if (!empty($checkifblessingExists[0]['exist'])) {
                 $this->db->rawQuery("UPDATE blessing_requests SET priest_id = '$priestid' WHERE remark = '1' AND event_id = '$eventID';");
-               
+                $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE remark = '1' AND event_id = '$eventID';");
+        
                 echo json_encode(array("msg" =>""));
             }
             if (!empty($checkifburialExists[0]['exist'])) {
@@ -75,7 +78,9 @@
                 echo json_encode(array("msg" =>""));
             }
             if (!empty($checkifmass_schedule_Exists[0]['exist'])) {
-                $this->db->rawQuery("UPDATE lbrmss_mass_schedules SET priest_id = '$priestid' WHERE remark = '1' AND mass_event_id = '$eventID';");
+                $this->db->rawQuery("UPDATE lbrmss_mass_schedules SET priest_id = '$priestid'  WHERE remark = '1' AND mass_event_id = '$eventID';");
+                $this->db->rawQuery("UPDATE lbrmss_event_table_main SET event_progress = '1' WHERE remark = '1' AND event_id = '$eventID';");
+        
                 echo json_encode(array("msg" =>""));
             }
 

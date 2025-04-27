@@ -29,10 +29,12 @@
                                                 e.name
                                                 FROM lbrmss_event_table_main a 
                                                 LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
-                                                LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+                                                LEFT JOIN lbrmss_priest_main c ON c.acc_id = a.priest_assigned_id 
                                                 LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client 
                                                 WHERE a.remark = '1' AND a.event_progress ='1' AND a.priest_assigned_id IS NOT NULL
+                                                group by a.event_id
+                                                
                                                 ORDER BY a.created_at");
      
      if(count($Display_Schedule) > 0){

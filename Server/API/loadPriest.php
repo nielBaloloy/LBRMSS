@@ -51,7 +51,7 @@
     LEFT JOIN 
         lbrmss_position AS pos ON b.position = pos.pos_id
     LEFT JOIN 
-        lbrmss_priest_schedule AS a ON a.priest_id = b.priest_id
+        lbrmss_priest_schedule AS a ON a.priest_id = b.acc_id
     LEFT JOIN 
         lbrmss_account_person AS e ON e.pid = b.acc_id
     LEFT JOIN 
@@ -63,7 +63,7 @@
         AND b.remark = '1'
         AND NOT EXISTS (
             SELECT 1 FROM lbrmss_priest_schedule AS a
-            WHERE a.priest_id = b.priest_id
+            WHERE a.priest_id = b.acc_id
             AND a.remark = '1' AND a.sched_status = '1'
             AND '$date' BETWEEN a.date_from AND a.date_to
             AND (
@@ -81,7 +81,8 @@
                 if(count($getAvailablePriest) > 0){
                     foreach($getAvailablePriest as $priest){
                             $AvailablePriest[] = [
-                            "priest_id" => $priest['priest_id'],
+                   
+                            "priest_id" => $priest['acc_id'],
                             "priest_name" => $priest['pos_prefix']." " .$priest['fname']." ".substr($priest['mname'],0,1)." ".$priest['lname'],
                             
                             ];

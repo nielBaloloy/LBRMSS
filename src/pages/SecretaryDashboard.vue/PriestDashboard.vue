@@ -130,9 +130,172 @@
               />
             </q-tab-panel>
 
-            <q-tab-panel name="articles">
-              <div class="text-h6">Movies</div>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <q-tab-panel name="articles" class="bg-grey-3">
+              <div class="text-h5 q-mb-md text-primary">My Account</div>
+
+              <q-card flat bordered class="q-mb-md">
+                <q-card-section>
+                  <q-item>
+                    <q-item-section avatar>
+                      <q-avatar size="60px">
+                        <img
+                          src="https://cdn.quasar.dev/img/avatar.png"
+                          alt="User"
+                        />
+                      </q-avatar>
+                    </q-item-section>
+
+                    <q-item-section>
+                      <q-item-label class="text-h6">
+                        {{ myObject.pos_prefix }},{{ myObject.fname }}
+                        {{ myObject.lname }}</q-item-label
+                      >
+                      <q-item-label caption class="text-grey">
+                        {{ myObject.pos_name }}</q-item-label
+                      >
+                    </q-item-section>
+                  </q-item>
+                </q-card-section>
+              </q-card>
+
+              <q-card flat bordered class="q-mb-md">
+                <q-list bordered separator>
+                  <q-item clickable v-ripple @click="editProfile">
+                    <q-item-section avatar>
+                      <q-icon name="edit" color="primary" />
+                    </q-item-section>
+                    <q-item-section>Edit Profile</q-item-section>
+                    <q-item-section side>
+                      <q-icon name="chevron_right" />
+                    </q-item-section>
+                  </q-item>
+
+                  <q-item clickable v-ripple @click="changePassword">
+                    <q-item-section avatar>
+                      <q-icon name="vpn_key" color="primary" />
+                    </q-item-section>
+                    <q-item-section>Change Password</q-item-section>
+                    <q-item-section side>
+                      <q-icon name="chevron_right" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
+              </q-card>
+
+              <!-- Spacer to push logout at the bottom -->
+              <div class="q-space"></div>
+
+              <q-btn
+                label="Logout"
+                color="negative"
+                class="q-mt-md"
+                unelevated
+                rounded
+                size="md"
+                @click="logout"
+                style="width: 100%"
+              />
+              <q-dialog v-model="editProfileDialog" persistent>
+                <q-card style="min-width: 350px">
+                  <q-card-section
+                    class="row items-center q-pa-md bg-primary text-white"
+                  >
+                    <div class="text-h6">Edit Profile</div>
+                    <q-space />
+                    <q-btn icon="close" flat round dense v-close-popup />
+                  </q-card-section>
+
+                  <q-card-section class="q-gutter-md">
+                    <div class="text-center q-mb-md">
+                      <q-avatar size="80px">
+                        <img
+                          src="https://cdn.quasar.dev/img/avatar.png"
+                          alt="User Photo"
+                        />
+                      </q-avatar>
+                    </div>
+
+                    <q-input
+                      v-model="myObject.fname"
+                      label="First Name"
+                      filled
+                    />
+                    <q-input
+                      v-model="myObject.mname"
+                      label="Middle Name"
+                      filled
+                    />
+                    <q-input
+                      v-model="myObject.lname"
+                      label="Last Name"
+                      filled
+                    />
+                    <q-input
+                      v-model="myObject.contact"
+                      label="Contact Number"
+                      filled
+                    />
+                    <q-input
+                      v-model="myObject.Username"
+                      label="Username"
+                      filled
+                    />
+                  </q-card-section>
+
+                  <q-card-actions align="right">
+                    <q-btn flat label="Cancel" color="primary" v-close-popup />
+                    <q-btn
+                      flat
+                      label="Save"
+                      color="primary"
+                      @click="saveProfile"
+                    />
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
+              <!-- Change Password Dialog -->
+              <q-dialog v-model="changePasswordDialog" persistent>
+                <q-card style="min-width: 350px">
+                  <q-card-section
+                    class="row items-center q-pa-md bg-primary text-white"
+                  >
+                    <div class="text-h6">Change Password</div>
+                    <q-space />
+                    <q-btn icon="close" flat round dense v-close-popup />
+                  </q-card-section>
+
+                  <q-card-section class="q-gutter-md">
+                    <q-input
+                      v-model="oldPassword"
+                      label="Old Password"
+                      type="password"
+                      filled
+                    />
+                    <q-input
+                      v-model="newPassword"
+                      label="New Password"
+                      type="password"
+                      filled
+                    />
+                    <q-input
+                      v-model="confirmNewPassword"
+                      label="Confirm New Password"
+                      type="password"
+                      filled
+                    />
+                  </q-card-section>
+
+                  <q-card-actions align="right">
+                    <q-btn flat label="Cancel" color="primary" v-close-popup />
+                    <q-btn
+                      flat
+                      label="Save"
+                      color="primary"
+                      @click="saveNewPassword"
+                    />
+                  </q-card-actions>
+                </q-card>
+              </q-dialog>
             </q-tab-panel>
           </q-tab-panels>
         </q-page>
@@ -163,6 +326,7 @@ export default defineComponent({
   setup() {
     const $q = useQuasar();
     const router = useRouter();
+    const changePasswordDialog = ref(false);
     onMounted(() => {
       getScheduledIndividualPriest(myObject.value.account_id);
     });
@@ -180,7 +344,7 @@ export default defineComponent({
       active.value = true;
     };
     //logout
-    const Logout = () => {
+    const logout = () => {
       $q.dialog({
         title: "Logout",
         message: "Are you sure you want to logout?",
@@ -205,8 +369,85 @@ export default defineComponent({
       console.log("refresh eventy list");
       getNopriestEvent();
     };
+    function editProfile() {
+      console.log("Edit Profile clicked");
+      // Navigate or open dialog
+    }
+
+    function changePassword() {
+      changePasswordDialog.value = true;
+      // Open change password dialog
+    }
+
+    function Logout() {
+      console.log("Logout clicked");
+      // Add your logout logic here
+    }
+    const editProfileDialog = ref(false);
+
+    function editProfile() {
+      editProfileDialog.value = true;
+    }
+    function saveProfile() {
+      console.log("Saving...", myObject.value);
+      // you can also update sessionStorage here if needed
+      editProfileDialog.value = false;
+    }
+
+    const oldPassword = ref("");
+    const newPassword = ref("");
+    const confirmNewPassword = ref("");
+    function saveNewPassword() {
+      if (
+        !oldPassword.value ||
+        !newPassword.value ||
+        !confirmNewPassword.value
+      ) {
+        $q.notify({
+          type: "warning",
+          message: "Please fill in all password fields.",
+        });
+        return;
+      }
+
+      if (newPassword.value !== confirmNewPassword.value) {
+        $q.notify({
+          type: "negative",
+          message: "New Password and Confirm Password do not match!",
+        });
+        return;
+      }
+
+      console.log("Changing password...");
+      console.log("Old Password:", oldPassword.value);
+      console.log("New Password:", newPassword.value);
+
+      // Simulate success
+      $q.notify({
+        type: "positive",
+        message: "Password successfully changed!",
+      });
+
+      changePasswordDialog.value = false;
+
+      // Clear fields
+      oldPassword.value = "";
+      newPassword.value = "";
+      confirmNewPassword.value = "";
+    }
+
     return {
+      oldPassword,
+      newPassword,
+      changePasswordDialog,
+      confirmNewPassword,
+      saveNewPassword,
+      saveProfile,
+      editProfileDialog,
+      editProfile,
+      changePassword,
       refreshEventList,
+      logout,
       nopriestEvent,
       scheduleOnePriest,
       Logout,

@@ -29,13 +29,55 @@
                     
         $getSchedule = $this->db->rawQuery("SELECT a.*, b.lname, b.mname, b.fname
                                             FROM lbrmss_mass_schedules a
-                                            LEFT JOIN lbrmss_priest_main b ON b.priest_id = a.priest_id
+                                            LEFT JOIN lbrmss_priest_main b ON b.acc_id = a.priest_id
                                             WHERE a.remark = '1';");
-        if($getSchedule){
-            echo json_encode(array("Status"=>"Success", "data"=>$getSchedule));
-        }else{
-            echo json_encode(array("Status"=>"Failed". $this->db->getLastError(), "data"=>[]));
-          }
+     $data = [];
+
+     if ($getSchedule) {
+         foreach ($getSchedule as $row) {
+          $maseveid = $row['mass_event_id'];
+            $getMasintentions = $this->db->rawQuery("SELECT * FROM lbrmss_mass_intentions WHERE mass_id ='$maseveid' AND  remark = '1';");
+            
+
+             $data[] = [
+                 'mass_id' => $row['mass_id'],
+                 'mass_event_id' => $row['mass_event_id'],
+                 'mass_title' => $row['mass_title'],
+                 'date' => $row['date'],
+                 'time_from' => $row['time_from'],
+                 'time_to' => $row['time_to'],
+                 'VenueType' => $row['VenueType'],
+                 'venue' => $row['venue'],
+                 'priest_id' => $row['priest_id'],
+                 'language' => $row['language'],
+                 'created_at' => $row['created_at'],
+                 'created_by' => $row['created_by'],
+                 'remark' => $row['remark'],
+                 'lname' => $row['lname'],
+                 'mname' => $row['mname'],
+                 'fname' => $row['fname'],
+                 'details'   => $getMasintentions
+             ];
+         }
+     
+         if (count($data) > 0) {
+             // Output the result as a single JSON response
+             echo json_encode([
+                 'Status' => 'Success',
+                 'data' => $data
+             ]);
+         } else {
+             echo json_encode([
+                 'Status' => 'Failed',
+                 'data' => []
+             ]);
+         }
+     } else {
+         echo json_encode([
+             'Status' => 'Failed',
+             'data' => []
+         ]);
+     }
       }
       public function httpPost($payload)
       {
@@ -51,6 +93,9 @@
         for($i = 0; $i < $c; $i++){
             $priestId = isset($arr[$i]['assigned_priest']['priest_id']) ? $arr[$i]['assigned_priest']['priest_id'] : null;
 
+            
+
+
         $eventData = Array(
             "event_id" => '',
             "service_id" => '7',
@@ -65,7 +110,7 @@
             "days"                => 1,
             "venue_type"          => $arr[$i]['venue_type'],
             "priest_assigned_id"  => $priestId,
-            "event_progress"      => 1,
+            "event_progress"      => $priestId ? 1 : 0,
             "requirement_status"  => 1,
             "created_at"          => $dty,
             "created_by"          => '1',
@@ -80,7 +125,6 @@
                 "mass_id" => null,
                 "mass_event_id"     => $eventId,
                 "mass_title"        => $arr[$i]['mass_title'],
-                
                 "date"              => $arr[$i]['date'],
                 "time_from"         => $arr[$i]['time_from'],
                 "time_to"           => $arr[$i]['time_to'],
@@ -96,7 +140,6 @@
             $insertMass = $this->db->insert('lbrmss_mass_schedules', $massSchedule);
             //schedule for priest
 
-            if(!empty($arr[$i]['assigned_priest']['priest_id'])){
                 $ScheduleData = array(
                     "sched_id" => '',
                     "priest_id"         => $priestId,
@@ -109,7 +152,7 @@
                     "remark"            => '1' // 1 = show, 0 = hide
                 );
                 $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$ScheduleData);
-            }
+            
            
           
         }

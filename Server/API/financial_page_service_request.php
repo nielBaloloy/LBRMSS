@@ -47,7 +47,9 @@
                                                 LEFT JOIN lbrmss_client_list e ON e.cid = a.client
                                                  LEFT JOIN lbrmss_event_fee ef ON ef.event_id = a.event_id
                                                 WHERE a.remark = '1' AND fee_type = '$feeType'  AND ef.status = '$apiParameter' $filterRange 
-                                                ORDER BY ef.reference_no DESC");
+                                                GROUP BY a.event_id
+                                                ORDER BY ef.reference_no DESC
+                                                ");
 
       if(count($Display_Pending) > 0){
 

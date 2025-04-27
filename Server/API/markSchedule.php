@@ -23,33 +23,25 @@
 
       public function httpGet($payload)
       {
-     
-       
       }
       public function httpPost($payload)
       {
       
         $datas = json_encode($payload);
         $arr = json_decode($datas, true);
-        $accountID =  $arr['acc'];
-        date_default_timezone_set('Asia/Manila');
-        $timeFrom   =  date("H:i:s");
-        $timeTo     =  date("H:i:s");
-        $date       =  date("Y-m-d");
+        $eventId = $arr['eventid'];
+   
 
-        $schedules =$this->db->rawQuery("SELECT *, c.* FROM lbrmss_priest_schedule as a 
-                                          LEFT JOIN lbrmss_priest_main as b ON a.priest_id = b.acc_id 
-                                          LEFT JOIN lbrmss_event_table_main as c ON c.event_id = a.sched_event_id 
-                                          LEFT JOIN lbrmss_event_services as d ON d.etype_id =c.service_id
-                                          WHERE b.acc_id = '$accountID' AND a.date_from >= CURDATE() AND a.sched_status = '1' AND c.event_progress = '1' AND a.remark = '1' GROUP BY a.sched_id ORDER BY a.time_from DESC ");
-  
-       if($schedules){
-          echo json_encode(array("Status"=>"Success","data"=> $schedules));
-       }else{
-        echo json_encode(array("Status"=>"Failed","data"=> []));
-       }
-
-
+        $update = $this->db->rawQuery("UPDATE lbrmss_event_table_main  SET event_progress ='2' WHERE event_id = '$eventId' AND remark = '1'");
+       
+        if($update){
+            echo json_encode(array("msg"=>"Update was unsuccesful"));
+           
+        }else{
+            echo json_encode(array("msg"=>""));
+        }
+                                             
+       
     }
  
      
