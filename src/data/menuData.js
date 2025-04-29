@@ -41,7 +41,7 @@ export const menuData = [
     ],
   },
   {
-    to: "/SecretaryDashboard/Account-Management",
+    to: "/Account",
     label: "Accounts",
     icon: "group",
   },

@@ -10,6 +10,7 @@
   header("Access-Control-Allow-Headers: Content-Type");
  
   require_once('../MysqlIDb.php');
+  require_once('../model/sessionGet.php');
  
  
   class API
@@ -21,43 +22,41 @@
       }
 
 
+      
       public function httpGet($payload)
       {
-       $account = $this->db->rawQuery("SELECT a.* ,b.* ,c.*, b.pos_id as mainPosid, CONCAT(b.fname,' ',b.mname,' ',b.lname)as Fullname FROM useraccounts as a 
-                            LEFT JOIN lbrmss_account_person AS b ON a.UID = b.account_id AND a.remark ='1' 
-                            LEFT JOIN lbrmss_position AS c  ON c.pos_id = b.pos_id 
-                            WHERE b.remark ='1' AND a.remark = '1' ");
-        $accountInfo =[];
-        if(count($account) > 0){
-          foreach($account as $details) 
-          {
-            $accountInfo[]=[
-              "all"=>$details,
-              "pid"=>$details['UID'],
-              "position"=>$details['pos_name'],
-              "fullname"=>$details['Fullname'],
-              "username"=>$details['Username'],
-              "status"=>($details['isActive'] == 1) ? 'Active' : 'Inactive',
-            ];
-          }
-            echo json_encode(array("Status"=>"Success", "data"=>$accountInfo));
-        }else{
-          echo json_encode(array("Status"=>"Failed", "data"=>[]));
-        }
+      
 
       }
       public function httpPost($payload)
       {
-      
-        $data = json_encode($payload);
-        $AccountInfo = json_decode($data, true);
+        $datas = json_encode($payload);
+        $req = json_decode($datas, true);
+       
+        $account = $req['changes'];
+        $lname = $account['lname'];
+        $mname = $account['mname'];
+        $fname = $account['fname'];
+        $contact = $account['contact'];
+        $pid = $account['pid'];
+        $account_id = $account['account_id'];
+        $username = $account['Username'];
+        $password = $account['Password'];
+        $isActive = $account['isActive'];
+        $updateAccount = $this->db->rawQuery("UPDATE lbrmss_account_person SET lname = '$lname' ,mname='$mname', fname='$fname' ,contact='$contact'
+                                            WHERE pid = '$pid' AND remark = '1'");
+        $updateAccount2 = $this->db->rawQuery("UPDATE lbrmss_priest_main SET lname = '$lname' ,mname='$mname', fname='$fname' 
+                                            WHERE acc_id = '$account_id' AND remark = '1'");
+        $updateAccount3 = $this->db->rawQuery("UPDATE useraccounts SET Username = '$username' ,`Password`='$password', isActive='$isActive' 
+                                            WHERE person_id = '$pid' AND remark = '1'");
+
+       
+        echo json_encode(array("Status"=> "Success","sql"));
+
+       
+
         
-
-        $tableName = 'users';
-
-        $dataKeys = ['first_name', 'last_name', 'email'];
-
-         
+      
     }
  
      

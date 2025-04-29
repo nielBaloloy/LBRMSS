@@ -129,6 +129,10 @@ const routes = [
   //       "../pages/SecretaryDashboard.vue/ServiceModule/CertificationRequest.vue"
   //     ),
   // },
+  {
+    path: "/Account",
+    component: () => import("src/pages/signupPage/signupForm.vue"),
+  },
   //ServicePayment
   // Always leave this as last one,
   // but you can also remove it

@@ -209,6 +209,63 @@
           </q-btn-dropdown>
         </q-td>
       </template>
+      <template v-slot:body-cell-Status="{ row }">
+        <q-td>
+          <q-chip
+            v-if="row.status == 'Active'"
+            color="green"
+            text-color="white"
+            size="sm"
+          >
+            Active
+          </q-chip>
+          <q-chip v-else color="red" text-color="white"> Inactive </q-chip>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-accountAction="{ row }">
+        <q-td>
+          <q-btn-dropdown
+            dense
+            flat
+            icon="more_vert"
+            dropdown-icon="null"
+            size="sm"
+          >
+            <q-list>
+              <q-item clickable v-close-popup @click="editRow(row)">
+                <q-item-section avatar>
+                  <q-icon name="edit" color="primary" />
+                </q-item-section>
+                <q-item-section>Edit</q-item-section>
+              </q-item>
+              <q-item
+                v-if="row.status == 'Active'"
+                clickable
+                v-close-popup
+                @click="setStatus(0)"
+              >
+                <q-item-section avatar>
+                  <q-icon name="toggle_off" color="primary" />
+                </q-item-section>
+                <q-item-section>Set as Inactive</q-item-section>
+              </q-item>
+              <q-item v-else clickable v-close-popup @click="setStatus(1)">
+                <q-item-section avatar>
+                  <q-icon name="toggle_on" color="primary" />
+                </q-item-section>
+                <q-item-section>Set as Active</q-item-section>
+              </q-item>
+
+              <q-item clickable v-close-popup @click="deleteRow(row)">
+                <q-item-section avatar>
+                  <q-icon name="delete" color="negative" />
+                </q-item-section>
+                <q-item-section>Remove</q-item-section>
+              </q-item>
+            </q-list>
+          </q-btn-dropdown>
+        </q-td>
+      </template>
     </q-table>
     <q-dialog v-model="showPdf">
       <q-card style="width: 90vw; max-width: 900px; height: 90vh">
@@ -666,7 +723,11 @@ export default {
     let FilterData = (filterpayload) => {
       emit("FilterRanges", filterpayload.value);
     };
+    function setStatus(status) {
+      console.log("Status:", status);
+    }
     return {
+      setStatus,
       FilterData,
       statusOptions,
       emitFilterEvent,

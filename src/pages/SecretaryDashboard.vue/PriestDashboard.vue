@@ -318,6 +318,7 @@ import {
   getNopriestEvent,
   nopriestEvent,
 } from "src/composables/getPriestSched";
+import { api } from "src/boot/axios";
 export default defineComponent({
   components: {
     priestModule,
@@ -390,8 +391,30 @@ export default defineComponent({
     }
     function saveProfile() {
       console.log("Saving...", myObject.value);
-      // you can also update sessionStorage here if needed
-      editProfileDialog.value = false;
+
+      $q.dialog({
+        title: "Save Changes?",
+        message: "Are you sure you want to save this changes?",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => {
+          api
+            .post("saveEditAccount.php", { changes: myObject.value })
+            .then((response) => {
+              if (response.data.Status == "Success") {
+                $q.notify({
+                  message: "Jim pinged you.",
+                  color: "green-5",
+                  top,
+                  icon: "check",
+                });
+              }
+            });
+        })
+        .onCancel(() => {
+          editProfileDialog.value = false;
+        });
     }
 
     const oldPassword = ref("");

@@ -123,7 +123,9 @@
                     "type"                => $type,
                     "days"                => $Event['Days'],
                     "venue_type"          => $Event['Venue_type'],
-                    "priest_assigned_id"  => $Event['Assigned_Priest']['priest_id'],
+                    "priest_assigned_id"  => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                    ? $Event['Assigned_Priest']['priest_id'] 
+                    : null),
                     "event_progress"      => $eventProgress,
                     "requirement_status"  => $BaptismData['Status'],
                     "created_at"          => $dty,
@@ -141,7 +143,9 @@
                     $BaptismAssignment = array(
                         "bapt_id" => '',
                         "event_id" =>   $new_eventId,
-                        "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+                        "assigned_priest" =>  (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                        ? $Event['Assigned_Priest']['priest_id'] 
+                        : null),
                         "remark" => '1'
                     );
                     $getBapt_id = $this->db->getMaxId('lbrmss_baptism_main','bapt_id')+1;
@@ -252,7 +256,9 @@
 
                                 $priestAssigned = array(
                                     "sched_id" => '',
-                                    "priest_id"=>$Event['Assigned_Priest']['priest_id'],
+                                    "priest_id"=> (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+                                    ? $Event['Assigned_Priest']['priest_id'] 
+                                    : null),
                                     "sched_event_id"=>$new_eventId,
                                     "date_from" =>$Event['Date'],
                                     "date_to" =>$Event['Date'],
