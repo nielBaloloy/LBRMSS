@@ -107,7 +107,7 @@
               "payment" => '', // Initial payment
               "balance" => '', // Remaining balance
               "due_date" => '', // Payment due date 1 week before event
-              "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+              "status" => '3', // 1 = Pending, 2 = Partially Paid, 3 = Paid
               "created_at" => $dty, // Timestamp of creation
               "updated_at" => '', // Timestamp of last update
               "created_by" =>'1', // User who created the record
@@ -134,7 +134,7 @@
 
 
 
-            echo json_encode(array("Status"=>"Success"));
+            echo json_encode(array("Status"=>"Success","data"=>$insertPriestSchedule));
           }else{
             echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
           }
