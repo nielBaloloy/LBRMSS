@@ -23,4 +23,8 @@ class EventModel {
             "remark"              => '1'
         );
     }
+
+    public static function sendSMS($sms){
+        echo var_dump($sms);
+    }
 }
