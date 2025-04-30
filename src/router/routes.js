@@ -122,6 +122,16 @@ const routes = [
         "../pages/SecretaryDashboard.vue/EventScheduler/PriestSchedule_mian.vue"
       ),
   },
+  {
+    path: "/Backup",
+    component: () =>
+      import("src/pages/SecretaryDashboard.vue/Tools/BackupPage.vue"),
+  },
+  {
+    path: "/Restore",
+    component: () =>
+      import("../pages/SecretaryDashboard.vue/Tools/RestorePage.vue"),
+  },
   // {
   //   path: "/Request_Certificate",
   //   component: () =>

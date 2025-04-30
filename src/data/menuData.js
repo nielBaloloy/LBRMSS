@@ -55,6 +55,20 @@ export const menuData = [
     label: "Priest Setup",
     icon: "settings",
   },
+  {
+    label: "Tools",
+    icon: "construction",
+    children: [
+      {
+        to: "/Backup",
+        label: "Backup Database",
+      },
+      {
+        to: "/Restore",
+        label: "Restore Database",
+      },
+    ],
+  },
 ];
 /** Financial Module */
 export const menuData2 = [
