@@ -157,6 +157,7 @@ import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 import { getToday, scheduleToday } from "src/composables/getTodaysSchedule";
 import { sched, updateSchedule } from "src/composables/updateEvent";
 import priestModule from "src/components/DashboardComponents/iosPage.vue";
+import { remindClient } from "src/composables/sendReminder";
 export default defineComponent({
   components: {
     EventCard,
@@ -212,6 +213,7 @@ export default defineComponent({
       getAvailablePriest();
       getToday();
       updateSchedule();
+      remindClient();
     });
     return {
       scheduleToday,

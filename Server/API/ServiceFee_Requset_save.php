@@ -11,6 +11,7 @@
  
   require_once('../MysqlIDb.php');
   require_once('../model/sessionGet.php');
+  require_once('../model/insertEvent.php');
  
  
   class API
@@ -18,6 +19,7 @@
       public function __construct()
       {
        $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
+     
        
       }
 
@@ -33,6 +35,7 @@
       
         $datas = json_encode($payload);
         $PaymentData= json_decode($datas, true);
+        $events = new EventModel();
         $ev_id = $PaymentData['event_id'];
         $dt = new DateTime();
         $dty = $dt->format('Y-m-d H:i:s');
@@ -95,6 +98,19 @@
 
 
           echo json_encode(array("message"=>""));
+        
+
+          $getdetails = $this->db->rawQuery("SELECT a.*, b.*,c.*,d.* FROM lbrmss_event_table_main AS a 
+                                              LEFT JOIN lbrmss_client_list as b ON a.client = b.cid
+                                              LEFT JOIN lbrmss_event_fee as c ON c.event_id = a.event_id
+                                              LEFT JOIN lbrmss_event_services as d ON d.etype_id  = a.service_id
+                                              WHERE a.event_id = '$ev_id' AND a.remark = '1' GROUP BY a.event_id;");
+          $res = $events->sendSMS($getdetails);
+          if($res){
+            echo json_encode(array("message"=>"" ));
+          }else{
+            echo json_encode(array("message"=>"Message not sent, please check your balance" ));
+          }
         }
          else
                {

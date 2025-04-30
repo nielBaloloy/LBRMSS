@@ -1,0 +1,13 @@
+{
+    "name": "telerivet/telerivet-php-client",
+    "type": "library",
+    "description": "PHP client library for Telerivet REST API",
+    "homepage": "https://telerivet.com/api",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "classmap": ["telerivet.php", "lib/"]
+    }
+}
