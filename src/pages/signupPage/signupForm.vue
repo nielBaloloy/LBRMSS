@@ -126,7 +126,7 @@
         <q-card style="width: 800px" class="q-pa-lg rounded-borders shadow-2">
           <!-- Header -->
           <q-card-section class="row items-center q-pb-none">
-            <div class="text-h6">Create Account</div>
+            <div class="text-h6">Create Accounts</div>
             <q-space />
             <q-btn icon="close" flat round dense v-close-popup />
           </q-card-section>
