@@ -136,7 +136,7 @@
             <q-form class="q-gutter-md">
               <!-- Section Title -->
               <div class="text-subtitle1 text-primary q-mb-sm">
-                Personal Information
+                User Information
               </div>
 
               <!-- 3 Columns per Row -->
