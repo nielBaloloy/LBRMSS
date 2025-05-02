@@ -30,7 +30,7 @@
         $host = 'localhost';
         $username = 'root';
         $password = ''; // Your MySQL password
-        $database = 'restore'; // Target database name
+        $database = 'lbrmss_db'; // Target database name
         
         $file = $_FILES['sql_file']['tmp_name'];
         if ($_FILES['sql_file']['type'] !== 'application/octet-stream' && pathinfo($_FILES['sql_file']['name'], PATHINFO_EXTENSION) !== 'sql') {

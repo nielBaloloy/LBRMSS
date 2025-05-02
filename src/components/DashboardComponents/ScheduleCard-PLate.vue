@@ -41,15 +41,23 @@ import gsap from "gsap";
 
 export default defineComponent({
   name: "EventCard",
-  setup() {
+  props: {
+    pending: { type: Number, default: 0 },
+    scheduled: { type: Number, default: 0 },
+    done: { type: Number, default: 0 },
+  },
+  setup(props) {
+    // Internal state refs
     const scheduled = ref(0);
     const pending = ref(0);
     const completed = ref(0);
 
+    // Reactive tween targets
     const scheduledTween = reactive({ number: 0 });
     const pendingTween = reactive({ number: 0 });
     const completedTween = reactive({ number: 0 });
 
+    // Animate each value with gsap on change
     watch(scheduled, (n) => {
       gsap.to(scheduledTween, { duration: 1, number: n || 0 });
     });
@@ -62,13 +70,14 @@ export default defineComponent({
       gsap.to(completedTween, { duration: 1, number: n || 0 });
     });
 
-    // Trigger animation by setting values on mount
+    // On mount, trigger animation from props
     onMounted(() => {
-      scheduled.value = 50;
-      pending.value = 20;
-      completed.value = 75;
+      scheduled.value = props.scheduled;
+      pending.value = props.pending;
+      completed.value = props.done;
     });
 
+    // Expose data for template
     return {
       scheduledTween,
       pendingTween,

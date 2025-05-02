@@ -107,7 +107,7 @@
               "payment" => '', // Initial payment
               "balance" => '', // Remaining balance
               "due_date" => '', // Payment due date 1 week before event
-              "status" => '3', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+              "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
               "created_at" => $dty, // Timestamp of creation
               "updated_at" => '', // Timestamp of last update
               "created_by" =>'1', // User who created the record
@@ -131,8 +131,7 @@
             "remark"=>'1'
           );
         $insertPriestSchedule= $this->db->insert('lbrmss_priest_schedule',$priestAssigned);
-
-
+      
 
             echo json_encode(array("Status"=>"Success","data"=>$insertPriestSchedule));
           }else{

@@ -298,24 +298,28 @@
           <!-- mass upload -->
           <div class="massUpload full-width q-pa-md" v-show="MassUpload">
             <p class="text-center">Upload Files Here</p>
-
-            <q-uploader
-              ref="uploader"
-              class="full-width"
-              url="http://localhost:4444/upload"
-              label="Upload Excel or CSV files"
+            <span class="text-blue" @click="click()">Click Here</span> to
+            generate
+            <q-file
+              v-model="excelData"
+              label="Drop your files here"
+              use-chips
               multiple
-              accept=".xls,.xlsx,.csv"
-              @rejected="onRejected"
-              auto-upload="false"
+              borderless
+              accept=".csv,.xlsx"
             />
 
+            <!-- Button to trigger JSON logging -->
             <q-btn
-              label="Upload Files"
-              color="primary"
-              class="q-mt-md full-width"
-              @click="uploadFiles"
-            />
+              unelevated
+              class="bg-amber-5"
+              label="Upload"
+              @click="excelExport(excelData)"
+              style="width: 100%"
+            ></q-btn>
+
+            <!-- Displaying the JSON output -->
+            <pre>{{ jsonData }}</pre>
           </div>
           <!-- Contact Number -->
           <div class="servicefield">
@@ -2859,9 +2863,11 @@ import {
   reactive,
 } from "vue";
 import { useQuasar } from "quasar";
+import * as XLSX from "xlsx";
 import philippineData from "../../AddressPH/philippine_provinces_cities_municipalities_and_barangays_2019v2.json";
 import moment from "moment";
 import vueFilePond from "vue-filepond";
+import { baseUrl } from "src/data/menuData";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond/dist/filepond.min.css";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
@@ -4686,8 +4692,78 @@ export default defineComponent({
       console.log("mass", rowData);
       massDialog.value = false;
     };
+    let excelData = ref();
+    let excelVar = ref({});
+    const excelExport = (files) => {
+      // files is the Q-File v-model array
+      const input = files[0];
+      if (!input) {
+        console.warn("No file selected");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // e.target.result is an ArrayBuffer
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: "array" });
+        console.log("Workbook loaded successfully:", wb);
+
+        const result = {};
+
+        wb.SheetNames.forEach((sheetName) => {
+          const ws = wb.Sheets[sheetName];
+
+          // 1) as an array of arrays (first row is header)
+          const asArrays = XLSX.utils.sheet_to_json(ws, {
+            header: 1,
+            defval: "",
+          });
+          console.log(`> ${sheetName} as array of arrays:`, asArrays);
+
+          // 2) as an array of objects (first row → keys)
+          const asObjects = XLSX.utils.sheet_to_json(ws, {
+            defval: "",
+          });
+          console.log(`> ${sheetName} as array of objects:`, asObjects);
+
+          result[sheetName] = {
+            rows: asArrays,
+            objects: asObjects,
+          };
+        });
+
+        // store it in your ref so your UI/reactivity sees it
+        excelVar.value = result;
+        console.log("Final JSON stored in excelVar:", excelVar.value);
+      };
+
+      reader.readAsArrayBuffer(input);
+    };
+    let click = () => {
+      const csvContent =
+        "Groom_First_Name,Groom_Middle_Name,Groom_Last_Name,Groom_Suffix,Groom_Status,Groom_Birthdate,Groom_Address,Bride_First_Name,Bride_Middle_Name,Bride_Last_Name,Grooms_Age,Bride_Age,Bride_Address,Groom_Father,Groom_Mother,Bride_Suffix,Bride_Birthdate,Bride_Status,Bride_Father,Bride_Mother,Priest_Name,Assigned_Priest,Observanda,Stipendium,Status,EventProgress,ContactNumber,Contact_Person,Groom_Witness,GroomWitness_Address,Baptismal,Marriage_License,Confirmation,LiveBirthCert,Cenomar,Interogation,PreCana,Confession";
+
+      const blob = new Blob([csvContent], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "MassWedding-Template.csv"); // Set the desired file name
+      link.style.display = "none";
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
 
     return {
+      excelExport,
+      excelData,
+      click,
+      excelVar,
       massrows,
       massData,
       massDialog,

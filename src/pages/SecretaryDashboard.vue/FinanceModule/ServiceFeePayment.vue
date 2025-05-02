@@ -157,7 +157,7 @@
 
             <q-tab-panel name="certificate">
               <SSR_datatable
-                :columns="columns"
+                :columns="columnscert"
                 :rowsData="certPaymentList"
                 :getStatusColor="getStatusColor"
                 :getStatusIcon="getStatusIcon"
@@ -394,7 +394,7 @@ export default defineComponent({
     const columns = [
       {
         name: "name",
-        label: "Bride and Groom",
+        label: "Client",
         field: "Client",
         sortable: true,
         align: "center",
@@ -506,7 +506,55 @@ export default defineComponent({
     function loadCert() {
       certpaymentSetList(1);
     }
+    const columnscert = [
+      {
+        name: "name",
+        label: "Reference Number",
+        field: "Reference",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "name",
+        label: "Client",
+        field: "Client",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Service",
+        label: "Service",
+        field: "Service",
+        sortable: true,
+        align: "center",
+      },
+
+      {
+        name: "Date",
+        label: "Date",
+        field: "Date",
+        sortable: true,
+        align: "center",
+      },
+
+      {
+        name: "Status",
+        label: "Payment Status",
+        field: "EventProgress",
+        sortable: true,
+        align: "center",
+        icon: "pause",
+      },
+      {
+        name: "Action",
+        label: "Action",
+        field: "Action",
+        sortable: false,
+        align: "center",
+      },
+    ];
     return {
+      columnscert,
       loadCert,
       certpaymentSetList,
       certPaymentList,

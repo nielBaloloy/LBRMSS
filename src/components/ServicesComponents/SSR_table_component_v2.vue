@@ -165,6 +165,16 @@
       </template>
 
       <!-- Custom slot for Action column -->
+      <template v-slot:body-cell-faction="{ row }">
+        <q-td>
+          <q-btn
+            class="bg-primary text-white"
+            label="view"
+            @click="row"
+          ></q-btn>
+          <q-btn label="print"></q-btn>
+        </q-td>
+      </template>
       <template v-slot:body-cell-Action="{ row }">
         <q-td>
           <q-btn-dropdown

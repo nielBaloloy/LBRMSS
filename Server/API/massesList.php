@@ -19,30 +19,41 @@
        $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
        
       }
+
+
       public function httpGet($payload)
       {
-        $serviceId = json_encode($payload);
-        $ServiceID = json_decode($serviceId, true);
-      
-       $ID  = $ServiceID['service'];
+        $getMassesandBlessing = $this->db->rawQuery("SELECT * FROM  lbrmss_donations where remark  ='1'");
 
-       switch($ID){
-          case 1 :
-            //marriages  service Counter
-         
-        $Display_Pending = $this->db->rawQuery("SELECT *
-                                                FROM  
-                                                lbrmss_event_fee ef 
-                                                WHERE ef.remark = '1' AND ef.status = '1' AND ef.fee_type = '1'
-                                                GROUP BY  ef.reference_no
-                                                ORDER BY ef.reference_no DESC");
-         $Display_Pending_Count = count($Display_Pending);
-            echo json_encode(array("Status"=>"Success", "data"=>$Display_Pending_Count));
-            break;
-       }
-            
+        if($getMassesandBlessing){
+          echo json_encode(array("Status"=>"Success","data"=>$getMassesandBlessing));
+        }else{
+          echo json_encode(array("Status"=>"Failed","data"=>[]));
+        }
+
       }
+      public function httpPost($payload)
+      {
+      
+        $datas = json_encode($payload);
+        $arr = json_decode($datas, true);
+         
+    }
+ 
      
+      public function httpPut($payload)
+      {
+        
+  
+
+    }
+      public function httpDelete($payload)
+      {
+        
+        
+       
+       
+      }
   }
  
 

@@ -40,40 +40,41 @@
             $venuetype     =   '';
         }
 
-    
+    // echo $timeFrom;
+    // echo $timeTo;
+    // echo $date;
          $getAvailablePriest = $this->db->rawQuery("SELECT DISTINCT
-        b.*,
-        pos.*,
-        e.*,
-        evt.venue_type
-    FROM 
-        lbrmss_priest_main AS b
-    LEFT JOIN 
-        lbrmss_position AS pos ON b.position = pos.pos_id
-    LEFT JOIN 
-        lbrmss_priest_schedule AS a ON a.priest_id = b.acc_id
-    LEFT JOIN 
-        lbrmss_account_person AS e ON e.pid = b.acc_id
-    LEFT JOIN 
-        lbrmss_event_table_main AS evt 
-            ON evt.priest_assigned_id = a.priest_id
-            AND a.remark = '1'
-    WHERE 
-        (a.priest_id IS NULL OR a.sched_status = '0')
-        AND b.remark = '1'
-        AND NOT EXISTS (
-            SELECT 1 FROM lbrmss_priest_schedule AS a
-            WHERE a.priest_id = b.acc_id
-            AND a.remark = '1' AND a.sched_status = '1'
-            AND '$date' BETWEEN a.date_from AND a.date_to
-            AND (
-                '$timeFrom' BETWEEN a.time_from AND a.time_to OR
-                '$timeTo' BETWEEN a.time_from AND a.time_to OR
-                a.time_from BETWEEN '$timeFrom' AND '$timeTo' OR
-                a.time_to BETWEEN '$timeFrom' AND '$timeTo'
-            )
-        )
-    GROUP BY b.priest_id
+                        b.*,
+                        pos.*,
+                        e.*,
+                        evt.venue_type
+                    FROM 
+                        lbrmss_priest_main AS b
+                    LEFT JOIN 
+                        lbrmss_position AS pos ON b.position = pos.pos_id
+                    LEFT JOIN 
+                        lbrmss_priest_schedule AS a ON a.priest_id = b.acc_id
+                    LEFT JOIN 
+                        lbrmss_account_person AS e ON e.pid = b.acc_id
+                    LEFT JOIN 
+                        lbrmss_event_table_main AS evt 
+                            ON evt.priest_assigned_id = a.priest_id
+                            AND a.remark = '1'
+                    WHERE 
+                        b.remark = '1'
+                        AND NOT EXISTS (
+                            SELECT 1 FROM lbrmss_priest_schedule AS a
+                            WHERE a.priest_id = b.acc_id
+                            AND a.remark = '1' AND a.sched_status = '1'
+                            AND '$date' BETWEEN a.date_from AND a.date_to
+                            AND (
+                                '$timeFrom' BETWEEN a.time_from AND a.time_to OR
+                                '$timeTo' BETWEEN a.time_from AND a.time_to OR
+                                a.time_from BETWEEN '$timeFrom' AND '$timeTo' OR
+                                a.time_to BETWEEN '$timeFrom' AND '$timeTo'
+                            )
+                        )
+                    GROUP BY b.priest_id
 
                     ");
 

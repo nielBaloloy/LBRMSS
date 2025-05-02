@@ -103,7 +103,7 @@
                 'Assigned_Priest' =>$event['pos_prefix']." " .$event['fname']." ".substr($event['mname'],0,1)." ".$event['lname'],
                 "Venue_type" => ($event['venue_type'] == '1') ? "Church" : (($event['venue_type'] == '2') ? "Pastoral Center" : "Outside"),
                 "EventProgress" => ($event['payStatus'] == '1') ? "Pending" :(($event['payStatus'] == '2') ? "Partial" :"Paid"),
-                "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
+                "Reference" =>  $event['reference_no'],
                 "icon" =>$icon,
                 "color" =>$color,
                 "burial_option" =>'',

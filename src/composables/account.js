@@ -28,4 +28,23 @@ const loadAccount = (payload) => {
   });
 };
 
+const CreateAccount = (payload) => {
+  return new Promise((resolve, reject) => {
+    api
+      .post("Signup.php", { account: payload })
+      .then((response) => {
+        console.log(response);
+        if (response.data.Status == "Success") {
+          account.value = response.data.data;
+        }
+      })
+      .catch((error) => {
+        reject(error);
+        $q.notify({
+          type: "negative",
+          message: "Network Error",
+        });
+      });
+  });
+};
 export { loadAccount, account };

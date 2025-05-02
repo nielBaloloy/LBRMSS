@@ -23,40 +23,28 @@
 
       public function httpGet($payload)
       {
-       
-      }
+        $pendingResult = $this->db->query("SELECT COUNT(event_id) AS count FROM lbrmss_event_table_main WHERE event_progress = '0' AND DATE_FORMAT(NOW(), '%Y-%m') = DATE_FORMAT(date_to, '%Y-%m') AND remark = '1'");
+            $scheduledResult = $this->db->query("SELECT COUNT(event_id) AS count FROM lbrmss_event_table_main WHERE event_progress = '1' AND DATE_FORMAT(NOW(), '%Y-%m') = DATE_FORMAT(date_to, '%Y-%m') AND remark = '1'");
+            $completeResult = $this->db->query("SELECT COUNT(event_id) AS count FROM lbrmss_event_table_main WHERE event_progress = '2' AND DATE_FORMAT(NOW(), '%Y-%m') = DATE_FORMAT(date_to, '%Y-%m') AND remark = '1'");
+
+            // Extract the count values safely
+            $pending = isset($pendingResult[0]['count']) ? (int)$pendingResult[0]['count'] : 0;
+            $scheduled = isset($scheduledResult[0]['count']) ? (int)$scheduledResult[0]['count'] : 0;
+            $complete = isset($completeResult[0]['count']) ? (int)$completeResult[0]['count'] : 0;
+
+            // Output JSON
+            echo json_encode([
+                "Status" => "Success",
+                "pending" => $pending,
+                "scheduled" => $scheduled,
+                "complete" => $complete
+            ]);
+    }
       public function httpPost($payload)
       {
       
-        $datas = json_encode($payload);
-        $arr = json_decode($datas, true);
         
-       
-        $dt = new DateTime();
-        $dty = $dt->format('Y-m-d H:i:s');
-        $dtyOne = $dt->format('Y-m-d');
-        $cleanDate = str_replace("-", "", $dtyOne);
-        $eve_id = $this->db->getMaxId(" lbrmss_donations","donation_id");
-        $data = array(
-          "event_id"        => '',
-          "donor"           => $arr['donor']['name'],
-          "donation_type"   => $arr['donation']['paymentMethod']['value'],
-          "purpose"         => $arr['donation']['type']['label'],
-          "amount_donated"  => $arr['donation']['amount'],
-          "donation_date"   => date('Y-m-d'), // or replace with actual date if available
-          "notes"           => $arr['donation']['description'],
-          "reference_no"    => "DON-" . $cleanDate . $eve_id,
-          "created_at"      => date('Y-m-d H:i:s'),
-          "created_by"      => '1', // replace with actual user ID variable
-          "remark"          => 1 // or use 0 depending on your logic (1 = show, 0 = hide)
-      );
-      $insertdonation = $this->db->insert("lbrmss_donations",$data);
-      if($insertdonation){
-        echo json_encode(array("message"=>""));
-      }else{
-        echo json_encode(array("message"=>"Failed"));
-      }
-     
+         
     }
  
      

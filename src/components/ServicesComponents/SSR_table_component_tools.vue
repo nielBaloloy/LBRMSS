@@ -74,7 +74,13 @@
           </q-btn-dropdown>
         </q-td>
       </template>
+      <template v-slot:body-cell-donate="{ row }">
+        <q-btn flat @click="donateForm(row)" label="edit" />
+      </template>
     </q-table>
+    <q-dialog v-model="formdonate">
+      <q-card> </q-card>
+    </q-dialog>
   </div>
 </template>
 
@@ -196,7 +202,15 @@ export default {
     let FilterData = (filterpayload) => {
       emit("FilterRanges", filterpayload.value);
     };
+    let formdonate = ref(false);
+    function donateForm(row) {
+      var eventid = row.event_id;
+      console.log(row);
+      formdonate.value = true;
+    }
     return {
+      formdonate,
+      donateForm,
       FilterData,
       statusOptions,
       emitFilterEvent,

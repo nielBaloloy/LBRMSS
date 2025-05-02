@@ -40,7 +40,7 @@ const pendingCounter_Cert = (serviceId) => {
       .then((response) => {
         if (response.data.Status == "Success") {
           console.log(response.data.data);
-          pendingService_Cert.value = response.data.data[0].counter;
+          pendingService_Cert.value = response.data.data;
         } else {
           console.log(response.data.data);
           pendingService_Cert.value = [];

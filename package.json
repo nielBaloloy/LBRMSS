@@ -32,7 +32,8 @@
     "vue": "^3.0.0",
     "vue-filepond": "^7.0.4",
     "vue-i18n": "^9.0.0",
-    "vue-router": "^4.0.0"
+    "vue-router": "^4.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@intlify/vite-plugin-vue-i18n": "^3.3.1",

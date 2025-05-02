@@ -152,10 +152,16 @@
             @click="loadFee(4)"
           />
           <q-tab
-            name="others"
+            name="blessing"
             icon="assignment"
-            label="Others"
-            @click="loadFee(8)"
+            label="Blessing"
+            @click="loadFee(6)"
+          />
+          <q-tab
+            name="annointingoftheSick"
+            icon="assignment"
+            label="Annointing of the Sick"
+            @click="loadFee(5)"
           />
         </q-tabs>
         <q-separator />
@@ -191,7 +197,14 @@
               @filterData="applyDateTimeFilter"
             />
           </q-tab-panel>
-          <q-tab-panel name="others">
+          <q-tab-panel name="blessing">
+            <SSR_table_tools
+              :columns="columns"
+              :rowsData="fee_list"
+              @filterData="applyDateTimeFilter"
+            />
+          </q-tab-panel>
+          <q-tab-panel name="annointingoftheSick">
             <SSR_table_tools
               :columns="columns"
               :rowsData="fee_list"

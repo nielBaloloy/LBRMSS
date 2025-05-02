@@ -117,6 +117,8 @@ const categoryOption = [
   { label: "Burial", value: 4 },
   { label: "Baptism", value: 2 },
   { label: "Confirmation", value: 3 },
+  { label: "Blessing", value: 6 },
+  { label: "Annointing of the Sick", value: 5 },
 ];
 
 const submitForm = () => {

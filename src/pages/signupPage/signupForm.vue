@@ -222,13 +222,20 @@
               <!-- Position and Status -->
               <div class="row q-col-gutter-md">
                 <q-select
-                  v-model="accountForm.position"
+                  v-model="accountForm.posid"
                   :options="positions"
                   label="Position"
                   outlined
                   dense
                   emit-value
                   map-options
+                  class="col-4"
+                />
+                <q-input
+                  v-model="accountForm.posprefix"
+                  label="Prefix"
+                  outlined
+                  dense
                   class="col-4"
                 />
                 <div class="col-8">
@@ -289,6 +296,7 @@ import SidebarMenu from "src/components/DashboardComponents/navigation_left.vue"
 import { menuData, menuData2 } from "src/data/menuData";
 import accountTable from "src/components/ServicesComponents/SSR_table_component_v2.vue";
 import { loadAccount, account } from "src/composables/account";
+import { api } from "src/boot/axios";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
@@ -314,6 +322,7 @@ export default defineComponent({
       password: "",
       posid: "",
       position: "",
+      posprefix: "",
     });
     const confirmPassword = ref("");
     const passwordMismatch = ref(false);
@@ -325,15 +334,28 @@ export default defineComponent({
 
     // Simulate available positions for selection
     const positions = [
-      { label: "Manager", value: "manager" },
-      { label: "Developer", value: "developer" },
-      { label: "Analyst", value: "analyst" },
+      { label: "Secretary", value: "2" },
+      { label: "Priest", value: "1" },
+      { label: "Cashier", value: "3" },
+      { label: "Bookkeeper", value: "4" },
     ];
     const saveAccount = () => {
       if (!passwordMismatch.value) {
         console.log("Form data:", accountForm.value);
-        // Submit logic here...
-        accountdialog.value = false;
+        api
+          .post("Signup.php", { account: accountForm.value })
+          .then((response) => {
+            console.log(response);
+            loadAccount();
+            accountdialog.value = false;
+          })
+          .catch((error) => {
+            reject(error);
+            $q.notify({
+              type: "negative",
+              message: "Network Error",
+            });
+          });
       }
       console.log("Form data:", accountForm.value);
     };

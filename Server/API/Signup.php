@@ -52,10 +52,60 @@
         $data = json_encode($payload);
         $AccountInfo = json_decode($data, true);
         
+        $account = $AccountInfo['account'];
+        $acc_ids = $this->db->getMaxId('useraccounts','UID') +1;
+      $data1 = array(
+        "pos_id"     => $account['posid'],               // maps to pos_id
+        "account_id" => $acc_ids,                 // maps to uid from account
+        "lname"      => $account['lnamme'],              // typo fixed: probably meant "lname"
+        "mname"      => $account['mname'],
+        "fname"      => $account['fname'],
+        "contact"    => $account['contact'],
+        "created_at" => date('Y-m-d H:i:s'),             // current timestamp
+        "created_by" => 1,                               // adjust as needed
+        "updated_at" => null,                            // or current timestamp if needed
+        "updated_by" => null,
+        "remark"     => 1                                // static or logic-based
+    );
+      
+      $insert1 = $this->db->insert('lbrmss_account_person', $data1);
+      $acc_idss = $this->db->getMaxId('lbrmss_account_person','pid');
+        $data2 = array(
+        "UID"        => '',
+        "person_id"  => $acc_idss,
+        "AccessLvl"  => $account['posid'],
+        "Username"   =>  $account['username'],
+        "Password"   => $account['password'],
+        "isActive"   => $account['status'],
+        "remark"     =>'1',
+    );
 
-        $tableName = 'users';
+     $insert2 = $this->db->insert('useraccounts', $data2);
+        if($account['posid'] == '1'){
+          $acc_id = $this->db->getMaxId('lbrmss_account_person','pid');
+          $data3 = array(
+            "priest_id"       => '',
+            "acc_id"          => $acc_id,
+            "lname"           => $account['lnamme'],
+            "mname"           => $account['mname'],
+            "fname"           => $account['fname'],
+            "suffix_name"     => $account['suffix_name'],
+            "status"          => $account['status'],
+            "contact_number"  => $account['contact'],
+            "position"        => $account['posid'],
+            "created_at"      => date('Y-m-d H:i:s'),
+            "created_by"      => '1',
+            "remark"          => '1'
+        );
+        
+        $insert3 = $this->db->insert('lbrmss_priest_main', $data3);
 
-        $dataKeys = ['first_name', 'last_name', 'email'];
+        }
+        if($insert1 == true && $insert2 == true){
+          echo json_encode(array("Status"=>"Success"));
+        }else{
+          echo json_encode(array("Status"=>"Failed"));
+        }
 
          
     }

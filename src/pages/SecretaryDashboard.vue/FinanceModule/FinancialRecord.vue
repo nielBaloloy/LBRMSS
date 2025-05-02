@@ -102,7 +102,26 @@
       <SidebarMenu :menuItems="menuData2" />
     </q-drawer>
 
-    <q-page-container> code here</q-page-container>
+    <q-page-container>
+      <div class="q-pa-lg">
+        <div class="row q-col-gutter-md">
+          <!-- Per Day Card -->
+          <div class="col-xs-12 col-sm-4">
+            <div class="text-h6">Total Earnings</div>
+            <div class="text-h6 q-mt-sm">₱ {{ overall }}</div>
+          </div>
+
+          <!-- Per Month Card -->
+        </div>
+        <div class="q-pt-md">
+          <FinanceTable
+            :title="Financial"
+            :rowsData="frecord"
+            :columns="columns"
+          />
+        </div>
+      </div>
+    </q-page-container>
   </q-layout>
 </template>
 <style scoped>
@@ -130,17 +149,22 @@ import { useQuasar, SessionStorage } from "quasar";
 import { useRouter } from "vue-router";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
-
+import FinanceTable from "src/components/ServicesComponents/SSR_table_component_v2.vue";
+import {
+  getFinanceRecord,
+  overall,
+  frecord,
+} from "src/composables/financialRecord.js";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
-  components: { SidebarMenu },
+  components: { SidebarMenu, FinanceTable },
 
   setup() {
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
-      await getSerivce(0); // Ensure fetch completes before proceeding
+      await getFinanceRecord(); // Ensure fetch completes before proceeding
       dataLoaded.value = true; // ✅ Mark as loaded
     });
 
@@ -169,8 +193,72 @@ export default defineComponent({
         router.push({ path: "/" });
       });
     };
+    const columns = [
+      {
+        name: "transaction_number",
+        label: "OR Number",
+        field: "reference_no",
+        sortable: true,
+        align: "left",
+      },
+      {
+        name: "transaction_date",
+        label: "Transaction Date",
+        field: "date",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "payees",
+        label: "Payees",
+        field: "name",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "event_or_service",
+        label: "Event or Service",
+        field: "event_name",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "type",
+        label: "Pay Type",
+        field: "payment_type",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "description",
+        label: "type",
+        field: "fee_type",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "amount",
+        label: "Amount",
+        field: "amount_total",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "faction",
+        label: "Action",
+        field: "action",
+        sortable: false,
+        align: "center",
+      },
+    ];
+    let Financial = "Financial Record";
 
     return {
+      overall,
+      frecord,
+      Financial,
+
+      columns,
       menuData2,
       dialog2: ref(false),
       Logout,

@@ -239,12 +239,12 @@ export default defineComponent({
       let diff = Math.floor((target.getTime() - now.getTime()) / 1000);
 
       if (diff <= 0) {
-        return "Start Soon";
+        return "Ended";
       }
 
       // If the remaining time is more than 1 hour, don't show countdown
       if (diff > 3600) {
-        return "";
+        return "Start Soon";
       }
 
       // Calculate hours, minutes, and seconds

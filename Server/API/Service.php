@@ -235,22 +235,20 @@
         $arr = json_decode($datas, true);
         
         $Event =$arr['eventData'];//Event Data
-
+        $stat  =(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+        ? 1
+        : 0);
         $dt = new DateTime();
-        $dty = $dt->format('Y-m-d H:i:s');
-       
+        $dty = $dt->format('Y-m-d H:i:s'); 
+        
+        $dtyOne = $dt->format('Y-m-d');
+        $cleanDate = str_replace("-", "", $dtyOne);
         /** Apply validation
          *  events with same day time, venue and priest is not allowed
          */
-            $validateEvent = $this->db->validateEventSchedule(
-              $Event['Date'],
-              $Event['Date'],
-              $Event['TimeTo'],
-              $Event['TimeFrom'],
-              'lbrmss_event_table_main'
-            );
+          
             
-            if(!$validateEvent){
+         
               $ClientData = Array(
                 "cid" => '',
                 "name" => $Event['Client'],
@@ -285,12 +283,11 @@
                   "priest_assigned_id"  =>(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
                     ? $Event['Assigned_Priest']['priest_id'] 
                     : null),
-                  "event_progress"      => 0,
+                  "event_progress"      => $stat,
                   "requirement_status"  => 1,
                   "created_at"          => $dty,
                   "created_by"          => '1',
                   "remark"              => '1'
-      
                 );
       
                  $insert_EventInfo =$this->db->insert('lbrmss_event_table_main', $eventData);
@@ -317,7 +314,24 @@
                         $insertAnnointing = $this->db->insert('lbrmss_annointing',$AnnointingData );
                       }
                    
-                
+                      $EventFeeData = array(
+                        "event_fee_id" => '', 
+                        "event_id" => $new_eventId, // Foreign key reference to event
+                        "service_id" =>  $Event['Service'],
+                        "reference_no" => "REFAN-".$cleanDate.$new_eventId, // Unique reference number
+                        "payment_type" =>'1',
+                        "amount_total" =>'', // Total amount for the event
+                        "payment" => '', // Initial payment
+                        "balance" => '', // Remaining balance
+                        "due_date" => '', // Payment due date 1 week before event
+                        "status" => '1', // 1 = Pending, 2 = Partially Paid, 3 = Paid
+                        "created_at" => $dty, // Timestamp of creation
+                        "updated_at" => '', // Timestamp of last update
+                        "created_by" =>'1', // User who created the record
+                        "updated_by" => '', // User who last updated the record
+                        "remark" => '1' // 1 = Show, 0 = Hide
+                    );
+                    $insertFeeTemplate= $this->db->insert('lbrmss_event_fee',$EventFeeData);
                     
                           $ScheduleData = array(
                             "sched_id" => '',
@@ -347,9 +361,7 @@
                   }
               }
               
-            }else{
-              echo json_encode(array("Status" => "Failed" . $this->db->getLastError()));
-            }
+          
        
         
     }

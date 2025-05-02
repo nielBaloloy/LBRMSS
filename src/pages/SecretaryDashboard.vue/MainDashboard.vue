@@ -125,7 +125,12 @@
             </div>
           </q-card>
         </div>
-        <EventCard v-if="myObject.AccessLvl === 'Secretary'" />
+        <EventCard
+          v-if="myObject.AccessLvl === 'Secretary'"
+          :pending="pending"
+          :scheduled="scheduled"
+          :done="done"
+        />
         <div class="q-pa-sm row q-gutter-lg">
           <div v-if="myObject.AccessLvl === 'Secretary'" class="col-7">
             <PreistCard :cardValue="scheduleToday" />
@@ -158,6 +163,12 @@ import { getToday, scheduleToday } from "src/composables/getTodaysSchedule";
 import { sched, updateSchedule } from "src/composables/updateEvent";
 import priestModule from "src/components/DashboardComponents/iosPage.vue";
 import { remindClient } from "src/composables/sendReminder";
+import {
+  dashboardUtil,
+  scheduled,
+  pending,
+  done,
+} from "src/composables/dashboardUtil";
 export default defineComponent({
   components: {
     EventCard,
@@ -214,8 +225,16 @@ export default defineComponent({
       getToday();
       updateSchedule();
       remindClient();
+      dashboardUtil();
+      setTimeout(() => {
+        console.log(pending.value);
+      }, 4000);
     });
+
     return {
+      scheduled,
+      pending,
+      done,
       scheduleToday,
       menuData2,
       menuData3,

@@ -119,12 +119,6 @@
                 label="Full Name"
                 outlined
               />
-              <q-input
-                v-model="donationForm.donor.email"
-                label="Email (optional)"
-                type="email"
-                outlined
-              />
 
               <!-- Donation Details -->
               <q-select
@@ -165,6 +159,13 @@
           </q-card>
         </div>
       </q-dialog>
+      <div class="q-pa-md">
+        <donationTable
+          :title="Donatyion"
+          :rowsData="Masslist"
+          :columns="columns"
+        />
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -201,15 +202,18 @@ import { useRouter } from "vue-router";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
 import { api } from "src/boot/axios";
+import { loadMasslist, Masslist } from "src/composables/massList";
+import donationTable from "src/components/ServicesComponents/SSR_table_component_tools.vue";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
-  components: { SidebarMenu },
+  components: { SidebarMenu, donationTable },
 
   setup() {
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
+      loadMasslist();
 
       dataLoaded.value = true; // ✅ Mark as loaded
     });
@@ -242,7 +246,6 @@ export default defineComponent({
 
     const donationTypes = [
       { label: "Church Fund", value: "church_fund" },
-      { label: "Mass Intention", value: "mass_intention" },
       { label: "Building Project", value: "building_project" },
       { label: "Charity / Outreach", value: "charity" },
       { label: "Others", value: "others" },
@@ -266,6 +269,7 @@ export default defineComponent({
         paymentMethod: "", // e.g., 'GCash', 'Bank Transfer'
       },
       date: new Date().toISOString(), // For record-keeping
+      serviceid: null,
     });
     const submitDonation = () => {
       console.log("Donation Form Submitted:", donationForm.value);
@@ -283,8 +287,9 @@ export default defineComponent({
               if (response.data.message == "") {
                 $q.notify({
                   type: "positive",
-                  message: "Payments submitted successfully!",
+                  message: "Success!",
                 });
+                loadMasslist();
               }
             })
             .catch((error) => {
@@ -317,7 +322,55 @@ export default defineComponent({
       },
       { immediate: true }
     );
+    const columns = [
+      {
+        name: "Reference",
+        label: "Reference",
+        field: "reference_no",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "Donor",
+        label: "Donor",
+        field: "donor",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "purpose",
+        label: "Purpose",
+        field: "purpose",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "date",
+        label: "Date",
+        field: "donation_date",
+        sortable: true,
+        align: "center",
+      },
+      {
+        name: "donation",
+        label: "Donation",
+        field: "amount_donated",
+        sortable: false,
+        align: "center",
+      },
+      {
+        name: "donate",
+        label: "Action",
+        field: "donate",
+        sortable: false,
+        align: "center",
+      },
+    ];
+    let Donatyion = "Donations";
     return {
+      Donatyion,
+      columns,
+      Masslist,
       description,
       donationDialog,
       donationTypes,

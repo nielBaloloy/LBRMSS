@@ -18,9 +18,18 @@
               <div class="text-subtitle1 text-weight-medium">
                 {{ formatDate(sched.date) }}
               </div>
+              <div class="text-subtitle1 text-weight-medium">
+                {{ sched.servicename }}
+              </div>
               <div class="text-subtitle2 text-weight-light">
                 {{ formatTime(sched.time_to) }} -
                 {{ formatTime(sched.time_to) }}
+              </div>
+              <div class="text-subtitle2 text-weight-light">
+                {{ sched.venue_name }}
+              </div>
+              <div class="text-subtitle2 text-weight-light">
+                Fr.{{ sched.fullname }}
               </div>
             </div>
           </div>
