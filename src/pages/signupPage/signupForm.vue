@@ -200,6 +200,7 @@
                   outlined
                   dense
                   class="col-6"
+                  @update:model-value="validatePasswordRules"
                 />
                 <q-input
                   v-model="confirmPassword"
@@ -213,7 +214,17 @@
                   @update:model-value="validatePasswords"
                 />
               </div>
-
+              <ul class="q-mt-sm">
+                <li :style="{ color: rules.uppercase ? 'green' : 'black' }">
+                  Contains uppercase letter
+                </li>
+                <li :style="{ color: rules.lowercase ? 'green' : 'black' }">
+                  Contains lowercase letter
+                </li>
+                <li :style="{ color: rules.special ? 'green' : 'black' }">
+                  Contains special character
+                </li>
+              </ul>
               <!-- Section Title -->
               <div class="text-subtitle1 text-primary q-mt-lg q-mb-sm">
                 Position & Status
@@ -289,7 +300,14 @@
 }
 </style>
 <script>
-import { ref, defineComponent, nextTick, onMounted, watchEffect } from "vue";
+import {
+  ref,
+  defineComponent,
+  nextTick,
+  onMounted,
+  watchEffect,
+  reactive,
+} from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter } from "vue-router";
 import SidebarMenu from "src/components/DashboardComponents/navigation_left.vue";
@@ -340,24 +358,41 @@ export default defineComponent({
       { label: "Bookkeeper", value: "4" },
     ];
     const saveAccount = () => {
-      if (!passwordMismatch.value) {
-        console.log("Form data:", accountForm.value);
-        api
-          .post("Signup.php", { account: accountForm.value })
-          .then((response) => {
-            console.log(response);
-            loadAccount();
-            accountdialog.value = false;
-          })
-          .catch((error) => {
-            reject(error);
-            $q.notify({
-              type: "negative",
-              message: "Network Error",
-            });
-          });
+      const allRulesSatisfied =
+        rules.uppercase && rules.lowercase && rules.special;
+      if (!allRulesSatisfied) {
+        $q.notify({
+          type: "negative",
+          message: "Password does not meet all requirements.",
+        });
+        return; // prevent submission
       }
+
+      // Check if passwords match
+      if (passwordMismatch.value) {
+        $q.notify({
+          type: "negative",
+          message: "Passwords do not match.",
+        });
+        return; // prevent submission
+      }
+
+      // If both are valid, proceed
       console.log("Form data:", accountForm.value);
+      api
+        .post("Signup.php", { account: accountForm.value })
+        .then((response) => {
+          console.log(response);
+          loadAccount();
+          accountdialog.value = false;
+        })
+        .catch((error) => {
+          reject(error);
+          $q.notify({
+            type: "negative",
+            message: "Network Error",
+          });
+        });
     };
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
@@ -436,8 +471,21 @@ export default defineComponent({
     const createAccount = (account) => {
       console.log(account);
     };
+    const rules = reactive({
+      uppercase: false,
+      lowercase: false,
+      special: false,
+    });
 
+    function validatePasswordRules() {
+      const pwd = accountForm.value.password;
+      rules.uppercase = /[A-Z]/.test(pwd);
+      rules.lowercase = /[a-z]/.test(pwd);
+      rules.special = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
+    }
     return {
+      rules,
+      validatePasswordRules,
       passwordMismatch,
       confirmPassword,
       validatePasswords,
