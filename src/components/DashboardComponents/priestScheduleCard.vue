@@ -1,6 +1,6 @@
 <template>
   <div class="service row">
-    <q-card class="my-card bg-white" style="width: 100vw" flat>
+    <q-card class="my-card bg-white" style="width: 50vw" flat>
       <p class="text-h6 q-pa-md">Today's Schedule</p>
       <div
         v-for="sched in cardValue"
@@ -13,8 +13,9 @@
             <q-avatar size="30" text-color="black">
               <q-icon name="event_note" size="30px" />
             </q-avatar>
-            <!-- Info -->
-            <div class="column">
+
+            <!-- Info (Left-Aligned) -->
+            <div class="column" style="flex-grow: 1">
               <div class="text-subtitle1 text-weight-medium">
                 {{ formatDate(sched.date) }}
               </div>
@@ -22,9 +23,16 @@
                 {{ sched.servicename }}
               </div>
               <div class="text-subtitle2 text-weight-light">
-                {{ formatTime(sched.time_to) }} -
+                {{ formatTime(sched.time_from) }} -
                 {{ formatTime(sched.time_to) }}
               </div>
+            </div>
+
+            <!-- Info (Right-Aligned) -->
+            <div
+              class="column q-pl-none"
+              style="flex-shrink: 0; text-align: right"
+            >
               <div class="text-subtitle2 text-weight-light">
                 {{ sched.venue_name }}
               </div>

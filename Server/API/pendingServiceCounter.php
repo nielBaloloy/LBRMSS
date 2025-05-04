@@ -33,11 +33,11 @@
         $Display_Pending = $this->db->rawQuery("SELECT count(ef.event_id) as counter
                                                 FROM  
                                                 lbrmss_event_fee ef 
-                                                WHERE ef.remark = '1' AND ef.status = '1' AND ef.service_id IN ('1','2','3','4')
+                                                WHERE ef.remark = '1' AND ef.status = '1' AND ef.fee_type = '0' AND ef.service_id IN ('1','2','3','4')
                                                 ORDER BY ef.reference_no DESC");
          
-           $Display_Pending;
-            echo json_encode(array("Status"=>"Success", "data"=>$Display_Pending));
+         $Display_Pending_Count = count($Display_Pending);
+            echo json_encode(array("Status"=>"Success", "data"=>$Display_Pending_Count));
             break;
        }
             

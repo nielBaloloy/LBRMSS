@@ -38,7 +38,7 @@
         $cleanDate = str_replace("-", "", $dtyOne);
         $eve_id = $this->db->getMaxId(" lbrmss_donations","donation_id");
         $data = array(
-          "event_id"        => '',
+          "donation_id"        => '',
           "donor"           => $arr['donor']['name'],
           "donation_type"   => $arr['donation']['paymentMethod']['value'],
           "purpose"         => $arr['donation']['type']['label'],

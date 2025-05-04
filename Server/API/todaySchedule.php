@@ -28,9 +28,9 @@
         $arr = json_decode($data, true);
         
         $getScheduleToday  = $this->db->rawQuery("SELECT a.* , CONCAT(b.fname, ' ', b.lname) as fullname ,c.event_name as servicename FROM lbrmss_event_table_main a
-        LEFT JOIN lbrmss_priest_main as b ON a.priest_assigned_id = b.acc_id
-        LEFT JOIN lbrmss_event_services as c ON c.etype_id =a.service_id
-        WHERE a.date =CURDATE() AND a.remark='1' AND a.event_progress = '1' GROUP BY a.event_id ORDER BY a.time_from DESC ");
+                                                  LEFT JOIN lbrmss_priest_main as b ON a.priest_assigned_id = b.acc_id
+                                                  LEFT JOIN lbrmss_event_services as c ON c.etype_id =a.service_id
+                                                  WHERE a.date =CURDATE() AND a.time_from > CURTIME() AND a.remark='1' AND a.event_progress = '1' GROUP BY a.event_id ORDER BY a.time_from ");
 
         if(count($getScheduleToday) > 0){
             echo json_encode(array("Status"=>"Success", "data"=>$getScheduleToday));

@@ -263,6 +263,7 @@ const submitForm = () => {
                   message: "Payments submitted successfully!",
                 });
               }
+              window.location.reload();
             })
             .catch((error) => {
               reject(error);
@@ -311,6 +312,7 @@ const submitForm = () => {
             ...fees.value,
           };
           console.log(payload);
+          window.location.reload();
           // api
           //   .post("ServiceFee_Requset_save.php", payload)
           //   .then((response) => {

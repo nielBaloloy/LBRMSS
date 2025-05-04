@@ -289,7 +289,7 @@ export default defineComponent({
                   type: "positive",
                   message: "Success!",
                 });
-                loadMasslist();
+                window.location.reload();
               }
             })
             .catch((error) => {

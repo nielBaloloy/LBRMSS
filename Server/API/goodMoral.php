@@ -58,7 +58,7 @@ try {
     
         <!-- Body Content -->
         <p style='text-align: justify; text-indent: 40px; margin-top: 20px;'>
-            Upon the recommendation of the Barangay Pastoral Coordinator of Dap-Dap, Legazpi City, I hereby certify that <strong>JOHN ERROL S. LOTIVIO</strong>, a resident of the same barangay, is of good moral character.
+            Upon the recommendation of the Barangay Pastoral Coordinator of Dap-Dap, Legazpi City, I hereby certify that <strong>'.$name.'</strong>, a resident of the same barangay, is of good moral character.
         </p>
     
         <p style='text-align: justify; text-indent: 40px; margin-top: 20px;'>
@@ -66,12 +66,12 @@ try {
         </p>
     
         <p style='text-indent: 40px; margin-top: 30px;'>
-            Issued this <strong>3<sup>rd</sup> day of October, 2022</strong> at St. Raphael Parish Office.
+            Issued this <strong>'.$dateStrings.'</strong> at St. Raphael Parish Office.
         </p>
     
         <!-- Signature -->
         <div style='text-align: center; margin-top: 60px;'>
-            <p><strong>REV. FR. LEANDRO P. MURILLO</strong></p>
+            <p><strong>'.$priest .'</strong></p>
             <p>Parish Priest</p>
         </div>
     

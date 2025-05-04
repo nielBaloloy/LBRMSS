@@ -523,6 +523,7 @@ export default defineComponent({
                 openModal.value = false;
                 loadScheduleTable();
               }
+              window.location.reload();
             })
             .catch((error) => {
               reject(error);
@@ -690,7 +691,7 @@ export default defineComponent({
               console.log(response);
               if (response.data.Status == "Success") {
                 $q.notify({
-                  type: "positive",
+                  type: "success",
                   message: "Saved Successfully",
                 });
 

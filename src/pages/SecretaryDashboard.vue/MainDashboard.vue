@@ -113,12 +113,13 @@
       />
     </q-drawer>
 
-    <q-page-container class="bg-accent">
+    <q-page-container class="">
       <div class="banner q-pa-sm">
         <div class="welcome-banner q-pa-sm">
-          <q-card class="glass-card q-pa-lg" flat>
+          <q-card class="glass-card bg-grey-3 q-pa-md" flat>
             <div class="text-h5 text-weight-medium q-mb-sm">
-              👋 Welcome Back
+              Welcome Back,
+              <span class="text-amber-7">{{ myObject.fname }}</span>
             </div>
             <div class="text-subtitle2 text-grey-7">
               Hope you're having a great day!
@@ -131,15 +132,19 @@
           :scheduled="scheduled"
           :done="done"
         />
-        <div class="q-pa-sm row q-gutter-lg">
-          <div v-if="myObject.AccessLvl === 'Secretary'" class="col-7">
-            <PreistCard :cardValue="scheduleToday" />
-          </div>
-          <div v-if="myObject.AccessLvl === 'Secretary'" class="col-4">
-            <event :cardValue="availablePriest" />
-          </div>
-        </div>
+
         <Graph v-if="myObject.AccessLvl === 'Cashier'" />
+      </div>
+      <div class="row q-pa-md q-gutter-lg">
+        <div v-if="myObject.AccessLvl === 'Secretary'" class="col-4">
+          <PreistCard :cardValue="scheduleToday" />
+        </div>
+        <div v-if="myObject.AccessLvl === 'Secretary'" class="col-4">
+          <PreistCard :cardValue="scheduleToday" />
+        </div>
+        <div v-if="myObject.AccessLvl === 'Secretary'" class="col-3">
+          <event :cardValue="availablePriest" />
+        </div>
       </div>
       <div class="mobile q-pa-md">
         <priestModule v-if="myObject.AccessLvl === 'priest'" />
@@ -149,11 +154,12 @@
 </template>
 
 <script>
-import { ref, defineComponent, onMounted } from "vue";
+import { ref, defineComponent, onMounted, onBeforeMount, nextTick } from "vue";
 import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import EventCard from "../../components/DashboardComponents/ScheduleCard-PLate.vue";
 import PreistCard from "../../components/DashboardComponents/priestScheduleCard.vue";
+import PreistUpcomingCard from "../../components/DashboardComponents/priestScheduleCard.vue";
 import event from "../../components/DashboardComponents/eventCalendar.vue";
 import Graph from "../../components/DashboardComponents/MainGraph.vue";
 import SidebarMenu from "../../components/DashboardComponents/navigation_left.vue";
@@ -169,6 +175,7 @@ import {
   pending,
   done,
 } from "src/composables/dashboardUtil";
+
 export default defineComponent({
   components: {
     EventCard,
@@ -182,7 +189,16 @@ export default defineComponent({
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
     const router = useRouter();
+    onMounted(() => {
+      getAvailablePriest();
+      getToday();
+      updateSchedule();
+      //remindClient();
 
+      nextTick(() => {
+        dashboardUtil();
+      });
+    });
     let myObject = ref();
     let sessionkey = SessionStorage.getItem("log");
     if (sessionkey === null || "") {
@@ -219,18 +235,6 @@ export default defineComponent({
         });
     };
 
-    //load components data
-    onMounted(() => {
-      getAvailablePriest();
-      getToday();
-      updateSchedule();
-      remindClient();
-      dashboardUtil();
-      setTimeout(() => {
-        console.log(pending.value);
-      }, 4000);
-    });
-
     return {
       scheduled,
       pending,
@@ -263,9 +267,5 @@ export default defineComponent({
   font-family: opensans;
   text-decoration: none;
   color: rgb(52, 52, 52);
-}
-.priestSched {
-  width: 900px;
-  margin-left: 0px;
 }
 </style>

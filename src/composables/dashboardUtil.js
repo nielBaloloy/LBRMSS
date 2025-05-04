@@ -20,7 +20,7 @@ const dashboardUtil = (serviceId) => {
           console.log(response.data);
           pending.value = response.data.pending;
           scheduled.value = response.data.scheduled;
-          done.value = response.data.done;
+          done.value = response.data.complete;
         } else {
           console.log(response.data.data);
         }

@@ -395,7 +395,7 @@ export default {
               console.log(baseUrl);
               pdfUrl.value =
                 baseUrl +
-                "ChangeofRecordPrint.php?date=" +
+                "marraigeprint.php?date=" +
                 encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
                 "&name=" +
                 encodeURIComponent(fullname) +

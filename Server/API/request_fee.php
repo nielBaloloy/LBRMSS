@@ -44,7 +44,7 @@
          if($getFee){
             echo json_encode(array("Status"=>"Success", "fee"=>$getFee));     
          }else{
-            echo json_encode(array("Status"=>"Failed", "fee"=>""));  
+            echo json_encode(array("Status"=>"Failed", "fee"=>[]));  
          }
 
 

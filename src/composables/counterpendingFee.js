@@ -19,7 +19,7 @@ const pendingCounter_Marriage = (serviceId) => {
       .then((response) => {
         if (response.data.Status == "Success") {
           console.log(response.data.data);
-          pendingService_Marriage.value = response.data.data[0].counter;
+          pendingService_Marriage.value = response.data.data;
         } else {
           console.log(response.data.data);
           pendingService_Marriage.value = [];

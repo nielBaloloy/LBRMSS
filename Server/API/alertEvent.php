@@ -30,7 +30,7 @@
                                         LEFT JOIN lbrmss_client_list AS b ON a.client = b.cid 
                                         LEFT JOIN lbrmss_event_fee AS c ON c.event_id = a.event_id 
                                         LEFT JOIN lbrmss_event_services AS d ON d.etype_id = a.service_id 
-                                        WHERE a.time_from BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 2 HOUR)
+                                        WHERE a.time_from BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 1 HOUR)
                                         AND a.remark = '1'
                                         AND d.etype_id != '7'
                                         GROUP BY a.event_id;

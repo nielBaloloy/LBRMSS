@@ -136,10 +136,12 @@ const submitForm = () => {
         })
         .then((response) => {
           console.log(response);
+          window.location.reload();
         })
         .catch((error) => {
           reject(error);
         });
+      window.location.reload();
       emit("closeDialog");
     })
 
