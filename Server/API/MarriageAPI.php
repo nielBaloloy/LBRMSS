@@ -145,7 +145,7 @@
               ? $Event['Assigned_Priest']['priest_id'] 
               : null),
               "event_progress"      => $eventProgress,
-              "requirement_status"  => $MarriageData['Status'],
+              "requirement_status"  => ($MarriageData['Status'] == "Complete") ? '1' : '0',
               "created_at"          => $dty,
               "created_by"          => '1',
               "remark"              => '1'
@@ -344,11 +344,12 @@
         $event = $arr['payload']['event']['all'];
         $groom = $arr['payload']['groom'];
         $bride = $arr['payload']['bride'];
-        
+        $priest = $arr['payload']['event']['Assigned_Priest']['priest_id'] ?? null;
+     
         $witness = $arr['payload']['event']['witness'];
         $requirements = $arr['payload']['requirements'];
         $seminar = $arr['payload']['seminar'];
-
+    
         $event_id =$event['event_id'];
     
         $UpdateEvent = Array(
@@ -364,7 +365,8 @@
           "type"                => $event['type'],
           "days"                => $event['days'],
           "venue_type"          => $event['venue_type'],
-          "priest_assigned_id"  => $event['priest_assigned_id'],
+          "priest_assigned_id"  =>  $event['priest_assigned_id']['priest_id'] ?? $priest,
+         
           "event_progress"      => $event['event_progress'],
           "requirement_status"  => ($requirementStatus == "complete") ? 1 : 0 ,
           "created_at"          => $event['created_at'],
@@ -377,14 +379,14 @@
         $update_main =Array(
           
           "event_id" =>   $event['event_id'],
-          "assigned_priest" => $event['priest_id'],
+          "assigned_priest" => $event['priest_assigned_id']['priest_id'] ?? $priest,
           "remark" => '1'
         );
         $this->db->where('event_id',$event_id);
         $updateConMain = $this->db->update('lbrmss_mariage_main',$update_main);
 
         $updateGroom = array(
-          "g_id"           => $groom['g_id'],
+        
           "g_event_id"     => $groom['g_event_id'],
           "groom_lname"    => $groom['groom_lname'],
           "groom_mname"    => $groom['groom_mname'],
@@ -409,7 +411,7 @@
         $this->db->where('g_event_id',$event_id);
         $grooms = $this->db->update('lbrmss_m_groom',$updateGroom);
         $updateBride = array(
-          "b_id"           => $bride['b_id'],
+       
           "b_event_id"     => $bride['b_event_id'],
           "bride_lname"    => $bride['bride_lname'],
           "bride_mname"    => $bride['bride_mname'],

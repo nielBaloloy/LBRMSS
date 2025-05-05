@@ -121,7 +121,7 @@
           : null),
 
           "event_progress"      => $eventProgress,
-          "requirement_status"  => $ConfirmationData['Status'],
+          "requirement_status"  => ($ConfirmationData['Status'] == "Complete") ? '1' : '0',
           "created_at"          => $dty,
           "created_by"          => '1',
           "remark"              => '1'

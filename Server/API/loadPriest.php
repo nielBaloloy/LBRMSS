@@ -31,13 +31,13 @@
             $timeFrom   =  date("H:i:s", strtotime($arr['clientSchedule']['timeFrom']));
             $timeTo     =   date("H:i:s", strtotime($arr['clientSchedule']['timeTo']));
             $date       =  $arr['clientSchedule']['date'];
-            $venuetype     =   $arr['clientSchedule']['venuetype'];
+            //$venuetype     =   $arr['clientSchedule']['venuetype'];
         
         }else{
             $timeFrom   =  date("H:i:s");
             $timeTo     =  date("H:i:s");
             $date       =  date("Y-m-d");
-            $venuetype     =   '';
+            //$venuetype     =   '';
         }
 
     // echo $timeFrom;

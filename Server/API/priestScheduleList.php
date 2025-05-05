@@ -53,7 +53,7 @@
                                                     b.priest_id = '$id'
                                                     AND b.sched_status = '1'
                                                     AND b.remark = '1'
-                                                    AND a.event_progress = 1
+                                                    AND a.event_progress IN (1,2)
                                                 GROUP BY b.sched_id;");
 
 

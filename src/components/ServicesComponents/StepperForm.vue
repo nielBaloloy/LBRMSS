@@ -1902,7 +1902,7 @@
                   </tbody>
                 </table>
 
-                <div class="Status" style="display: none">
+                <div class="Status" style="display: block">
                   {{ requirementsList }}
                   {{ reqstats }}
                   {{ (marriageData.Requirement = requirementsList) }}
@@ -2072,7 +2072,7 @@
                             {{ (marriageData.Witness = cardValues) }}
                             {{ SeminarDay }}
                             {{ timeDurationSeminar }}
-                            <div style="display: block">
+                            <div style="display: none">
                               {{ SchedulecardValues }}
                               {{ (cardSeminar.field5 = SeminarDay) }}
                               {{ (cardSeminar.field6 = timeDurationSeminar) }}

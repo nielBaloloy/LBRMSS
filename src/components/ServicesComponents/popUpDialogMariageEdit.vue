@@ -196,7 +196,7 @@
                 </q-input>
               </div>
 
-              <div class="timeDurat">
+              <div class="timeDurat hidden">
                 <!-- {{ event.all.duration }} -->
                 {{ (event.all.duration = timeDurationEvent) }}
               </div>
@@ -1091,7 +1091,7 @@ export default defineComponent({
       });
     };
 
-    const timeDurationEvent = ref(null);
+    let timeDurationEvent = ref(null);
     const durationInMinutesEvent = (payload) => {
       console.log(payload);
       setTimeout(() => {
@@ -1125,20 +1125,37 @@ export default defineComponent({
       }
     };
     const eventDetails = computed(() => ({
-      date: events.value.Date,
-      timeFrom: events.value.Time_from,
-      timeTo: events.value.Time_to,
+      date: events.value[0].Date,
+      timeFrom: events.value[0].Time_from,
+      timeTo: events.value[0].Time_to,
     }));
+
     watch(
-      () => [events.value.Date, events.value.Time_from, events.value.Time_to],
-      ([newDate, newTimeFrom, newTimeTo]) => {
+      () => [
+        events.value[0].Date,
+        events.value[0].Time_from,
+        events.value[0].Time_to,
+      ],
+      (
+        [newDate, newTimeFrom, newTimeTo],
+        [oldDate, oldTimeFrom, oldTimeTo]
+      ) => {
+        console.log("Changed values:");
+        if (newDate !== oldDate)
+          console.log(`Date changed: ${oldDate} → ${newDate}`);
+        if (newTimeFrom !== oldTimeFrom)
+          console.log(`Time From changed: ${oldTimeFrom} → ${newTimeFrom}`);
+        if (newTimeTo !== oldTimeTo)
+          console.log(`Time To changed: ${oldTimeTo} → ${newTimeTo}`);
+
         if (newDate && newTimeFrom && newTimeTo) {
-          events.value.Assigned_Priest = null;
+          events.value[0].Assigned_Priest = null;
+          console.log("Updated event details:", eventDetails.value);
           getAvailablePriest(eventDetails.value);
-          // Pass event details to function
         }
       }
     );
+
     // Get ADDRESS Groom
     let selectedRegion = ref(null);
     let grEGION = ref();
@@ -1391,7 +1408,7 @@ export default defineComponent({
                   type: "positive",
                   message: "Updated successfully!",
                 });
-                emit("closeDialog");
+                window.location.reload();
               }
             })
             .catch((error) => {
@@ -1437,6 +1454,8 @@ export default defineComponent({
     );
 
     return {
+      timeDurationEvent,
+      availablePriest,
       RequirementStatus,
       bride,
       groom,

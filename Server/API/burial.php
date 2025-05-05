@@ -121,7 +121,7 @@
           ? $Event['Assigned_Priest']['priest_id'] 
           : null),
           "event_progress"      => $eventProgress,
-          "requirement_status"  => $BurialData['Status'],
+          "requirement_status"  => ($BurialData['Status'] == "Complete") ? '1' : '0',
           "created_at"          => $dty,
           "created_by"          => '1',
           "remark"              => '1'

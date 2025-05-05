@@ -959,7 +959,7 @@ export default defineComponent({
       });
     };
 
-    const timeDurationEvent = ref(null);
+    let timeDurationEvent = ref(null);
     const durationInMinutesEvent = (payload) => {
       console.log(payload);
       setTimeout(() => {
@@ -1270,6 +1270,7 @@ export default defineComponent({
     );
 
     return {
+      timeDurationEvent,
       events,
       saveEditDetails,
       durationSeminar,

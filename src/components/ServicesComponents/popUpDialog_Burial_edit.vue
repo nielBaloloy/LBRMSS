@@ -991,7 +991,7 @@ export default defineComponent({
     return {
       events,
       saveEditDetails,
-
+      timeDurationEvent,
       C_requirementsList,
       philippineData,
       selectedRegion,

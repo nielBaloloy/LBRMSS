@@ -898,7 +898,7 @@ export default defineComponent({
       });
     };
 
-    const timeDurationEvent = ref(null);
+    let timeDurationEvent = ref(null);
     const durationInMinutesEvent = (payload) => {
       console.log(payload);
       setTimeout(() => {
@@ -932,17 +932,33 @@ export default defineComponent({
       }
     };
     const eventDetails = computed(() => ({
-      date: events.value.Date,
-      timeFrom: events.value.Time_from,
-      timeTo: events.value.Time_to,
+      date: events.value[0].Date,
+      timeFrom: events.value[0].Time_from,
+      timeTo: events.value[0].Time_to,
     }));
+
     watch(
-      () => [events.value.Date, events.value.Time_from, events.value.Time_to],
-      ([newDate, newTimeFrom, newTimeTo]) => {
+      () => [
+        events.value[0].Date,
+        events.value[0].Time_from,
+        events.value[0].Time_to,
+      ],
+      (
+        [newDate, newTimeFrom, newTimeTo],
+        [oldDate, oldTimeFrom, oldTimeTo]
+      ) => {
+        console.log("Changed values:");
+        if (newDate !== oldDate)
+          console.log(`Date changed: ${oldDate} → ${newDate}`);
+        if (newTimeFrom !== oldTimeFrom)
+          console.log(`Time From changed: ${oldTimeFrom} → ${newTimeFrom}`);
+        if (newTimeTo !== oldTimeTo)
+          console.log(`Time To changed: ${oldTimeTo} → ${newTimeTo}`);
+
         if (newDate && newTimeFrom && newTimeTo) {
-          events.value.Assigned_Priest = null;
+          events.value[0].Assigned_Priest = null;
+          console.log("Updated event details:", eventDetails.value);
           getAvailablePriest(eventDetails.value);
-          // Pass event details to function
         }
       }
     );
@@ -1098,7 +1114,18 @@ export default defineComponent({
         field7: item.seminar_venue, // Venue
       }));
     });
+    let RequirementStatus = ref("incomplete");
+    watch(
+      C_requirementsList,
+      (newVal) => {
+        const allChecked = Object.entries(newVal)
+          .filter(([key]) => key !== "req_id") // ignore req_id
+          .every(([, value]) => value === "true");
 
+        RequirementStatus.value = allChecked ? "complete" : "incomplete";
+      },
+      { deep: true }
+    );
     function addScheduleCard() {
       Schedulecards.value.push({
         field0: "",
@@ -1159,6 +1186,8 @@ export default defineComponent({
         event: events.value[0],
         requirements: C_requirementsList.value,
         seminar: Schedulecards.value,
+        statusReq: RequirementStatus.value,
+        eventduration: timeDurationEvent,
       };
 
       console.log("Final Payload:", payload);
@@ -1181,14 +1210,46 @@ export default defineComponent({
             .catch((error) => {
               console.log(error);
             });
-          emit("closeDialog");
+          window.location.reload();
         })
         .onCancel(() => {
           emit("closeDialog");
         });
     };
+    watch(
+      () => [event.value[0].Time_from, event.value[0].Time_to],
+      ([from, to]) => {
+        if (from && to) {
+          const [fromH, fromM] = from.split(":").map(Number);
+          const [toH, toM] = to.split(":").map(Number);
 
+          const fromDate = new Date();
+          fromDate.setHours(fromH, fromM, 0);
+
+          const toDate = new Date();
+          toDate.setHours(toH, toM, 0);
+
+          let duration = (toDate - fromDate) / 60000; // duration in minutes
+
+          if (duration < 0) duration += 1440; // handle overnight time
+
+          const hours = Math.floor(duration / 60);
+          const minutes = duration % 60;
+          const formattedDuration = `${hours}h ${minutes}m`;
+
+          event.value[0].all.duration = formattedDuration;
+
+          // ✅ Log the duration
+          console.log("Duration updated:", formattedDuration);
+        } else {
+          event.value[0].all.duration = "";
+          console.log("Duration reset: Missing time input");
+        }
+      }
+    );
     return {
+      timeDurationEvent,
+      availablePriest,
       events,
       saveEditDetails,
       durationSeminar,

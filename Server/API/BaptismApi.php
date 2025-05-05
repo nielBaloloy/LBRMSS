@@ -116,8 +116,8 @@
                     "client" => $new_cid,
                     "date" =>  $Event['Date'],
                     "date_to" =>  $Event['Date'],
-                    "time_from"           => $Event['TimeTo'],
-                    "time_to"             => $Event['TimeFrom'],
+                    "time_from"           => $Event['TimeFrom'],
+                    "time_to"             => $Event['TimeTo'],
                     "venue_name"          => $Event['Venue'],
                     "duration"            => $Event['Duration'],
                     "type"                => $type,
@@ -127,7 +127,7 @@
                     ? $Event['Assigned_Priest']['priest_id'] 
                     : null),
                     "event_progress"      => $eventProgress,
-                    "requirement_status"  => $BaptismData['Status'],
+                    "requirement_status"  => ($BaptismData['Status'] == "Complete") ? '1' : '0',
                     "created_at"          => $dty,
                     "created_by"          => '1',
                     "remark"              => '1'
@@ -307,6 +307,7 @@
         $dty = $dt->format('Y-m-d H:i:s');
         
         $event = $arr['payload']['event']['all'];
+        $events = $arr['payload']['event'];
         $personalDetails   = $arr['payload']['event']['baptismperson'];
         $witness = $arr['payload']['event']['witness'];
         $requirements = $arr['payload']['requirements'];
@@ -323,12 +324,12 @@
         $UpdateEvent = Array(
          "event_id"            => $event['event_id'],
           "service_id"          => $event['service_id'],
-          "client"              => $event['client'],
-          "date"                => $event['date'],
+          "client"              => $events['Client'],
+          "date"                => $events['Date'],
           "date_to"             => $event['date_to'],
-          "time_from"           => $event['time_from'],
-          "time_to"             => $event['time_to'],
-          "venue_name"          => $event['venue_name'],
+          "time_from"           => $events['Time_from'],
+          "time_to"             => $events['Time_to'],
+          "venue_name"          => $event['Venue'],
           "duration"            => $event['duration'] ?? '', // If not present
           "type"                => $event['type'],
           "days"                => $event['days'],
@@ -353,7 +354,7 @@
         $this->db->where('event_id',$event_id);
         $updateConMain = $this->db->update('lbrmss_baptism_main',$updateCon_main);
         $updatePerson  =Array(
-            "bapt_person_id"     => $personalDetails['bapt_person_id'],
+           
             "bapt_event_id"     => $personalDetails['bapt_event_id'],
             "bapt_lname"        => $personalDetails['bapt_lname'],
             "bapt_mname"        => $personalDetails['bapt_mname'],

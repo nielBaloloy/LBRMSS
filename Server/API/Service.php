@@ -123,8 +123,8 @@
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
-            "Time_from" =>$event['time_to'],
-            "Time_to"  =>$event['time_from'],
+            "Time_from" =>$event['time_from'],
+            "Time_to"  =>$event['time_to'],
             
             "priest_assigned_id" =>$event['priest_assigned_id'],
               ];
