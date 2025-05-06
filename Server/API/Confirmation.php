@@ -104,13 +104,13 @@
         $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
 
         $eventData = Array(
-          "event_id" => '',
-          "service_id" => $Event['Service'],
-          "client" => $new_cid,
-          "date" =>  $Event['Date'],
-          "date_to" =>  $Event['Date'],
-          "time_from"           => $Event['TimeTo'],
-          "time_to"             => $Event['TimeFrom'],
+          "event_id"            => '',
+          "service_id"          => $Event['Service'],
+          "client"              => $new_cid,
+          "date"                => $Event['Date'],
+          "date_to"             => $Event['Date'],
+          "time_from"           => $Event['TimeFrom'],
+          "time_to"             => $Event['TimeTo'],
           "venue_name"          => $Event['Venue'],
           "duration"            => $Event['Duration'],
           "type"                => $type,
@@ -119,7 +119,6 @@
           "priest_assigned_id" => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
           ? $Event['Assigned_Priest']['priest_id'] 
           : null),
-
           "event_progress"      => $eventProgress,
           "requirement_status"  => ($ConfirmationData['Status'] == "Complete") ? '1' : '0',
           "created_at"          => $dty,

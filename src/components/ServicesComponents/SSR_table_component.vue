@@ -292,12 +292,14 @@
 
 <script>
 import { ref, computed, watch, defineEmits, defineComponent } from "vue";
+import { useQuasar } from "quasar";
 import { FilterRange } from "src/composables/SeviceData";
 import editDialogPanel from "src/components/ServicesComponents/PopupDialog_Confirmation_edit.vue";
 import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMariageEdit.vue";
 import editBaptismDialog from "src/components/ServicesComponents/popUpDialogBaptismEdit.vue";
 import editBurialDialog from "src/components/ServicesComponents/popUpDialog_Burial_edit.vue";
 import editBlessingDialog from "src/components/ServicesComponents/popUpDialog_Blessing_edit.vue";
+import { api } from "src/boot/axios";
 export default defineComponent({
   props: {
     title: { type: String, default: "Table" },
@@ -323,6 +325,7 @@ export default defineComponent({
     let Baptism = ref(false);
     let Burial = ref(false);
     let Blessing = ref(false);
+    let $q = useQuasar();
     const pagination = ref({
       sortBy: "Client",
       descending: false,
@@ -370,15 +373,37 @@ export default defineComponent({
     }
 
     function deleteRow(row) {
-      // $q.dialog({
-      //   title: "Confirm",
-      //   message: "Are you sure you want to delete this row?",
-      //   cancel: true,
-      //   persistent: true,
-      // }).onOk(() => {
-      console.log("Deleted row:", row);
-      // Add logic to remove the row from your data
-      // });
+      let deletedId = row.all.event_id;
+      $q.dialog({
+        title: "Delete this Information",
+        message: "Are you sure you want to delete this row?",
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        console.log("Deleted row:", deletedId);
+        api
+          .delete("Service.php", { data: { deletedId: deletedId } })
+          .then((response) => {
+            if (response.data.Status == "Success") {
+              $q.notify({
+                type: "positive",
+                message: "Row deleted successfully!",
+              });
+            } else {
+              $q.notify({
+                type: "negative",
+                message: "Error!",
+              });
+            }
+          })
+          .catch((error) =>
+            $q.notify({
+              type: "negative",
+              message: "Error!",
+              error,
+            })
+          );
+      });
     }
     // ✅ Computed property to filter and paginate
     const filteredRows = computed(() => {

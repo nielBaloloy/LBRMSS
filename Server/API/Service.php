@@ -375,10 +375,17 @@
     }
       public function httpDelete($payload)
       {
+        $datas = json_encode($payload);
+        $arr = json_decode($datas, true);
         
+        $deletedEventId = $arr['deletedId'];
         
-       
-       
+        $update = $this->db->rawQuery("UPDATE lbrmss_event_table_main SET remark = '0' WHERE event_id = '$deletedEventId'");
+        if($update){
+          echo json_encode(array("Status"=>"Success"));
+        }else{
+          echo json_encode(array("Status"=>"Failed"));
+        }
       }
   }
  
