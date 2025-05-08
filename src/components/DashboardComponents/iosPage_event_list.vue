@@ -3,64 +3,66 @@
     <div class="col-sm">
       <label class="text-h6">Upcoming Event</label>
       <div class="sched" v-if="schedValue.length > 0">
-        <div
-          v-for="sched in schedValue"
-          :key="sched.event_id"
-          class="col-xs-12 col-sm-12 col-md-12 q-mt-md"
-        >
-          <q-card
-            class="q-pa-md rounded-borders bg-grey-1"
-            style="min-width: 340px"
-            flat
+        <q-pull-to-refresh @refresh="refresh" color="yellow-9" icon="lightbulb">
+          <div
+            v-for="sched in schedValue"
+            :key="sched.event_id"
+            class="col-xs-12 col-sm-12 col-md-12 q-mt-md"
           >
-            <div class="row items-center no-wrap q-gutter-md">
-              <!-- Avatar -->
-              <q-avatar size="30" text-color="green">
-                <q-icon name="event_note" size="40px" />
-              </q-avatar>
-              <!-- Info -->
-              <div class="column">
-                <div class="text-subtitle2 text-weight-medium">
-                  {{ sched.service }}
-                </div>
-                <div class="text-subtitle2 text-color='grey-3'">
-                  <div class="client" v-if="sched.title == 'N/A'"></div>
-                  <div class="client" v-else>
-                    {{ sched.title }}
+            <q-card
+              class="q-pa-md rounded-borders bg-grey-1"
+              style="min-width: 340px"
+              flat
+            >
+              <div class="row items-center no-wrap q-gutter-md">
+                <!-- Avatar -->
+                <q-avatar size="30" text-color="green">
+                  <q-icon name="event_note" size="40px" />
+                </q-avatar>
+                <!-- Info -->
+                <div class="column">
+                  <div class="text-subtitle2 text-weight-medium">
+                    {{ sched.service }}
+                  </div>
+                  <div class="text-subtitle2 text-color='grey-3'">
+                    <div class="client" v-if="sched.title == 'N/A'"></div>
+                    <div class="client" v-else>
+                      {{ sched.title }}
+                    </div>
+                  </div>
+                  <div class="text-subtitle2 text-weight-light">
+                    {{ sched.venue }}
+                  </div>
+                  <div class="text-subtitle2 text-weight-light">
+                    {{ formatDate(sched.date) }},
+
+                    {{ formatTime(sched.time_from) }} -
+                    {{ formatTime(sched.time_to) }}
+                  </div>
+                  <div class="view q-pt-md q-gutter-sm">
+                    <q-btn
+                      size="10px"
+                      unelevated
+                      color="green-5"
+                      label="Take this Schedule"
+                      no-caps
+                      @click="takeSchedule(sched)"
+                    />
+                    <q-btn
+                      size="10px"
+                      unelevated
+                      color="grey-3"
+                      text-color="grey-7"
+                      no-caps
+                      @click="viewEvent(sched)"
+                      label="View"
+                    />
                   </div>
                 </div>
-                <div class="text-subtitle2 text-weight-light">
-                  {{ sched.venue }}
-                </div>
-                <div class="text-subtitle2 text-weight-light">
-                  {{ formatDate(sched.date) }},
-
-                  {{ formatTime(sched.time_from) }} -
-                  {{ formatTime(sched.time_to) }}
-                </div>
-                <div class="view q-pt-md q-gutter-sm">
-                  <q-btn
-                    size="10px"
-                    unelevated
-                    color="green-5"
-                    label="Take this Schedule"
-                    no-caps
-                    @click="takeSchedule(sched)"
-                  />
-                  <q-btn
-                    size="10px"
-                    unelevated
-                    color="grey-3"
-                    text-color="grey-7"
-                    no-caps
-                    @click="viewEvent(sched)"
-                    label="View"
-                  />
-                </div>
               </div>
-            </div>
-          </q-card>
-        </div>
+            </q-card>
+          </div>
+        </q-pull-to-refresh>
       </div>
       <div class="div" v-else>
         <div
@@ -196,13 +198,27 @@ export default defineComponent({
           console.log(">>>> Cancel");
         });
     }
+
     return {
       formatDate,
       formatTime,
       viewEvent,
+
       alert,
       eventContainer,
       takeSchedule,
+      refresh(done) {
+        setTimeout(() => {
+          watch(
+            () => props.schedValue,
+            (newVal) => {
+              console.log("Updated value:", newVal);
+            },
+            { immediate: true, deep: true }
+          );
+          done();
+        }, 1000);
+      },
     };
   },
 });

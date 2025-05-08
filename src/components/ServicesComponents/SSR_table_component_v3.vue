@@ -181,7 +181,22 @@
 
       <!-- Custom slot for Action column -->
       <template v-slot:body-cell-Action="{ row }">
-        <q-td>
+        <q-td
+          v-if="
+            row.Service == 'Blessing' || row.Service == 'Annointing of the Sick'
+          "
+        >
+          <q-btn
+            unelevated
+            no-caps
+            icon="inventory_2"
+            label="Donate"
+            size="sm"
+            @click="openDonation(row)"
+          >
+          </q-btn>
+        </q-td>
+        <q-td v-else>
           <q-btn
             unelevated
             no-caps
@@ -331,7 +346,12 @@ export default {
     let FilterData = (filterpayload) => {
       emit("FilterRanges", filterpayload.value);
     };
+
+    function openDonation(row) {
+      console.log("Donation", row);
+    }
     return {
+      openDonation,
       FilterData,
       statusOptions,
       emitFilterEvent,

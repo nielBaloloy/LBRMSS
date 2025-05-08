@@ -8,8 +8,8 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({
-  // baseURL: "http://192.168.1.6/LBRMSS/Server/API/",
-  baseURL: "http://localhost/LBRMSS/Server/API/",
+  //baseURL: "http://192.168.1.39/LBRMSS/Server/API/",
+   baseURL: "http://localhost/LBRMSS/Server/API/",
   headers: {
     Accept: "application/json", // Tells the server you want JSON
   },

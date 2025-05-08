@@ -51,7 +51,7 @@
                                                 LEFT JOIN lbrmss_event_fee ef ON ef.event_id = mm.event_id
                                                 WHERE a.remark = '1' AND a.service_id = 1   AND a.event_progress = '2' GROUP BY a.event_id
                                               
-                                                ORDER BY a.created_at");
+                                                ORDER BY a.created_at DESC");
 
       if(count($Marriage) > 0){
 
@@ -342,6 +342,7 @@
         $requirementStatus = $arr['payload']['statusReq'];
       
         $event = $arr['payload']['event']['all'];
+        $events = $arr['payload']['event'];
         $groom = $arr['payload']['groom'];
         $bride = $arr['payload']['bride'];
         $priest = $arr['payload']['event']['Assigned_Priest']['priest_id'] ?? null;
@@ -358,13 +359,14 @@
           "client"              => $event['client'],
           "date"                => $event['date'],
           "date_to"             => $event['date_to'],
-          "time_from"           => $event['time_from'],
-          "time_to"             => $event['time_to'],
-          "venue_name"          => $event['venue_name'],
+          "time_from"           => $events['Time_from'],
+          "time_to"             => $events['Time_to'],
+          "venue_name"          => $events['Venue'],
           "duration"            => $event['duration'] ?? '', // If not present
           "type"                => $event['type'],
           "days"                => $event['days'],
-          "venue_type"          => $event['venue_type'],
+          "venue_type"          => ($events['Venue'] === 'St Raphael Church') ? '1' :
+          (($events['Venue'] === 'Pastoral Center') ? '2' : '3'),
           "priest_assigned_id"  =>  $event['priest_assigned_id']['priest_id'] ?? $priest,
          
           "event_progress"      => $event['event_progress'],

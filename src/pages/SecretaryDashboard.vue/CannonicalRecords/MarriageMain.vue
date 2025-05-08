@@ -207,7 +207,7 @@ export default defineComponent({
     const columns = [
       {
         name: "name",
-        label: "Bride and Groom",
+        label: "Groom and Bride",
         field: "Client",
         sortable: true,
         align: "center",

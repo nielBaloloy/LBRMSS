@@ -81,12 +81,6 @@
                 label="Mass"
                 @update:model-value="dateShow(formData.Type)"
               />
-              <q-radio
-                v-model="formData.Type"
-                val="Certificate"
-                label="Certification"
-                @update:model-value="dateShow(formData.Type)"
-              />
             </div>
           </div>
 

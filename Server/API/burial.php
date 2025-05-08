@@ -136,7 +136,9 @@
           $BurialAssignment = array(
             "burial_id" => '',
             "event_id" =>   $new_eventId,
-            "assigned_priest" => $Event['Assigned_Priest']['priest_id'],
+            "assigned_priest" => (isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
+            ? $Event['Assigned_Priest']['priest_id'] 
+            : null),
             "remark" => '1'
         );
 
@@ -176,17 +178,17 @@
          $RequirementsData = array(
           "req_id" => null, // Auto-increment
           "event_id" => $new_eventId,
-          "baptismal_certificate" => $ConfirmationData['Requirements']['Baptismal'] ?? 'no',
-          "marriage_license" => $ConfirmationData['Requirements']['Marriage_License'] ?? 'no',
-          "confirmation" => $ConfirmationData['Requirements']['Confirmation'] ?? 'no',
-          "birth_certificate" => $ConfirmationData['Requirements']['LiveBirthCert'] ?? 'no',
-          "cenomar" => $ConfirmationData['Requirements']['Cenomar'] ?? 'no',
-          "interrogation" => $ConfirmationData['Requirements']['Interogation'] ?? 'no',
-          "precana_seminar" => $ConfirmationData['Requirements']['PreCana'] ?? 'no',
-          "confession" => $ConfirmationData['Requirements']['Confession'] ?? 'no',
-          "family_consent" => $ConfirmationData['Requirements']['Family_Consent'] ?? 'no',
-          "cremation_authorization" => $ConfirmationData['Requirements']['Cremation_Authorization'] ?? 'no',
-          "death_certificate" => $ConfirmationData['Requirements']['Death_Certificate'] ?? 'no',
+          "baptismal_certificate" => $BurialData['Requirements']['Baptismal'] ?? 'no',
+          "marriage_license" => $BurialData['Requirements']['Marriage_License'] ?? 'no',
+          "confirmation" => $BurialData['Requirements']['Confirmation'] ?? 'no',
+          "birth_certificate" => $BurialData['Requirements']['LiveBirthCert'] ?? 'no',
+          "cenomar" => $BurialData['Requirements']['Cenomar'] ?? 'no',
+          "interrogation" => $BurialData['Requirements']['Interogation'] ?? 'no',
+          "precana_seminar" => $BurialData['Requirements']['PreCana'] ?? 'no',
+          "confession" => $BurialData['Requirements']['Confession'] ?? 'no',
+          "family_consent" => $BurialData['Requirements']['Family_Consent'] ?? 'no',
+          "cremation_authorization" => $BurialData['Requirements']['Cremation_Authorization'] ?? 'no',
+          "death_certificate" => $BurialData['Requirements']['Death_Certificate'] ?? 'no',
           "remark" => 1 // Default to show (1) based on schema
       );
 

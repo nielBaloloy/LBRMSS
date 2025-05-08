@@ -28,7 +28,17 @@
             <q-icon name="search" />
           </template>
         </q-input>
+
+        <q-btn
+          v-if="titles == 'Financial Record'"
+          color="green-5"
+          icon-right="archive"
+          label="Export to csv"
+          no-caps
+          @click="exportTable"
+        />
       </template>
+
       <template v-slot:top-left>
         <div class="row items-center q-gutter-md">
           <!-- Filter Button -->
@@ -300,10 +310,27 @@
 
 <script>
 import { ref, computed, watch, defineEmits } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, exportFile } from "quasar";
 import { FilterRange } from "src/composables/SeviceData";
 import { baseUrl } from "src/data/menuData.js";
 import { api } from "src/boot/axios";
+function wrapCsvValue(val, formatFn, row) {
+  let formatted = formatFn !== void 0 ? formatFn(val, row) : val;
+
+  formatted =
+    formatted === void 0 || formatted === null ? "" : String(formatted);
+
+  formatted = formatted.split('"').join('""');
+  /**
+   * Excel accepts \n and \r in strings, but some other CSV parsers do not
+   * Uncomment the next two lines to escape new lines
+   */
+  // .split('\n').join('\\n')
+  // .split('\r').join('\\r')
+
+  return `"${formatted}"`;
+}
+
 export default {
   props: {
     title: { type: String, default: "Table" },
@@ -312,6 +339,7 @@ export default {
   },
   emits: ["edit", "FilterRanges", "filterData"],
   setup(props, { emit }) {
+    let titles = props.title;
     const tableRef = ref();
     const filter = ref("");
     const loading = ref(false);
@@ -331,7 +359,7 @@ export default {
     function print(x) {
       $q.dialog({
         title: "Print Certificate",
-        message: "Proceed to the Cashier to settle the payments?",
+        message: "Please proceed to the Cashier to settle the payment first",
         cancel: true,
         persistent: true,
       })
@@ -495,57 +523,113 @@ export default {
 
       switch (id) {
         case 1:
-          pdfUrl.value =
-            baseUrl +
-            "ChangeofRecordPrint.php?date=" +
-            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
-            "&name=" +
-            encodeURIComponent(fullname) +
-            "&priest=" +
-            encodeURIComponent(priest) +
-            "&service=" +
-            encodeURIComponent(Service); // Encoding the fullname
-          showPdf.value = true;
+          $q.dialog({
+            title: "Currently Under development",
+            message: "Skip this shit for a while",
+          })
+            .onOk(() => {
+              // console.log('OK')
+            })
+            .onCancel(() => {
+              // console.log('Cancel')
+            })
+            .onDismiss(() => {
+              // console.log('I am triggered on both OK and Cancel')
+            });
+
+          // pdfUrl.value =
+          //   baseUrl +
+          //   "ChangeofRecordPrint.php?date=" +
+          //   encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+          //   "&name=" +
+          //   encodeURIComponent(fullname) +
+          //   "&priest=" +
+          //   encodeURIComponent(priest) +
+          //   "&service=" +
+          //   encodeURIComponent(Service); // Encoding the fullname
+          // showPdf.value = true;
           break;
         case 2:
-          pdfUrl.value =
-            baseUrl +
-            "ChangeofRecordPrint.php?date=" +
-            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
-            "&name=" +
-            encodeURIComponent(baptismfullname) +
-            "&priest=" +
-            encodeURIComponent(priest) +
-            "&service=" +
-            encodeURIComponent(Service); // Encoding the fullname
-          showPdf.value = true;
+          $q.dialog({
+            title: "Currently Under development",
+            message: "Skip this shit for a while",
+          })
+            .onOk(() => {
+              // console.log('OK')
+            })
+            .onCancel(() => {
+              // console.log('Cancel')
+            })
+            .onDismiss(() => {
+              // console.log('I am triggered on both OK and Cancel')
+            });
+
+          // pdfUrl.value =
+          //   baseUrl +
+          //   "ChangeofRecordPrint.php?date=" +
+          //   encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+          //   "&name=" +
+          //   encodeURIComponent(baptismfullname) +
+          //   "&priest=" +
+          //   encodeURIComponent(priest) +
+          //   "&service=" +
+          //   encodeURIComponent(Service); // Encoding the fullname
+          // showPdf.value = true;
           break;
         case 3:
-          console.log(confirmationfullname);
-          pdfUrl.value =
-            baseUrl +
-            "ChangeofRecordPrint.php?date=" +
-            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
-            "&name=" +
-            encodeURIComponent(confirmationfullname) +
-            "&priest=" +
-            encodeURIComponent(priest) +
-            "&service=" +
-            encodeURIComponent(Service); // Encoding the fullname
-          showPdf.value = true;
+          $q.dialog({
+            title: "Currently Under development",
+            message: "Skip this shit for a while",
+          })
+            .onOk(() => {
+              // console.log('OK')
+            })
+            .onCancel(() => {
+              // console.log('Cancel')
+            })
+            .onDismiss(() => {
+              // console.log('I am triggered on both OK and Cancel')
+            });
+
+          // console.log(confirmationfullname);
+          // pdfUrl.value =
+          //   baseUrl +
+          //   "ChangeofRecordPrint.php?date=" +
+          //   encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+          //   "&name=" +
+          //   encodeURIComponent(confirmationfullname) +
+          //   "&priest=" +
+          //   encodeURIComponent(priest) +
+          //   "&service=" +
+          //   encodeURIComponent(Service); // Encoding the fullname
+          // showPdf.value = true;
           break;
         case 4:
-          pdfUrl.value =
-            baseUrl +
-            "BurialCert.php?date=" +
-            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
-            "&name=" +
-            encodeURIComponent(Burialfullname) +
-            "&priest=" +
-            encodeURIComponent(priest) +
-            "&service=" +
-            encodeURIComponent(Service); // Encoding the fullname
-          showPdf.value = true;
+          $q.dialog({
+            title: "Currently Under development",
+            message: "Skip this shit for a while",
+          })
+            .onOk(() => {
+              // console.log('OK')
+            })
+            .onCancel(() => {
+              // console.log('Cancel')
+            })
+            .onDismiss(() => {
+              // console.log('I am triggered on both OK and Cancel')
+            });
+
+        // pdfUrl.value =
+        //   baseUrl +
+        //   "BurialCert.php?date=" +
+        //   encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+        //   "&name=" +
+        //   encodeURIComponent(Burialfullname) +
+        //   "&priest=" +
+        //   encodeURIComponent(priest) +
+        //   "&service=" +
+        //   encodeURIComponent(Service); // Encoding the fullname
+        // showPdf.value = true;
       }
     }
 
@@ -593,17 +677,30 @@ export default {
 
       switch (id) {
         case 1:
-          pdfUrl.value =
-            baseUrl +
-            "goodMoral.php?date=" +
-            encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
-            "&name=" +
-            encodeURIComponent(fullname) +
-            "&priest=" +
-            encodeURIComponent(priest) +
-            "&service=" +
-            encodeURIComponent(Service); // Encoding the fullname
-          showPdf.value = true;
+          $q.dialog({
+            title: "Currently Under development",
+            message: "Skip this shit for a while",
+          })
+            .onOk(() => {
+              // console.log('OK')
+            })
+            .onCancel(() => {
+              // console.log('Cancel')
+            })
+            .onDismiss(() => {
+              // console.log('I am triggered on both OK and Cancel')
+            });
+          // pdfUrl.value =
+          //   baseUrl +
+          //   "goodMoral.php?date=" +
+          //   encodeURIComponent(date) + // Encoding the date to ensure it's correctly passed
+          //   "&name=" +
+          //   encodeURIComponent(fullname) +
+          //   "&priest=" +
+          //   encodeURIComponent(priest) +
+          //   "&service=" +
+          //   encodeURIComponent(Service); // Encoding the fullname
+          // showPdf.value = true;
           break;
         case 2:
           pdfUrl.value =
@@ -736,7 +833,40 @@ export default {
     function setStatus(status) {
       console.log("Status:", status);
     }
+
+    function exportTable() {
+      // naive encoding to csv format
+      const content = [props.columns.map((col) => wrapCsvValue(col.label))]
+        .concat(
+          props.rowsData.map((row) =>
+            props.columns
+              .map((col) =>
+                wrapCsvValue(
+                  typeof col.field === "function"
+                    ? col.field(row)
+                    : row[col.field === void 0 ? col.name : col.field],
+                  col.format,
+                  row
+                )
+              )
+              .join(",")
+          )
+        )
+        .join("\r\n");
+
+      const status = exportFile("Financial_Record.csv", content, "text/csv");
+
+      if (status !== true) {
+        $q.notify({
+          message: "Browser denied file download...",
+          color: "negative",
+          icon: "warning",
+        });
+      }
+    }
     return {
+      exportTable,
+      titles,
       setStatus,
       FilterData,
       statusOptions,

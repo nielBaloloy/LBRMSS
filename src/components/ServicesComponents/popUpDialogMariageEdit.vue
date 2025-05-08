@@ -1021,6 +1021,11 @@ export default defineComponent({
   },
   setup(props) {
     const emit = defineEmits(["closeDialog"]);
+    const originalEvents = JSON.parse(JSON.stringify(props.editables));
+
+    // Refs to store changed field details
+    const changedFieldsOld = ref([]);
+    const changedFieldsNew = ref([]);
     let personaldetails = ref();
     let regionOptions = ref([]);
     let provinceOptions = ref([]);

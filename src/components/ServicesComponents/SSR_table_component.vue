@@ -337,6 +337,7 @@ export default defineComponent({
       Editdialog.value = false; // Close the dialog
     };
     const editObject = ref([]);
+
     function editRow(row) {
       console.log("Edit row:", row);
 

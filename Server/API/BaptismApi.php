@@ -28,7 +28,7 @@
 
         $baptism = $this->db->rawQuery("SELECT * FROM lbrmss_event_table_main a 
         LEFT JOIN lbrmss_event_services b ON a.service_id = b.etype_id 
-        LEFT JOIN lbrmss_priest_main c ON c.priest_id = a.priest_assigned_id 
+        LEFT JOIN lbrmss_priest_main c ON c.acc_id = a.priest_assigned_id 
         LEFT JOIN lbrmss_position d ON d.pos_id = c.position 
         LEFT JOIN lbrmss_baptism_main mm ON mm.event_id =a.event_id
         LEFT JOIN lbrmss_bapt_person mg ON mg.bapt_event_id = mm.event_id 

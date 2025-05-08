@@ -50,16 +50,7 @@
           else{
            
             
-            $session = new SessionModel();
-            $session->setSessionData('log', [
-              "UID" => 1,
-              "Name" => "Jay Barcellano",
-              "AccessLvl" => "Secretary",
-              "Username" => "JAY_1",
-              "Password" => "Admins",
-              "isActive" => 1,
-              "remark" => 1
-          ]);
+          
            
             echo json_encode(array("Status"=>"Success", "loginData"=>$account));
           }

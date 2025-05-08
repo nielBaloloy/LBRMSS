@@ -251,7 +251,7 @@ export default defineComponent({
         align: "center",
       },
     ];
-    let Financial = "Financial Record";
+    let Financial = ref("Financial Record");
 
     return {
       overall,
