@@ -140,7 +140,7 @@
           <PreistCard :cardValue="scheduleToday" />
         </div>
         <div v-if="myObject.AccessLvl === 'Secretary'" class="col-4">
-          <PreistCard :cardValue="scheduleToday" />
+          <PreistUpcomingCard :cardValue="scheduleToday" />
         </div>
         <div v-if="myObject.AccessLvl === 'Secretary'" class="col-3">
           <event :cardValue="availablePriest" />
@@ -184,6 +184,7 @@ export default defineComponent({
     PreistCard,
     event,
     priestModule,
+    PreistUpcomingCard,
   },
   setup() {
     const leftDrawerOpen = ref(false);

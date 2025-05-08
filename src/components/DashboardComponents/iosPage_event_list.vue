@@ -121,7 +121,14 @@ import { defineComponent, reactive, watch, ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
 import gsap from "gsap";
 import { useQuasar, SessionStorage } from "quasar";
-
+import {
+  getScheduledPriest,
+  schedulePriest,
+  getScheduledIndividualPriest,
+  scheduleOnePriest,
+  getNopriestEvent,
+  nopriestEvent,
+} from "src/composables/getPriestSched";
 export default defineComponent({
   name: "priestModule",
   props: {
@@ -189,6 +196,12 @@ export default defineComponent({
             })
             .then((response) => {
               console.log(response.data.data);
+              getNopriestEvent();
+              $q.notify({
+                message: "Updated Succesfully",
+                color: "green-6",
+                position: "bottom-right",
+              });
             })
             .catch((error) => {
               console.log(error);

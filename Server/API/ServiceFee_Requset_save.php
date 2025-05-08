@@ -105,7 +105,7 @@
                                               LEFT JOIN lbrmss_event_fee as c ON c.event_id = a.event_id
                                               LEFT JOIN lbrmss_event_services as d ON d.etype_id  = a.service_id
                                               WHERE a.event_id = '$ev_id' AND a.remark = '1' GROUP BY a.event_id;");
-          //$res = $events->sendSMS($getdetails);
+          $res = $events->sendSMS($getdetails);
           if($res){
             echo json_encode(array("message"=>"" ));
           }else{
