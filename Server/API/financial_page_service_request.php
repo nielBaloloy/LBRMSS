@@ -90,7 +90,7 @@
             "RequirementStatus" => ($event['requirement_status']=='0') ? "Incomplete" : "Complete",
             "icon" =>$icon,
             "color" =>$color,
-            "burial_option" => $getBurialOptions[0],
+            "burial_option" => $getBurialOptions[0] ?? '',
               ];
             }else{
               $pendingEvents[] = [

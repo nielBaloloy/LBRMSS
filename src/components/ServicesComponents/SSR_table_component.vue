@@ -240,14 +240,34 @@
       <template v-slot:body-cell-details="{ row }">
         <q-td>
           <div>
-            <div><strong>Service:</strong>{{ row.Service }}</div>
-            <div><strong>Venue:</strong>{{ row.all.venue_name }}</div>
-            <div><strong>Date : </strong>{{ row.all.date }}</div>
+            <div><strong>Service:</strong> {{ row.Service }}</div>
+            <div><strong>Venue:</strong> {{ row.all.venue_name }}</div>
+            <div><strong>Date : </strong> {{ row.all.date }}</div>
             <div>
-              <strong>Time : </strong>{{ row.all.time_from }} to
+              <strong>Time : </strong> {{ row.all.time_from }} to
               {{ row.all.time_to }}
             </div>
             <div><strong>Event Type : </strong>{{ row.Type }}</div>
+          </div>
+        </q-td>
+      </template>
+      <template v-slot:body-cell-Requirements="{ row }">
+        <q-td>
+          <div>
+            <center>
+              <div v-if="row.RequirementStatus == 'Complete'">
+                <p class="text-subtitle2 text-green-5">
+                  <q-chip dense color="green-5" text-color="white">
+                    {{ row.RequirementStatus }}
+                  </q-chip>
+                </p>
+              </div>
+              <div v-if="row.RequirementStatus == 'Incomplete'">
+                <q-chip dense color="green-5" text-color="white">
+                  {{ row.RequirementStatus }}
+                </q-chip>
+              </div>
+            </center>
           </div>
         </q-td>
       </template>
@@ -299,6 +319,7 @@ import editMrriageDialog from "src/components/ServicesComponents/popUpDialogMari
 import editBaptismDialog from "src/components/ServicesComponents/popUpDialogBaptismEdit.vue";
 import editBurialDialog from "src/components/ServicesComponents/popUpDialog_Burial_edit.vue";
 import editBlessingDialog from "src/components/ServicesComponents/popUpDialog_Blessing_edit.vue";
+import { getSerivce, Data } from "src/composables/SeviceData.js";
 import { api } from "src/boot/axios";
 export default defineComponent({
   props: {
@@ -374,7 +395,7 @@ export default defineComponent({
     }
 
     function deleteRow(row) {
-      let deletedId = row.all.event_id;
+      let deletedId = row.all.event_id ?? row.all.maineventid;
       $q.dialog({
         title: "Delete this Information",
         message: "Are you sure you want to delete this row?",
@@ -390,11 +411,13 @@ export default defineComponent({
                 type: "positive",
                 message: "Row deleted successfully!",
               });
+              getSerivce(0);
             } else {
               $q.notify({
-                type: "negative",
-                message: "Error!",
+                type: "Success",
+                message: "Deleted Successfully!",
               });
+              getSerivce(0);
             }
           })
           .catch((error) =>

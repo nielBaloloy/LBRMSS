@@ -9,7 +9,7 @@ export const menuData = [
     icon: "event",
     children: [
       { to: "/Services", label: "Ceremonial Services" },
-      // { to: "/Request_Certificate", label: "Certification Request" },
+      { to: "/Request_Certificate", label: "Documentary Request" },
     ],
   },
   {
@@ -40,21 +40,17 @@ export const menuData = [
       { to: "/Confirmation", label: "Confirmation Records" },
     ],
   },
-  {
-    to: "/Account",
-    label: "Accounts",
-    icon: "group",
-  },
-  {
-    to: "/SecretaryDashboard/Account-Management",
-    label: "Logs and Audit Trails",
-    icon: "dvr",
-  },
-  {
-    to: "/PriestSetup",
-    label: "Priest Setup",
-    icon: "settings",
-  },
+
+  // {
+  //   to: "/SecretaryDashboard/Account-Management",
+  //   label: "Logs and Audit Trails",
+  //   icon: "dvr",
+  // },
+  // {
+  //   to: "/PriestSetup",
+  //   label: "Priest Setup",
+  //   icon: "settings",
+  // },
   {
     label: "Tools",
     icon: "construction",
@@ -67,6 +63,20 @@ export const menuData = [
         to: "/Restore",
         label: "Restore Database",
       },
+    ],
+  },
+  {
+    label: "Authorization",
+    icon: "construction",
+    children: [
+      {
+        to: "/Account",
+        label: "Accounts",
+      },
+      // {
+      //   to: "/Permission",
+      //   label: "Restore Database",
+      // },
     ],
   },
 ];
@@ -93,11 +103,7 @@ export const menuData2 = [
     label: "Financial Records",
     icon: "summarize",
   },
-  {
-    to: "/FinancialReport",
-    label: "Financial Reports",
-    icon: "summarize",
-  },
+
   {
     label: "Tools",
     icon: "construction",
@@ -134,3 +140,4 @@ export const menuData3 = [
   },
 ];
 export const baseUrl = "http://localhost/LBRMSS/Server/API/";
+export const imageBase = "http://localhost/LBRMSS/Server/";

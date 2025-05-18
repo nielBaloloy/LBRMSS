@@ -257,7 +257,7 @@ export default defineComponent({
                 1000
               );
             }
-          } else if (status.value === "Failed") {
+          } else if (status.value == "Failed") {
             $q.notify({
               message: "Username or Password is incorrect",
               color: "red-7",
@@ -265,6 +265,11 @@ export default defineComponent({
           } else if (isActive.value === "No") {
             $q.notify({
               message: "Your Account is no longer active  ",
+              color: "red-7",
+            });
+          } else {
+            $q.notify({
+              message: "Username or Password is Incorrect  ",
               color: "red-7",
             });
           }

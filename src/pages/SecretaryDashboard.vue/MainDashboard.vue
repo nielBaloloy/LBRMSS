@@ -4,10 +4,10 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> LBRMSS-Dashboard </q-toolbar-title>
+        <q-toolbar-title> Dashboard </q-toolbar-title>
         <div class="account">
           <q-avatar>
-            <img src="../../assets/quasar-logo-vertical.svg" />
+            <img src="src/assets/quasar-logo-vertical.svg" />
           </q-avatar>
           <q-btn-dropdown flat class="dropdown-btn">
             <div class="row no-wrap flex">
@@ -19,7 +19,7 @@
                     class="flex q-pt-lg"
                     style="width: 1.6em; height: 1.6em"
                   >
-                    <img src="../../assets/quasar-logo-vertical.svg" />
+                    <img src="src/assets/quasar-logo-vertical.svg" />
                   </q-avatar>
                 </div>
                 <div class="profile-info q-pa-sm">
@@ -140,7 +140,11 @@
           <PreistCard :cardValue="scheduleToday" />
         </div>
         <div v-if="myObject.AccessLvl === 'Secretary'" class="col-4">
-          <PreistUpcomingCard :cardValue="scheduleToday" />
+          Upcoming Schedule
+          <br />
+          <div class="div" style="overflow-y: scroll; height: 500px">
+            <upcomingCard :cardValues="upcoming" />
+          </div>
         </div>
         <div v-if="myObject.AccessLvl === 'Secretary'" class="col-3">
           <event :cardValue="availablePriest" />
@@ -149,6 +153,7 @@
       <div class="mobile q-pa-md">
         <priestModule v-if="myObject.AccessLvl === 'priest'" />
       </div>
+      <q-btn>See more</q-btn>
     </q-page-container>
   </q-layout>
 </template>
@@ -159,16 +164,26 @@ import { useQuasar, SessionStorage } from "quasar";
 import { useRouter, useRoute } from "vue-router";
 import EventCard from "../../components/DashboardComponents/ScheduleCard-PLate.vue";
 import PreistCard from "../../components/DashboardComponents/priestScheduleCard.vue";
-import PreistUpcomingCard from "../../components/DashboardComponents/priestScheduleCard.vue";
+import upcomingCard from "../../components/DashboardComponents/seminarScheduleCard.vue";
 import event from "../../components/DashboardComponents/eventCalendar.vue";
 import Graph from "../../components/DashboardComponents/MainGraph.vue";
 import SidebarMenu from "../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2, menuData3 } from "src/data/menuData";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 import { getToday, scheduleToday } from "src/composables/getTodaysSchedule";
-import { sched, updateSchedule } from "src/composables/updateEvent";
+import {
+  financeData,
+  loadFinanceData,
+} from "src/composables/loadDashboardFinance";
+import {
+  sched,
+  updateSchedule,
+  upcomingSchedule,
+  upcoming,
+} from "src/composables/updateEvent";
 import priestModule from "src/components/DashboardComponents/iosPage.vue";
 import { remindClient } from "src/composables/sendReminder";
+
 import {
   dashboardUtil,
   scheduled,
@@ -184,7 +199,7 @@ export default defineComponent({
     PreistCard,
     event,
     priestModule,
-    PreistUpcomingCard,
+    upcomingCard,
   },
   setup() {
     const leftDrawerOpen = ref(false);
@@ -194,7 +209,9 @@ export default defineComponent({
       getAvailablePriest();
       getToday();
       updateSchedule();
-      //remindClient();
+      remindClient();
+      loadFinanceData();
+      upcomingSchedule();
 
       nextTick(() => {
         dashboardUtil();
@@ -237,6 +254,7 @@ export default defineComponent({
     };
 
     return {
+      upcoming,
       scheduled,
       pending,
       done,

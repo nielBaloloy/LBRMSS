@@ -142,7 +142,7 @@
                   $getGroom = $this->db->get("lbrmss_m_groom");
                   
                     // Add multiple keys for event_id == 1
-                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : "N/a";
                     $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
                     $pendingEvents[$lastIndex]['groom'] = !empty($getGroom) ? $getGroom : [];
                     $pendingEvents[$lastIndex]['bride'] = !empty($getBride) ? $getBride : [];
@@ -152,24 +152,18 @@
             
                 case 2:
                     // Handle event_id == 2: Baptism
-                    $this->db->where('remark', '1');
-                    $this->db->where('event_id', $ev_id);
-                    $hasbapt = $this->db->has('lbrmss_baptism_main');
-            
-                    if ($hasbapt) {
+                   
                         $this->db->where('remark', '1');
                         $this->db->where('bapt_event_id', $ev_id);
                         $getbapt = $this->db->get("lbrmss_bapt_person");
-                    } else {
-                        $getbapt = [];
-                    }
+                   
             
                     // Add multiple keys for event_id == 2
-                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : [];
+                    $pendingEvents[$lastIndex]['payment'] = !empty($getPayment[0]['reference_no']) ? $getPayment[0]['reference_no'] : "N/a";
                     $pendingEvents[$lastIndex]['witness'] = !empty($getWitness) ? $getWitness : [];
                     $pendingEvents[$lastIndex]['Requirement'] = !empty($getRequirement) ? $getRequirement : [];
                     $pendingEvents[$lastIndex]['seminar'] = !empty($getSeminar) ? $getSeminar : [];
-                    $pendingEvents[$lastIndex]['baptismperson'] = !empty($getbapt[0]) ? $getbapt[0] : [];
+                    $pendingEvents[$lastIndex]['baptismperson'] = !empty($getbapt) ? $getbapt : [];
                     break;
             
                 case 3:
@@ -283,7 +277,7 @@
                   "priest_assigned_id"  =>(isset($Event['Assigned_Priest']) && isset($Event['Assigned_Priest']['priest_id']) 
                     ? $Event['Assigned_Priest']['priest_id'] 
                     : null),
-                  "event_progress"      => $stat,
+                  "event_progress"      => 1,
                   "requirement_status"  => 1,
                   "created_at"          => $dty,
                   "created_by"          => '1',

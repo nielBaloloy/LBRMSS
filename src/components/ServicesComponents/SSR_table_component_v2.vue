@@ -205,20 +205,20 @@
                 <q-item-section avatar>
                   <q-icon name="print" color="print" />
                 </q-item-section>
-                <q-item-section>Request Print</q-item-section>
+                <q-item-section>Print Certificate</q-item-section>
               </q-item>
-              <q-item clickable v-close-popup @click="changeRecord(row)">
+              <!-- <q-item clickable v-close-popup @click="changeRecord(row)">
                 <q-item-section avatar>
                   <q-icon name="restore_page" color="print" />
                 </q-item-section>
                 <q-item-section>Change of Record</q-item-section>
-              </q-item>
-              <q-item clickable v-close-popup @click="goodMoral(row)">
+              </q-item> -->
+              <!-- <q-item clickable v-close-popup @click="goodMoral(row)">
                 <q-item-section avatar>
                   <q-icon name="description" color="print" />
                 </q-item-section>
                 <q-item-section>Print Good Moral</q-item-section>
-              </q-item>
+              </q-item> -->
               <q-item clickable v-close-popup @click="deleteRow(row)">
                 <q-item-section avatar>
                   <q-icon name="delete" color="negative" />
@@ -230,17 +230,21 @@
         </q-td>
       </template>
       <template v-slot:body-cell-Status="{ row }">
-        <q-td>
-          <q-chip
-            v-if="row.status == 'Active'"
-            color="green"
-            text-color="white"
-            size="sm"
-          >
-            Active
-          </q-chip>
-          <q-chip v-else color="red" text-color="white"> Inactive </q-chip>
-        </q-td>
+        <center>
+          <q-td>
+            <q-chip
+              v-if="row.status == 'Active'"
+              color="green"
+              text-color="white"
+              size="sm"
+            >
+              Active
+            </q-chip>
+            <q-chip v-else color="red" text-color="white" size="sm">
+              Inactive
+            </q-chip>
+          </q-td>
+        </center>
       </template>
       <template v-slot:body-cell-accountAction="{ row }">
         <q-td>
@@ -257,23 +261,6 @@
                   <q-icon name="edit" color="primary" />
                 </q-item-section>
                 <q-item-section>Edit</q-item-section>
-              </q-item>
-              <q-item
-                v-if="row.status == 'Active'"
-                clickable
-                v-close-popup
-                @click="setStatus(0)"
-              >
-                <q-item-section avatar>
-                  <q-icon name="toggle_off" color="primary" />
-                </q-item-section>
-                <q-item-section>Set as Inactive</q-item-section>
-              </q-item>
-              <q-item v-else clickable v-close-popup @click="setStatus(1)">
-                <q-item-section avatar>
-                  <q-icon name="toggle_on" color="primary" />
-                </q-item-section>
-                <q-item-section>Set as Active</q-item-section>
               </q-item>
 
               <q-item clickable v-close-popup @click="deleteRow(row)">
@@ -293,6 +280,24 @@
           <div class="text-h6">PDF Preview</div>
           <q-space />
           <q-btn dense flat icon="close" @click="showPdf = false" />
+        </q-bar>
+        <q-separator />
+        <q-card-section class="q-pa-none" style="height: 100%">
+          <iframe
+            :src="pdfUrl"
+            width="100%"
+            height="100%"
+            style="border: none"
+          ></iframe>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+    <q-dialog v-model="showChangeRecordPdf">
+      <q-card style="width: 90vw; max-width: 900px; height: 90vh">
+        <q-bar>
+          <div class="text-h6">Change of Record Preview</div>
+          <q-space />
+          <q-btn dense flat icon="close" @click="showChangeRecordPdf = false" />
         </q-bar>
         <q-separator />
         <q-card-section class="q-pa-none" style="height: 100%">
@@ -337,7 +342,7 @@ export default {
     columns: { type: Array, required: true },
     rowsData: { type: Array, required: true },
   },
-  emits: ["edit", "FilterRanges", "filterData"],
+  emits: ["edit", "FilterRanges", "filterData", "delete"],
   setup(props, { emit }) {
     let titles = props.title;
     const tableRef = ref();
@@ -356,6 +361,7 @@ export default {
     function editRow(row) {
       emit("edit", row);
     }
+
     function print(x) {
       $q.dialog({
         title: "Print Certificate",
@@ -744,15 +750,14 @@ export default {
       }
     }
     function deleteRow(row) {
-      // $q.dialog({
-      //   title: "Confirm",
-      //   message: "Are you sure you want to delete this row?",
-      //   cancel: true,
-      //   persistent: true,
-      // }).onOk(() => {
-      console.log("Deleted row:", row);
-      // Add logic to remove the row from your data
-      // });
+      $q.dialog({
+        title: "Confirm",
+        message: "Are you sure you want to delete this row?",
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        emit("delete", row);
+      });
     }
     // ✅ Computed property to filter and paginate
     const filteredRows = computed(() => {
@@ -835,11 +840,30 @@ export default {
     }
 
     function exportTable() {
-      // naive encoding to csv format
-      const content = [props.columns.map((col) => wrapCsvValue(col.label))]
+      const columns = props.columns;
+      const rows = props.rowsData;
+
+      // Sum up the amount column
+      let totalAmount = 0;
+      const amountCol = columns.find(
+        (col) => col.name === "amount" || col.field === "amount"
+      );
+
+      if (amountCol) {
+        totalAmount = rows.reduce((sum, row) => {
+          const value =
+            typeof amountCol.field === "function"
+              ? parseFloat(amountCol.field(row))
+              : parseFloat(row[amountCol.field || amountCol.name]);
+          return sum + (isNaN(value) ? 0 : value);
+        }, 0);
+      }
+
+      // Create CSV content
+      const content = [columns.map((col) => wrapCsvValue(col.label))]
         .concat(
-          props.rowsData.map((row) =>
-            props.columns
+          rows.map((row) =>
+            columns
               .map((col) =>
                 wrapCsvValue(
                   typeof col.field === "function"
@@ -852,6 +876,15 @@ export default {
               .join(",")
           )
         )
+        .concat([
+          columns
+            .map((col) =>
+              col.name === "amount" || col.field === "amount"
+                ? wrapCsvValue("Total: " + totalAmount.toFixed(2))
+                : ""
+            )
+            .join(","),
+        ])
         .join("\r\n");
 
       const status = exportFile("Financial_Record.csv", content, "text/csv");
@@ -864,6 +897,7 @@ export default {
         });
       }
     }
+
     return {
       exportTable,
       titles,

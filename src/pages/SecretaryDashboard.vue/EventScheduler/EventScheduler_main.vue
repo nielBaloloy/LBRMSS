@@ -184,29 +184,82 @@ const viewEvent = (info) => {
       return `
       <tr>
         <td style="padding: 8px; border: 1px solid #ccc;">${index + 1}</td>
-         <td style="padding: 8px; border: 1px solid #ccc;">${
-           payment.reference_no
-         }</td>
-        <td style="padding: 8px; border: 1px solid #ccc;">  ${
-          payment.status == 2
-            ? "Partially Paid"
-            : payment.status == 3
-            ? "Fully Paid"
-            : "Pending"
+        <td style="padding: 8px; border: 1px solid #ccc;">${
+          payment.reference_no
         }</td>
+        <td style="padding: 8px; border: 1px solid #ccc;">
+          ${
+            payment.status == 2
+              ? "Partially Paid"
+              : payment.status == 3
+              ? "Fully Paid"
+              : "Pending"
+          }
+        </td>
         <td style="padding: 8px; border: 1px solid #ccc;">${
           payment.due_date
         }</td>
-       
-       
       </tr>
     `;
     })
     .join("");
+
+  // Conditional Seminar Section HTML
+  const seminarSection =
+    eventData.event_name === "Blessing" ||
+    eventData.event_name === "Anointing of the Sick" ||
+    eventData.event_name === "Misa"
+      ? ""
+      : `
+  <div>
+    <h5 style="font-weight: bold; color: #333;">Seminar</h5>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background-color: #f0f0f0;">
+            <th style="padding: 8px; border: 1px solid #ccc;">#</th>
+            <th style="padding: 8px; border: 1px solid #ccc;">Title</th>
+            <th style="padding: 8px; border: 1px solid #ccc;">Date</th>
+            <th style="padding: 8px; border: 1px solid #ccc;">Time</th>
+            <th style="padding: 8px; border: 1px solid #ccc;">Venue</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${seminarRows}
+        </tbody>
+      </table>
+    </div>
+  </div>
+`;
+  const paymentInfo =
+    eventData.event_name === "Anointing of the Sick" ||
+    eventData.event_name === "Misa"
+      ? ""
+      : `
+     <div>
+        <h5 style="font-weight: bold; color: #333;">Payment Info</h5>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+              <tr style="background-color: #f0f0f0;">
+                <th style="padding: 8px; border: 1px solid #ccc;">#</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">Reference</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">Status</th>
+                <th style="padding: 8px; border: 1px solid #ccc;">Due date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${payyment}
+            </tbody>
+          </table>
+        </div>
+      </div>
+`;
+
   $q.dialog({
     title: `Event Details`,
     message: `
-    <form style="display: flex; flex-direction: column;  padding: 10px; font-family: Arial, sans-serif;">
+    <form style="display: flex; flex-direction: column; padding: 10px; font-family: Arial, sans-serif;">
       <div style="display: flex; flex-direction: column;">
         <label style="font-weight: bold; color: #333;">Event Name</label>
         <input type="text" value="${eventData.event_name}" readonly
@@ -251,51 +304,9 @@ const viewEvent = (info) => {
           style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9;">
       </div>
 
-      <!-- Dynamic Seminar Section -->
-     <div>
-       <h5 style="font-weight: bold; color: #333;">Seminar</h5>
-       <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-          <thead>
-            <tr style="background-color: #f0f0f0;">
-              
-              <th style="padding: 8px; border: 1px solid #ccc;">#</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Title</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Date</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Time</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Venue</th>
-              
-            </tr>
-          </thead>
-          <tbody>
-            ${seminarRows}
-          </tbody>
-        </table>
-      </div>
-       </div>
-     
-           <!-- Dynamic payment Section -->
-     <div>
-       <h5 style="font-weight: bold; color: #333;">Payment Info</h5>
-       <div style="overflow-x: auto;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
-          <thead>
-            <tr style="background-color: #f0f0f0;">
-              
-              <th style="padding: 8px; border: 1px solid #ccc;">#</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Reference</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Status</th>
-              <th style="padding: 8px; border: 1px solid #ccc;">Due date</th>
-             
-              
-            </tr>
-          </thead>
-          <tbody>
-            ${payyment}
-          </tbody>
-        </table>
-      </div>
-       </div>
+      ${seminarSection}
+    ${paymentInfo}
+    
     </form>
   `,
     html: true,

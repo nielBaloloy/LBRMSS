@@ -356,7 +356,7 @@
         $UpdateEvent = Array(
          "event_id"            => $event['event_id'],
           "service_id"          => $event['service_id'],
-          "client"              => $event['client'],
+          
           "date"                => $event['date'],
           "date_to"             => $event['date_to'],
           "time_from"           => $events['Time_from'],

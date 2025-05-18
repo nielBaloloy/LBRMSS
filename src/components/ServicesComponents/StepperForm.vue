@@ -147,10 +147,11 @@
           </div>
 
           <div
-            class="servicfield flex flex-wrap justify-between w-full"
+            class="servicfield row q-col-gutter-md q-pa-md"
             v-show="dateField"
           >
-            <div class="date">
+            <!-- Date Field -->
+            <div class="col-12 col-md-4">
               <div class="mb-1">Date of Event</div>
               <q-input
                 class="w-full"
@@ -183,7 +184,8 @@
               </q-input>
             </div>
 
-            <div class="timeFrom flex-1">
+            <!-- Time From Field -->
+            <div class="col-12 col-md-4">
               <div class="mb-1">Time From</div>
               <q-input
                 class="w-full"
@@ -215,11 +217,11 @@
               </q-input>
             </div>
 
-            <div class="timeTo flex-1 min-w-[200px]">
+            <!-- Time To Field -->
+            <div class="col-12 col-md-4">
               <div class="mb-1">Time To</div>
               <q-input
                 class="w-full"
-                ref="step1Ref"
                 outlined
                 :dense="true"
                 v-model="formData.TimeTo"
@@ -250,14 +252,19 @@
                 </template>
               </q-input>
             </div>
-            <q-btn
-              v-show="openPriestList"
-              color="primary"
-              icon="list"
-              @click="massDialog = true"
-              class="q-mt-md"
-            />
-            <div class="timeDurat hidden">
+
+            <!-- Priest List Button -->
+            <div class="col-12 q-mt-sm" v-show="openPriestList">
+              <q-btn
+                color="primary"
+                icon="list"
+                @click="massDialog = true"
+                label="Priest List"
+              />
+            </div>
+
+            <!-- Hidden Duration Field -->
+            <div class="col-12 timeDurat hidden">
               {{ (formData.Duration = timeDurationEvent) }}
             </div>
           </div>
@@ -290,30 +297,48 @@
           </div>
 
           <!-- mass upload -->
-          <div class="massUpload full-width q-pa-md" v-show="MassUpload">
-            <p class="text-center">Upload Files Here</p>
-            <span class="text-blue" @click="click()">Click Here</span> to
-            generate
+          <div
+            class="massUpload q-pa-md q-mt-md q-mb-md"
+            v-show="MassUpload"
+            style="border: 2px dotted grey; border-radius: 8px"
+          >
+            <!-- Upload prompt -->
+            <div class="text-center q-mb-sm">
+              <p class="text-h6 text-grey-8">Upload Files Here</p>
+              <span class="text-blue cursor-pointer" @click="click()"
+                >Click Here</span
+              >
+              to generate
+            </div>
+
+            <!-- File input -->
             <q-file
               v-model="excelData"
-              label="Drop your files here"
+              label="Drop or select your files"
               use-chips
               multiple
-              borderless
+              outlined
               accept=".csv,.xlsx"
+              class="full-width q-mb-md"
             />
 
-            <!-- Button to trigger JSON logging -->
+            <!-- Upload button -->
             <q-btn
               unelevated
-              class="bg-amber-5"
+              color="amber-5"
               label="Upload"
               @click="excelExport(excelData)"
-              style="width: 100%"
-            ></q-btn>
+              class="full-width q-mt-sm"
+            />
 
-            <!-- Displaying the JSON output -->
-            <pre>{{ jsonData }}</pre>
+            <!-- JSON Output -->
+            <q-separator spaced class="q-mt-md" />
+            <div
+              class="bg-grey-1 q-pa-sm"
+              style="overflow-x: auto; max-height: 300px"
+            >
+              <pre class="text-caption text-left">{{ jsonData }}</pre>
+            </div>
           </div>
           <!-- Contact Number -->
           <div class="servicefield">
@@ -1439,7 +1464,7 @@
         :title="stepTitle"
         icon="add_comment"
         :done="step > 3"
-        v-if="stepper3panel"
+        v-if="stepperWitnesspanel"
       >
         <!-- =====================================Marriage God Parents============================ -->
         <div class="d-flex col align-items-center">
@@ -1767,7 +1792,10 @@
         <!-- =====================================Marriage God Parents============================ -->
         <div class="d-flex col align-items-center q-gutter-xs">
           <div class="MarriageField" v-if="formData.Service == '1'">
-            <div class="header justify-between">
+            <div
+              class="header justify-between"
+              v-if="formData.Type == 'Special'"
+            >
               <h6 class="q-mb-md q-mt-sm">
                 Documentary Requirements Checklist
               </h6>
@@ -1913,183 +1941,170 @@
               </div>
             </div>
 
-            <div class="header q-mt-lg justify-between">
-              <div class="header flex justify-between">
-                <h6 class="q-mb-md q-mt-sm">Seminars</h6>
+            <div class="q-mt-lg">
+              <!-- Header Section -->
+              <div class="row items-center justify-between q-mb-md">
+                <h6 class="text-h6">Seminars</h6>
                 <q-btn
                   rounded
                   unelevated
                   @click="addScheduleCard()"
-                  size="md"
                   icon="add"
-                  label="add Schedule"
-                ></q-btn>
+                  label="Add Schedule"
+                  color="primary"
+                />
               </div>
-              <div class="q-gutter-sm">
-                <div class="Requirements q-pa-sm q-mb-sm">
-                  <div class="marriageInfo">
-                    <div
-                      class="cardwITNESS"
-                      v-for="(cardSeminar, index) in Schedulecards"
-                      :key="index"
-                    >
-                      <div class="seminar-card q-pa-md q-mb-sm">
-                        <div class="flex q-gutter-md items-center">
-                          <div class="field">
-                            <label>Title</label>
-                            <q-input
-                              ref="step4Ref"
-                              v-model="cardSeminar.field1"
-                              dense
-                              outlined
-                            />
-                          </div>
 
-                          <div class="field">
-                            <label>Date</label>
-                            <q-input
-                              dense
-                              outlined
-                              v-model="cardSeminar.field2"
-                            >
-                              <template v-slot:prepend>
-                                <q-icon name="event" class="cursor-pointer">
-                                  <q-popup-proxy
-                                    cover
-                                    transition-show="scale"
-                                    transition-hide="scale"
-                                  >
-                                    <q-date
-                                      @update:model-value="
-                                        durationSeminar(cardSeminar)
-                                      "
-                                      v-model="cardSeminar.field2"
-                                      mask="YYYY-MM-DD"
-                                    >
-                                      <div class="row items-center justify-end">
-                                        <q-btn
-                                          v-close-popup
-                                          label="Close"
-                                          color="primary"
-                                          flat
-                                        />
-                                      </div>
-                                    </q-date>
-                                  </q-popup-proxy>
-                                </q-icon>
-                              </template>
-                            </q-input>
-                          </div>
+              <!-- Table Headers -->
+              <div
+                class="row q-px-sm bg-grey-3 text-weight-medium text-caption q-py-sm q-mb-xs"
+              >
+                <div class="col-12 col-sm-2">Title</div>
+                <div class="col-12 col-sm-2">Date</div>
+                <div class="col-6 col-sm-2">Start Time</div>
+                <div class="col-6 col-sm-2">End Time</div>
+                <div class="col-12 col-sm-3">Venue</div>
+                <div class="col-12 col-sm-1 text-center">Action</div>
+              </div>
 
-                          <div class="field">
-                            <label>Time Start</label>
-                            <q-input
-                              outlined
-                              v-model="cardSeminar.field3"
-                              dense
-                            >
-                              <template v-slot:append>
-                                <q-icon
-                                  name="access_time"
-                                  class="cursor-pointer"
-                                >
-                                  <q-popup-proxy
-                                    cover
-                                    transition-show="scale"
-                                    transition-hide="scale"
-                                  >
-                                    <q-time v-model="cardSeminar.field3">
-                                      <div class="row items-center justify-end">
-                                        <q-btn
-                                          v-close-popup
-                                          label="Close"
-                                          color="primary"
-                                          flat
-                                        />
-                                      </div>
-                                    </q-time>
-                                  </q-popup-proxy>
-                                </q-icon>
-                              </template>
-                            </q-input>
-                          </div>
+              <!-- Table Rows (Seminar Entries) -->
+              <div
+                v-for="(cardSeminar, index) in Schedulecards"
+                :key="index"
+                class="row q-col-gutter-sm q-pa-sm items-center bg-grey-1 q-mb-xs"
+              >
+                <!-- Title -->
+                <div class="col-12 col-sm-2">
+                  <q-input
+                    dense
+                    outlined
+                    v-model="cardSeminar.field1"
+                    placeholder="Seminar Title"
+                  />
+                </div>
 
-                          <div class="field">
-                            <label>Time End</label>
-                            <q-input
-                              outlined
-                              v-model="cardSeminar.field4"
-                              dense
-                            >
-                              <template v-slot:append>
-                                <q-icon
-                                  name="access_time"
-                                  class="cursor-pointer"
-                                >
-                                  <q-popup-proxy
-                                    cover
-                                    transition-show="scale"
-                                    transition-hide="scale"
-                                  >
-                                    <q-time
-                                      v-model="cardSeminar.field4"
-                                      @update:model-value="
-                                        durationInMinutesSeminar(cardSeminar)
-                                      "
-                                    >
-                                      <div class="row items-center justify-end">
-                                        <q-btn
-                                          v-close-popup
-                                          label="Close"
-                                          color="primary"
-                                          flat
-                                        />
-                                      </div>
-                                    </q-time>
-                                  </q-popup-proxy>
-                                </q-icon>
-                              </template>
-                            </q-input>
-                          </div>
-
-                          <div class="field">
-                            <label>Venue</label>
-                            <q-input
-                              ref="step4Ref"
-                              v-model="cardSeminar.field7"
-                              dense
-                              outlined
-                            />
-                          </div>
-                          <div class="scheduleData hidden">
-                            {{ SchedulecardValues }}
-                            {{ (marriageData.Witness = cardValues) }}
-                            {{ SeminarDay }}
-                            {{ timeDurationSeminar }}
-                            <div style="display: none">
-                              {{ SchedulecardValues }}
-                              {{ (cardSeminar.field5 = SeminarDay) }}
-                              {{ (cardSeminar.field6 = timeDurationSeminar) }}
-                              {{
-                                (marriageData.SeminarDetails =
-                                  SchedulecardValues)
-                              }}
-                              {{ (formData.EventServiceID = randnum) }}
+                <!-- Date -->
+                <div class="col-12 col-sm-2">
+                  <q-input dense outlined v-model="cardSeminar.field2">
+                    <template v-slot:prepend>
+                      <q-icon name="event" class="cursor-pointer">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-date
+                            mask="YYYY-MM-DD"
+                            v-model="cardSeminar.field2"
+                            @update:model-value="durationSeminar(cardSeminar)"
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
                             </div>
-                          </div>
-                          <q-btn
-                            unelevated
-                            @click="RemoveScheduleCard(Schedulecards)"
-                            size="sm"
-                            icon="delete"
-                            label="Remove"
-                            color="red"
-                            class="remove-btn"
-                            :disable="Schedulecards.length <= 1"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                          </q-date>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+
+                <!-- Start Time -->
+                <div class="col-6 col-sm-2">
+                  <q-input dense outlined v-model="cardSeminar.field3">
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-time v-model="cardSeminar.field3">
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+
+                <!-- End Time -->
+                <div class="col-6 col-sm-2">
+                  <q-input dense outlined v-model="cardSeminar.field4">
+                    <template v-slot:append>
+                      <q-icon name="access_time" class="cursor-pointer">
+                        <q-popup-proxy
+                          cover
+                          transition-show="scale"
+                          transition-hide="scale"
+                        >
+                          <q-time
+                            v-model="cardSeminar.field4"
+                            @update:model-value="
+                              durationInMinutesSeminar(cardSeminar)
+                            "
+                          >
+                            <div class="row items-center justify-end">
+                              <q-btn
+                                v-close-popup
+                                label="Close"
+                                color="primary"
+                                flat
+                              />
+                            </div>
+                          </q-time>
+                        </q-popup-proxy>
+                      </q-icon>
+                    </template>
+                  </q-input>
+                </div>
+
+                <!-- Venue -->
+                <div class="col-12 col-sm-3">
+                  <q-input
+                    dense
+                    outlined
+                    v-model="cardSeminar.field7"
+                    placeholder="Venue"
+                  />
+                </div>
+
+                <!-- Remove Button -->
+                <div class="col-12 col-sm-1 text-center">
+                  <q-btn
+                    icon="delete"
+                    color="red"
+                    size="sm"
+                    unelevated
+                    dense
+                    @click="RemoveScheduleCard(Schedulecards)"
+                    :disable="Schedulecards.length <= 1"
+                  />
+                </div>
+
+                <!-- Hidden Data Fields -->
+                <div class="scheduleData hidden">
+                  {{ SchedulecardValues }}
+                  {{ (marriageData.Witness = cardValues) }}
+                  {{ SeminarDay }}
+                  {{ timeDurationSeminar }}
+                  <div style="display: none">
+                    {{ SchedulecardValues }}
+                    {{ (cardSeminar.field5 = SeminarDay) }}
+                    {{ (cardSeminar.field6 = timeDurationSeminar) }}
+                    {{ (marriageData.SeminarDetails = SchedulecardValues) }}
+                    {{ (formData.EventServiceID = randnum) }}
                   </div>
                 </div>
               </div>
@@ -2097,7 +2112,10 @@
           </div>
           <!-- ======================= BAPTISM DATA ====================================== -->
           <div class="MarriageField" v-if="formData.Service == '2'">
-            <div class="header justify-between">
+            <div
+              class="header justify-between"
+              v-if="formData.Type == 'Special'"
+            >
               <h6 class="q-mb-md q-mt-sm">
                 Documentary Requirements Checklist
               </h6>
@@ -2801,7 +2819,6 @@
             </q-card-section>
           </q-card>
         </div>
-        rd
       </q-step>
       <template v-slot:navigation>
         <q-stepper-navigation v-show="Event">
@@ -3040,6 +3057,7 @@ export default defineComponent({
     //  custom stepper
     let stepper2panel = ref(false);
     let stepper3panel = ref(false);
+    let stepperWitnesspanel = ref(false);
     let stepTitle = ref();
     let stepTitle2 = ref();
     let Address_A = ref(false);
@@ -3053,6 +3071,7 @@ export default defineComponent({
         field3.value = false;
         stepper2panel.value = true;
         Preffered_Priest.value = true;
+        stepperWitnesspanel.value = true;
         stepTitle.value = "Witness and God Parents";
         stepTitle2.value = "Seminar and Requirements";
         Address_A.value = false;
@@ -3062,6 +3081,7 @@ export default defineComponent({
         stepper2panel.value = true;
         Preffered_Priest.value = true;
         stepper3panel.value = true;
+        stepperWitnesspanel.value = true;
         stepTitle.value = "Witness and God Parents";
         stepTitle2.value = "Seminar and Requirements";
         Address_A.value = false;
@@ -3071,6 +3091,7 @@ export default defineComponent({
         stepper2panel.value = true;
         Preffered_Priest.value = true;
         stepper3panel.value = true;
+        stepperWitnesspanel.value = true;
         stepTitle.value = "Witness and God Parents";
         stepTitle2.value = "Seminar and Requirements";
         Address_A.value = false;
@@ -3080,6 +3101,7 @@ export default defineComponent({
         stepper2panel.value = true;
         Preffered_Priest.value = true;
         stepper3panel.value = true;
+        stepperWitnesspanel.value = true;
         stepTitle.value = "Additional Info";
         stepTitle2.value = "Requirements";
         Address_A.value = false;
@@ -3089,6 +3111,7 @@ export default defineComponent({
         field2.value = false;
         dateField.value = true;
         Cfor.value = false;
+        stepperWitnesspanel.value = false;
         stepper2panel.value = false;
         Preffered_Priest.value = true;
         Address_A.value = true;
@@ -3099,6 +3122,7 @@ export default defineComponent({
         dateField.value = true;
         Cfor.value = false;
         Description_Field.value = true;
+        stepperWitnesspanel.value = false;
         stepper2panel.value = false;
         Preffered_Priest.value = true;
         Address_A.value = true;
@@ -3109,6 +3133,7 @@ export default defineComponent({
         dateField.value = true;
         MassUpload.value = false;
         stepper2panel.value = false;
+        stepperWitnesspanel.value = false;
         Cfor.value = false;
         openPriestList.value = true;
         Description_Field.value = true;
@@ -3121,12 +3146,14 @@ export default defineComponent({
         dateField.value = true;
         Cfor.value = false;
         stepper2panel.value = false;
+        stepperWitnesspanel.value = false;
         Preffered_Priest.value = true;
         Address_A.value = true;
       } else {
         field1.value = false;
         field2.value = false;
         field3.value = false;
+        stepperWitnesspanel.value = false;
         Cfor.value = false;
         stepper2panel.value = false;
       }
@@ -3261,6 +3288,7 @@ export default defineComponent({
         MassUpload.value = false;
         stepper3panel.value = false;
         stepper2panel.value = false;
+        stepperWitnesspanel.value = false;
         venue.value = false;
         Preffered_Priest.value = false;
         if (
@@ -3283,7 +3311,8 @@ export default defineComponent({
         Certificate.value = false;
         Event.value = true;
         Preffered_Priest.value = true;
-        stepper3panel.value = false;
+        stepper3panel.value = true;
+        stepperWitnesspanel.value = false;
         stepper2panel.value = false;
       } else if (type === "Special") {
         dateField.value = true;
@@ -3294,6 +3323,7 @@ export default defineComponent({
         Event.value = true;
         stepper3panel.value = true;
         stepper2panel.value = true;
+        stepperWitnesspanel.value = true;
       }
     };
 
@@ -4322,6 +4352,54 @@ export default defineComponent({
       TimeTo: "",
       // ... other fields
     });
+    let excelData = ref();
+    let excelVar = ref({});
+    const excelExport = (files) => {
+      // files is the Q-File v-model array
+      const input = files[0];
+      if (!input) {
+        console.warn("No file selected");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // e.target.result is an ArrayBuffer
+        const data = new Uint8Array(e.target.result);
+        const wb = XLSX.read(data, { type: "array" });
+        console.log("Workbook loaded successfully:", wb);
+
+        const result = {};
+
+        wb.SheetNames.forEach((sheetName) => {
+          const ws = wb.Sheets[sheetName];
+
+          // 1) as an array of arrays (first row is header)
+          const asArrays = XLSX.utils.sheet_to_json(ws, {
+            header: 1,
+            defval: "",
+          });
+          console.log(`> ${sheetName} as array of arrays:`, asArrays);
+
+          // 2) as an array of objects (first row → keys)
+          const asObjects = XLSX.utils.sheet_to_json(ws, {
+            defval: "",
+          });
+          console.log(`> ${sheetName} as array of objects:`, asObjects);
+
+          result[sheetName] = {
+            rows: asArrays,
+            objects: asObjects,
+          };
+        });
+
+        // store it in your ref so your UI/reactivity sees it
+        excelVar.value = result;
+        console.log("Final JSON stored in excelVar:", excelVar.value);
+      };
+
+      reader.readAsArrayBuffer(input);
+    };
     let randnum = ref();
     function onContinueStep() {
       switch (step.value) {
@@ -4606,8 +4684,79 @@ export default defineComponent({
             formData.value.EventScheduleID = randnum.value;
             send_mass(formData.value);
           }
-          // sendclose(false);
+          if (formData.value.Service == "1" && formData.value.Type == "Mass") {
+            api
+              .post("MassWedding.php", {
+                eventData: formData.value,
+                excel: excelVar.value.Sheet1.objects,
+                Seminar: SchedulecardValues.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message:
+                      "This schedule is already taken! Please choose another date or time.",
+                    color: "red-6",
+                    position: "bottom-right",
+                  });
+                }
+              })
+              .catch((error) => {
+                $q.notify({
+                  message: "Server Error",
+                  color: "red-6",
+                  position: "bottom-right",
+                });
+                reject(error);
+              });
+            console.log(formData.value);
+            console.log(excelVar.value.Sheet1.objects);
+            console.log(SchedulecardValues.value);
+          }
 
+          if (formData.value.Service == "2" && formData.value.Type == "Mass") {
+            api
+              .post("massBaptism.php", {
+                eventData: formData.value,
+                excel: excelVar.value.Sheet1.objects,
+                Seminar: SchedulecardValues.value,
+              })
+              .then((response) => {
+                if (response.data.Status == "Success") {
+                  $q.notify({
+                    message: "Information saved Successfully",
+                    color: "green-6",
+                    position: "bottom-right",
+                  });
+                  getSerivce(0);
+                } else {
+                  $q.notify({
+                    message:
+                      "This schedule is already taken! Please choose another date or time.",
+                    color: "red-6",
+                    position: "bottom-right",
+                  });
+                }
+              })
+              .catch((error) => {
+                $q.notify({
+                  message: "Server Error",
+                  color: "red-6",
+                  position: "bottom-right",
+                });
+                reject(error);
+              });
+            console.log(formData.value);
+            console.log(excelVar.value.Sheet1.objects);
+            console.log(SchedulecardValues.value);
+          }
           break;
       }
     }
@@ -4686,57 +4835,10 @@ export default defineComponent({
       console.log("mass", rowData);
       massDialog.value = false;
     };
-    let excelData = ref();
-    let excelVar = ref({});
-    const excelExport = (files) => {
-      // files is the Q-File v-model array
-      const input = files[0];
-      if (!input) {
-        console.warn("No file selected");
-        return;
-      }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        // e.target.result is an ArrayBuffer
-        const data = new Uint8Array(e.target.result);
-        const wb = XLSX.read(data, { type: "array" });
-        console.log("Workbook loaded successfully:", wb);
-
-        const result = {};
-
-        wb.SheetNames.forEach((sheetName) => {
-          const ws = wb.Sheets[sheetName];
-
-          // 1) as an array of arrays (first row is header)
-          const asArrays = XLSX.utils.sheet_to_json(ws, {
-            header: 1,
-            defval: "",
-          });
-          console.log(`> ${sheetName} as array of arrays:`, asArrays);
-
-          // 2) as an array of objects (first row → keys)
-          const asObjects = XLSX.utils.sheet_to_json(ws, {
-            defval: "",
-          });
-          console.log(`> ${sheetName} as array of objects:`, asObjects);
-
-          result[sheetName] = {
-            rows: asArrays,
-            objects: asObjects,
-          };
-        });
-
-        // store it in your ref so your UI/reactivity sees it
-        excelVar.value = result;
-        console.log("Final JSON stored in excelVar:", excelVar.value);
-      };
-
-      reader.readAsArrayBuffer(input);
-    };
     let click = () => {
       const csvContent =
-        "Groom_First_Name,Groom_Middle_Name,Groom_Last_Name,Groom_Suffix,Groom_Status,Groom_Birthdate,Groom_Address,Bride_First_Name,Bride_Middle_Name,Bride_Last_Name,Grooms_Age,Bride_Age,Bride_Address,Groom_Father,Groom_Mother,Bride_Suffix,Bride_Birthdate,Bride_Status,Bride_Father,Bride_Mother,Priest_Name,Assigned_Priest,Observanda,Stipendium,Status,EventProgress,ContactNumber,Contact_Person,Groom_Witness,GroomWitness_Address,Baptismal,Marriage_License,Confirmation,LiveBirthCert,Cenomar,Interogation,PreCana,Confession";
+        "Groom_First_Name,Groom_Middle_Name,Groom_Last_Name,Groom_Suffix,Groom_Status,Groom_Birthdate,Groom_Address,Bride_First_Name,Bride_Middle_Name,Bride_Last_Name,Grooms_Age,Bride_Age,Bride_Address,Groom_Father,Groom_Mother,Bride_Suffix,Bride_Birthdate,Bride_Status,Bride_Father,Bride_Mother,Priest_Name,Assigned_Priest,Observanda,Stipendium,Status,EventProgress,ContactNumber,Contact_Person,Groom_Witness,GroomWitness_Address,Bride_Witness,BrideWitness_Address,Baptismal,Marriage_License,Confirmation,LiveBirthCert,Cenomar,Interogation,PreCana,Confession";
 
       const blob = new Blob([csvContent], { type: "text/csv" });
       const url = URL.createObjectURL(blob);
@@ -4822,6 +4924,7 @@ export default defineComponent({
       CertButton,
       stepper2panel,
       stepper3panel,
+      stepperWitnesspanel,
       // Auto Compute Age
       Computedage,
       computeAge,

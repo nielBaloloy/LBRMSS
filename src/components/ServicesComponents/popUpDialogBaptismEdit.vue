@@ -204,14 +204,14 @@
                 <p>Venue Type</p>
                 <q-btn-toggle
                   unelevated
-                  v-model="event.Venuetype"
+                  v-model="event.all.venue_type"
                   toggle-color="primary"
                   :options="[
                     { label: 'Pastoral Center', value: 2 },
                     { label: 'Church', value: 1 },
                     { label: 'Outside', value: 3 },
                   ]"
-                  @update:model-value="setAddress(event.Venuetype, event)"
+                  @update:model-value="setAddress(event.all.venue_type, event)"
                 />
               </div>
 
@@ -219,7 +219,7 @@
                 Venue Address
                 <q-input
                   outlined
-                  v-model="event.Venue"
+                  v-model="event.all.venue_name"
                   :dense="true"
                   class="input-field"
                 />
@@ -267,7 +267,38 @@
         </q-tab-panel>
         <!-- Personal Details -->
         <q-tab-panel name="personaldetails">
+          <div v-if="events[0].all.type == '1'" class="q-pa-md">
+            <q-table
+              :rows="personaldetails"
+              :columns="[
+                { name: 'lname', label: 'Last Name', field: 'bapt_lname' },
+                { name: 'fname', label: 'First Name', field: 'bapt_fname' },
+                { name: 'mname', label: 'Middle Name', field: 'bapt_mname' },
+                { name: 'suffix', label: 'Suffix', field: 'bapt_suffix' },
+                {
+                  name: 'status',
+                  label: 'Status',
+                  field: (row) =>
+                    row.bapt_legitimacy == 1 ? 'Illegal' : 'Legal',
+                },
+                { name: 'dob', label: 'Birth Date', field: 'bapt_dob' },
+                { name: 'age', label: 'Age', field: 'bapt_age' },
+                { name: 'father', label: 'Father', field: 'bapt_father' },
+                { name: 'mother', label: 'Mother', field: 'bapt_mother' },
+                { name: 'region', label: 'Region', field: 'bapt_region' },
+                { name: 'province', label: 'Province', field: 'bapt_province' },
+                { name: 'city', label: 'City', field: 'bapt_City' },
+                { name: 'barangay', label: 'Barangay', field: 'bapt_Barangay' },
+              ]"
+              row-key="bapt_person_id"
+              flat
+              bordered
+              dense
+              class="q-mb-md"
+            />
+          </div>
           <div
+            v-else
             class="event_container q-pa-md"
             v-for="personalDetails in personaldetails"
             :key="personalDetails.bapt_person_id"
@@ -823,6 +854,13 @@ import {
   defineComponent,
   onMounted,
 } from "vue";
+import {
+  getSerivce,
+  Data,
+  sendEventCeremonyData,
+  msg,
+  msgColor,
+} from "../../composables/SeviceData.js";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 export default defineComponent({
   props: {
@@ -836,7 +874,7 @@ export default defineComponent({
     let cityOptions = ref([]);
     let barangayOptions = ref([]);
     let events = ref([props.editables[0]]);
-    let personaldetails = ref([props.editables[0].baptismperson]);
+    let personaldetails = ref(props.editables[0].baptismperson);
     let witness = ref(props.editables[0].witness);
     let Requirement = ref([props.editables[0].Requirement]);
     let seminar = ref([props.editables[0].seminar]);
@@ -918,6 +956,7 @@ export default defineComponent({
     let VenueTypeAddress = ref(false);
     let Address_A = ref(false);
     let setAddress = (venueType, formData) => {
+      console.log(venueType);
       if (venueType == 1) {
         formData.Venue = "St Raphael Church";
         Address_A.value = false;
@@ -1210,7 +1249,7 @@ export default defineComponent({
             .catch((error) => {
               console.log(error);
             });
-          window.location.reload();
+          getSerivce(0);
         })
         .onCancel(() => {
           emit("closeDialog");

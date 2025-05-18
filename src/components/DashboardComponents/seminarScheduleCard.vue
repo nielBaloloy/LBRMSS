@@ -1,9 +1,8 @@
 <template>
   <div class="service row">
     <q-card class="my-card bg-white" style="width: 50vw" flat>
-      <p class="text-h6 q-pa-md">Today's Schedule</p>
       <div
-        v-for="sched in cardValue"
+        v-for="sched in cardValues"
         :key="sched.event_id"
         class="col-xs-12 col-sm-6 col-md-4"
       >
@@ -17,14 +16,17 @@
             <!-- Info (Left-Aligned) -->
             <div class="column" style="flex-grow: 1">
               <div class="text-subtitle1 text-weight-medium">
-                {{ formatDate(sched.date) }}
+                {{ formatDate(sched.Date) }}
               </div>
               <div class="text-subtitle1 text-weight-medium">
-                {{ sched.servicename }}
+                {{ sched.Client }}
+              </div>
+              <div class="text-subtitle1 text-weight-medium">
+                {{ sched.Event }}
               </div>
               <div class="text-subtitle2 text-weight-light">
-                {{ formatTime(sched.time_from) }} -
-                {{ formatTime(sched.time_to) }}
+                {{ formatTime(sched.Time_from) }} -
+                {{ formatTime(sched.Time_to) }}
               </div>
             </div>
 
@@ -34,11 +36,12 @@
               style="flex-shrink: 0; text-align: right"
             >
               <div class="text-subtitle2 text-weight-light">
-                {{ sched.venue_name }}
+                {{ sched.Venue_name }}
               </div>
               <div class="text-subtitle2 text-weight-light">
-                Fr.{{ sched.fullname }}
+                {{ sched.Priest_assigned }}
               </div>
+              <q-btn unelevated>See more</q-btn>
             </div>
           </div>
         </q-card>
@@ -49,23 +52,23 @@
 
 <script>
 import { defineComponent, reactive, watch, ref, onMounted } from "vue";
-
+import { upcomingSchedule, upcoming } from "src/composables/updateEvent";
 import gsap from "gsap";
 
 export default defineComponent({
-  name: "EventCard",
+  name: "upcomingCard",
   props: {
-    cardValue: { type: Array, default: () => [] },
+    cardValues: { type: Array, default: () => [] },
   },
   setup(props) {
-    console.log(props.cardValue);
+    console.log(props.cardValues);
     onMounted(() => {
-      console.log("Mounted value:", props.cardValue);
+      console.log("Mounted value:", props.cardValues);
     });
 
     // Watch for changes
     watch(
-      () => props.cardValue,
+      () => props.cardValues,
       (newVal) => {
         console.log("Updated value:", newVal);
       },

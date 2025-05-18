@@ -132,16 +132,20 @@ const routes = [
     component: () =>
       import("../pages/SecretaryDashboard.vue/Tools/RestorePage.vue"),
   },
-  // {
-  //   path: "/Request_Certificate",
-  //   component: () =>
-  //     import(
-  //       "../pages/SecretaryDashboard.vue/ServiceModule/CertificationRequest.vue"
-  //     ),
-  // },
+  {
+    path: "/Request_Certificate",
+    component: () =>
+      import(
+        "../pages/SecretaryDashboard.vue/ServiceModule/CertificationRequest.vue"
+      ),
+  },
   {
     path: "/Account",
     component: () => import("src/pages/signupPage/signupForm.vue"),
+  },
+  {
+    path: "/PermissionPage",
+    component: () => import("src/pages/signupPage/permissionPage.vue"),
   },
   //ServicePayment
   // Always leave this as last one,

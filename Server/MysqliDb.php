@@ -2628,8 +2628,18 @@ class MysqliDb
         return count($existingEvents) > 0; // Returns true if an event exists, false otherwise
     }
     
-    
-    
+    public function excelDateToDate($excelSerial) {
+    // Validate the input
+    if (!is_numeric($excelSerial) || $excelSerial <= 0) {
+        return null; // or return ''; depending on how you want to handle invalid dates
+    }
+
+    // Convert Excel serial date to Unix timestamp
+    $unixTimestamp = ($excelSerial - 25569) * 86400;
+
+    // Convert to formatted date (UTC)
+    return gmdate("Y-m-d", $unixTimestamp);
+}
 
 
 

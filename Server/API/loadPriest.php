@@ -61,6 +61,7 @@
                             ON evt.priest_assigned_id = a.priest_id
                             AND a.remark = '1'
                     WHERE 
+                        e.remark = '1' AND
                         b.remark = '1'
                         AND NOT EXISTS (
                             SELECT 1 FROM lbrmss_priest_schedule AS a

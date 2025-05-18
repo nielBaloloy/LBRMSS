@@ -262,7 +262,38 @@
         </q-tab-panel>
         <!-- Personal Details -->
         <q-tab-panel name="groom">
+          <div v-if="events[0].all.type == '1'" class="q-pa-md">
+            <q-table
+              :rows="groom"
+              :columns="[
+                { name: 'lname', label: 'Last Name', field: 'groom_lname' },
+                { name: 'fname', label: 'First Name', field: 'groom_fname' },
+                { name: 'mname', label: 'Middle Name', field: 'groom_mname' },
+                { name: 'suffix', label: 'Suffix', field: 'groom_suffix' },
+                {
+                  name: 'status',
+                  label: 'Status',
+                  field: (row) =>
+                    row.g_civil_status == 1 ? 'Widow' : 'Single',
+                },
+                { name: 'dob', label: 'Birth Date', field: 'dob' },
+                { name: 'age', label: 'Age', field: 'age' },
+                { name: 'father', label: 'Father', field: 'g_father' },
+                { name: 'mother', label: 'Mother', field: 'g_mother' },
+                { name: 'region', label: 'Region', field: 'g_region' },
+                { name: 'province', label: 'Province', field: 'g_province' },
+                { name: 'city', label: 'City', field: 'g_city' },
+                { name: 'barangay', label: 'Barangay', field: 'g_brgy' },
+              ]"
+              row-key="g_id"
+              flat
+              bordered
+              dense
+              class="q-mb-md"
+            />
+          </div>
           <div
+            v-else
             class="event_container q-pa-md"
             v-for="groomdetail in groom"
             :key="groomdetail.g_id"
@@ -459,7 +490,38 @@
           </div>
         </q-tab-panel>
         <q-tab-panel name="bride">
+          <div v-if="events[0].all.type == '1'" class="q-pa-md">
+            <q-table
+              :rows="bride"
+              :columns="[
+                { name: 'lname', label: 'Last Name', field: 'bride_lname' },
+                { name: 'fname', label: 'First Name', field: 'bride_fname' },
+                { name: 'mname', label: 'Middle Name', field: 'bride_mname' },
+                { name: 'suffix', label: 'Suffix', field: 'bride_suffix' },
+                {
+                  name: 'status',
+                  label: 'Status',
+                  field: (row) =>
+                    row.b_civil_status == 1 ? 'Widow' : 'Single',
+                },
+                { name: 'dob', label: 'Birth Date', field: 'dob' },
+                { name: 'age', label: 'Age', field: 'age' },
+                { name: 'father', label: 'Father', field: 'b_father' },
+                { name: 'mother', label: 'Mother', field: 'b_mother' },
+                { name: 'region', label: 'Region', field: 'b_region' },
+                { name: 'province', label: 'Province', field: 'b_province' },
+                { name: 'city', label: 'City', field: 'b_city' },
+                { name: 'barangay', label: 'Barangay', field: 'b_brgy' },
+              ]"
+              row-key="b_id"
+              flat
+              bordered
+              dense
+              class="q-mb-md"
+            />
+          </div>
           <div
+            v-else
             class="event_container q-pa-md"
             v-for="bridedetail in bride"
             :key="bridedetail.b_id"
@@ -1032,7 +1094,7 @@ export default defineComponent({
     let cityOptions = ref([]);
     let barangayOptions = ref([]);
     let events = ref([props.editables[0]]);
-    let groom = ref([props.editables[0].groom[0]]);
+    let groom = ref([props.editables[0].groom][0]);
     let bride = ref([props.editables[0].bride][0]);
     let witness = ref([props.editables[0].witness]);
     let Requirement = ref([props.editables[0].Requirement]);

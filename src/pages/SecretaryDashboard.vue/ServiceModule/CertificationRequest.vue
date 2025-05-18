@@ -103,7 +103,69 @@
     </q-drawer>
 
     <q-page-container>
-      <div class="header q-pa-lg">Filter Options</div>
+      <div class="q-pa-lg">
+        <div class="text-h6 q-mb-md">Request Certificate</div>
+
+        <!-- Purpose Dropdown -->
+        <q-select
+          outlined
+          v-model="selectedPurpose"
+          :options="purposes"
+          label="Select Purpose"
+          class="q-mb-md"
+        />
+
+        <!-- Search Name Input -->
+        <q-select
+          outlined
+          ref="step1Ref"
+          v-model="searchName"
+          use-input
+          hide-selected
+          fill-input
+          input-debounce="0"
+          :options="filterOptions"
+          option-label="fullname"
+          option-value="id"
+          @new-value="createValue"
+          @filter="filterFn"
+          style="width: 100%"
+          :rules="[(val) => !!val || 'Field is required']"
+        >
+          <template v-slot:no-option>
+            <q-item>
+              <q-item-section class="text-grey"> No results </q-item-section>
+            </q-item>
+          </template>
+        </q-select>
+
+        <q-select
+          outlined
+          v-model="Service"
+          :options="serviceOption"
+          label="Select Service"
+          class="q-mb-md"
+          @update:model-value="setSearch(Service)"
+        />
+
+        <!-- Print Button -->
+        <q-btn
+          label="Print"
+          color="primary"
+          @click="printDocument(selectedPurpose, searchName)"
+          class="q-mb-lg"
+        />
+
+        <!-- Embedded PDF -->
+        <div class="printcanvas" style="border: 2px dotted black">
+          <iframe
+            :src="pdfUrl"
+            width="100%"
+            height="600px"
+            style="border: none"
+          ></iframe>
+        </div>
+      </div>
     </q-page-container>
   </q-layout>
 </template>
@@ -132,7 +194,9 @@ import { useQuasar, SessionStorage } from "quasar";
 import { useRouter } from "vue-router";
 import SidebarMenu from "../../../components/DashboardComponents/navigation_left.vue";
 import { menuData, menuData2 } from "src/data/menuData";
-
+import { loadSearch, names } from "src/composables/searcName";
+import { baseUrl } from "src/data/menuData.js";
+import { api } from "src/boot/axios";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
@@ -142,10 +206,12 @@ export default defineComponent({
     const dataLoaded = ref(false); // ✅ Track data loading state
     onMounted(async () => {
       await nextTick();
+      loadSearch();
       await getSerivce(0); // Ensure fetch completes before proceeding
+
       dataLoaded.value = true; // ✅ Mark as loaded
     });
-
+    const pdfUrl = ref("");
     const leftDrawerOpen = ref(false);
     const $q = useQuasar();
     const router = useRouter();
@@ -158,6 +224,24 @@ export default defineComponent({
       myObject.value = JSON.parse(sessionkey);
       console.log(myObject.value);
     }
+    const selectedPurpose = ref("");
+    const searchName = ref("");
+    const Service = ref("");
+
+    const purposes = [
+      { label: "For Good Moral", value: "good_moral" },
+      { label: "For Change of Records", value: "change_records" },
+      { label: "Affidavit of Change Records", value: "affidavit_change" },
+    ];
+    function setSearch(service) {
+      let id = service.value;
+      loadSearch(id);
+    }
+    const serviceOption = [
+      { value: "1", label: "Marriage" },
+      { value: "2", label: "Baptism" },
+      { value: "3", label: "Confirmation" },
+    ];
 
     // Logout function
     const Logout = () => {
@@ -172,7 +256,87 @@ export default defineComponent({
       });
     };
 
+    const filterOptions = ref([]);
+    filterOptions.value = [...names.value];
+    const createValue = (val, done) => {
+      if (val.length > 0) {
+        const exists = names.value.some(
+          (item) => item.fullname.toLowerCase() === val.toLowerCase()
+        );
+        if (!exists) {
+          const newId = (names.value.length + 1).toString();
+          const newItem = {
+            id: newId,
+            event_id: newId, // ✅ Map event_id to newId
+            fullname: val,
+          };
+          names.value.push(newItem);
+        }
+        done(val, "toggle");
+      }
+    };
+
+    const filterFn = (val, update, abort) => {
+      update(() => {
+        if (val === "") {
+          filterOptions.value = [...names.value];
+        } else {
+          const needle = val.toLowerCase();
+          filterOptions.value = names.value.filter((v) =>
+            v.fullname.toLowerCase().includes(needle)
+          );
+        }
+      });
+    };
+    const printDocument = () => {
+      const purpose = selectedPurpose.value?.label || selectedPurpose.value; // assuming it's a Quasar option object
+      const Serviceswelect = Service.value?.label || Service.value;
+      const name = searchName.value?.fullname || searchName.value;
+      const event_id = searchName.value?.event_id;
+      console.log("Sending:", { purpose, Serviceswelect, name, event_id });
+      $q.dialog({
+        title: "Print Certificate",
+        message: "Please proceed to the Cashier to settle the payment first",
+        cancel: true,
+        persistent: true,
+      }).onOk(() => {
+        api
+          .post("certificationpayment.php", { event_id, purpose })
+          .then((response) => {
+            console.log(response);
+            if (response.data.Status == "Success") {
+              $q.notify({
+                type: "positive",
+                message: "Payment Request Sent!",
+              });
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+        pdfUrl.value =
+          baseUrl +
+          "certificateprint.php?purpose=" +
+          encodeURIComponent(purpose) +
+          "&name=" +
+          encodeURIComponent(name) +
+          "&service=" +
+          encodeURIComponent(Serviceswelect);
+      });
+    };
+
     return {
+      Service,
+      filterOptions,
+      serviceOption,
+      filterFn,
+      createValue,
+      searchName,
+      printDocument,
+      selectedPurpose,
+      setSearch,
+      pdfUrl,
+      purposes,
       menuData,
       dialog2: ref(false),
       Logout,

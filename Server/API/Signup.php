@@ -19,8 +19,6 @@
        $this->db = new MysqlIDB('localhost', 'root', '', 'lbrmss_db');
        
       }
-
-
       public function httpGet($payload)
       {
        $account = $this->db->rawQuery("SELECT a.* ,b.* ,c.*, b.pos_id as mainPosid, CONCAT(b.fname,' ',b.mname,' ',b.lname)as Fullname FROM useraccounts as a 
@@ -32,6 +30,7 @@
           foreach($account as $details) 
           {
             $accountInfo[]=[
+              "mode"=>1,
               "all"=>$details,
               "pid"=>$details['UID'],
               "position"=>$details['pos_name'],
@@ -46,79 +45,151 @@
         }
 
       }
-      public function httpPost($payload)
-      {
-      
-        $data = json_encode($payload);
-        $AccountInfo = json_decode($data, true);
-        
-        $account = $AccountInfo['account'];
-        $acc_ids = $this->db->getMaxId('useraccounts','UID') +1;
-      $data1 = array(
-        "pos_id"     => $account['posid'],               // maps to pos_id
-        "account_id" => $acc_ids,                 // maps to uid from account
-        "lname"      => $account['lnamme'],              // typo fixed: probably meant "lname"
-        "mname"      => $account['mname'],
-        "fname"      => $account['fname'],
-        "contact"    => $account['contact'],
-        "created_at" => date('Y-m-d H:i:s'),             // current timestamp
-        "created_by" => 1,                               // adjust as needed
-        "updated_at" => null,                            // or current timestamp if needed
-        "updated_by" => null,
-        "remark"     => 1                                // static or logic-based
-    );
-      
-      $insert1 = $this->db->insert('lbrmss_account_person', $data1);
-      $acc_idss = $this->db->getMaxId('lbrmss_account_person','pid');
-        $data2 = array(
+    public function httpPost()
+{
+    // Retrieve POST data directly
+    $posid        = $_POST['posid'];
+    $lname        = $_POST['lname'];
+    $mname        = $_POST['mname'];
+    $fname        = $_POST['fname'];
+    $suffix_name  = $_POST['suffix_name'];
+    $contact      = $_POST['contact'];
+    $username     = $_POST['username'];
+    $password     = $_POST['password'];
+    $status       = $_POST['status'];
+    $posprefix    = $_POST['posprefix'];
+
+    // Get next account ID
+    $acc_ids = $this->db->getMaxId('useraccounts', 'UID') + 1;
+
+    // Handle file upload
+    $imagePath = '';
+    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = __DIR__ . '/../uploads/';
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $imageName = uniqid() . '_' . basename($_FILES['image']['name']);
+        $targetPath = $uploadDir . $imageName;
+
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+            $imagePath = 'uploads/' . $imageName;
+        }
+    }
+
+    // Insert into lbrmss_account_person
+    $data1 = [
+        "pos_id"      => $posid,
+        "account_id"  => $acc_ids,
+        "lname"       => $lname,
+        "mname"       => $mname,
+        "fname"       => $fname,
+        "suffix_name" => $suffix_name,
+        "contact"     => $contact,
+        "photo"       => $imagePath, // if your table has a `photo` column
+        "created_at"  => date('Y-m-d H:i:s'),
+        "created_by"  => 1,
+        "updated_at"  => null,
+        "updated_by"  => null,
+        "remark"      => 1
+    ];
+
+    $insert1 = $this->db->insert('lbrmss_account_person', $data1);
+    $acc_idss = $this->db->getMaxId('lbrmss_account_person', 'pid');
+
+    // Insert into useraccounts
+    $data2 = [
         "UID"        => '',
         "person_id"  => $acc_idss,
-        "AccessLvl"  => $account['posid'],
-        "Username"   =>  $account['username'],
-        "Password"   => $account['password'],
-        "isActive"   => $account['status'],
-        "remark"     =>'1',
-    );
+        "AccessLvl"  => $posid,
+        "Username"   => $username,
+        "Password"   => $password,
+        "isActive"   => $status,
+        "remark"     => '1',
+    ];
 
-     $insert2 = $this->db->insert('useraccounts', $data2);
-        if($account['posid'] == '1'){
-          $acc_id = $this->db->getMaxId('lbrmss_account_person','pid');
-          $data3 = array(
-            "priest_id"       => '',
-            "acc_id"          => $acc_id,
-            "lname"           => $account['lnamme'],
-            "mname"           => $account['mname'],
-            "fname"           => $account['fname'],
-            "suffix_name"     => $account['suffix_name'],
-            "status"          => $account['status'],
-            "contact_number"  => $account['contact'],
-            "position"        => $account['posid'],
-            "created_at"      => date('Y-m-d H:i:s'),
-            "created_by"      => '1',
-            "remark"          => '1'
-        );
-        
+    $insert2 = $this->db->insert('useraccounts', $data2);
+
+    // Insert into priest_main if position is 1
+    if ($posid == '1') {
+        $acc_id = $acc_idss; // already retrieved
+        $data3 = [
+            "priest_id"      => '',
+            "acc_id"         => $acc_id,
+            "lname"          => $lname,
+            "mname"          => $mname,
+            "fname"          => $fname,
+            "suffix_name"    => $suffix_name,
+            "status"         => $status,
+            "contact_number" => $contact,
+            "position"       => $posid,
+            "created_at"     => date('Y-m-d H:i:s'),
+            "created_by"     => '1',
+            "remark"         => '1'
+        ];
+
         $insert3 = $this->db->insert('lbrmss_priest_main', $data3);
-
-        }
-        if($insert1 == true && $insert2 == true){
-          echo json_encode(array("Status"=>"Success"));
-        }else{
-          echo json_encode(array("Status"=>"Failed"));
-        }
-
-         
     }
+
+    // Final response
+    if ($insert1 && $insert2) {
+        echo json_encode(["Status" => "Success"]);
+    } else {
+        echo json_encode(["Status" => "Failed"]);
+    }
+}
+
  
      
       public function httpPut($payload)
       {
-        
-  
+          $data = json_encode($payload);
+          $AccountInfo = json_decode($data, true);
+          $AccountInfo  =$AccountInfo['account'];
+          $pid  = $AccountInfo['pid'];
+          $pos_id  = $AccountInfo['posid'];
+          $fname  = $AccountInfo['fname'];
+          $mname  = $AccountInfo['mname'];
+          $lname  = $AccountInfo['lnamme'];
+          $pass  = $AccountInfo['password'];
+          $username  = $AccountInfo['username'];
+          $contact  = $AccountInfo['contact'];
+           $status  = $AccountInfo['status'];
+          $suffix  = $AccountInfo['suffix_name'] ?? null;
+          $update = $this->db->rawQuery("UPDATE lbrmss_account_person SET pos_id = '$pos_id',
+                                        fname = '$fname',
+                                        mname ='$mname',
+                                        lname ='$mname',
+                                        suffix_name = '$suffix',
+                                        contact = '$contact'
+                                        WHERE pid  ='$pid'
+                                        AND remark = '1';
+                                          ");
+          $this->db->rawQuery("UPDATE useraccounts SET 
+                                                Username  ='$username', 
+                                                Password = '$pass', 
+                                                isActive = '$status'
+                                                WHERE person_id  ='$pid' AND remark = '1';");
+           
+          echo json_encode(array("Status"=>"Success","data"=>$AccountInfo));
+    
 
     }
       public function httpDelete($payload)
       {
+          $data = json_encode($payload);
+          $AccountInfo = json_decode($data, true);
+          $delete_id  =$AccountInfo['delete'];
+
+          $update = $this->db->rawQuery("UPDATE lbrmss_account_person SET remark ='0'
+                                          WHERE pid  ='$delete_id'
+                                          AND remark = '1';
+                                            ");
+            $this->db->rawQuery("UPDATE useraccounts SET remark ='0'
+                                                  WHERE person_id  ='$delete_id' AND remark = '1';");
+           
+          echo json_encode(array("Status"=>"Success","data"=>$AccountInfo));
         
         
        

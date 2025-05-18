@@ -240,6 +240,13 @@ import {
   defineComponent,
   onMounted,
 } from "vue";
+import {
+  getSerivce,
+  Data,
+  sendEventCeremonyData,
+  msg,
+  msgColor,
+} from "../../composables/SeviceData.js";
 import { getAvailablePriest, availablePriest } from "src/composables/getPriest";
 export default defineComponent({
   props: {
@@ -337,6 +344,7 @@ export default defineComponent({
             .catch((error) => {
               console.log(error);
             });
+          getSerivce(0);
         })
         .onCancel(() => {});
     };

@@ -314,6 +314,8 @@
         $seminar = $arr['payload']['seminar'];
         $requirementStatus = $arr['payload']['statusReq'];
         $event_id =$event['event_id'];
+        $priest = $arr['payload']['event']['Assigned_Priest']['priest_id'] ?? null;
+        $Venue_type = $arr['payload']['event']['Venue_type'] ?? null;
         
         //update event
         // $UpdateEvent = Array (
@@ -322,19 +324,18 @@
         // $type = (isset($Event['Type']) && strtolower($Event['Type']) === "special") ? 2 : 1;
 
         $UpdateEvent = Array(
-         "event_id"            => $event['event_id'],
+          "event_id"            => $event['event_id'],
           "service_id"          => $event['service_id'],
-          "client"              => $events['Client'],
           "date"                => $events['Date'],
           "date_to"             => $event['date_to'],
           "time_from"           => $events['Time_from'],
           "time_to"             => $events['Time_to'],
-          "venue_name"          => $event['Venue'],
+          "venue_name"          => $event['venue_name'],
           "duration"            => $event['duration'] ?? '', // If not present
           "type"                => $event['type'],
           "days"                => $event['days'],
           "venue_type"          => $event['venue_type'],
-          "priest_assigned_id"  => $event['priest_assigned_id'],
+          "priest_assigned_id"  =>$event['priest_assigned_id']['priest_id'] ?? $priest,
           "event_progress"      => $event['event_progress'],
           "requirement_status"  => ($requirementStatus == "complete") ? 1 : 0 ,
           "created_at"          => $event['created_at'],
@@ -348,7 +349,7 @@
         $updateCon_main =Array(
         
           "event_id" =>   $event['event_id'],
-          "assigned_priest" => $event['priest_id'],
+          "assigned_priest" => $event['priest_assigned_id']['priest_id'] ?? $priest,
           "remark" => '1'
         );
         $this->db->where('event_id',$event_id);

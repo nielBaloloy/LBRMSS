@@ -181,11 +181,7 @@
 
       <!-- Custom slot for Action column -->
       <template v-slot:body-cell-Action="{ row }">
-        <q-td
-          v-if="
-            row.Service == 'Blessing' || row.Service == 'Annointing of the Sick'
-          "
-        >
+        <q-td v-if="row.Service == 'Annointing of the Sick'">
           <q-btn
             unelevated
             no-caps

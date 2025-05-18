@@ -48,7 +48,7 @@
             :rules="[(val) => !!val || 'Please select a service type']"
           />
         </div>
-        <div class="">
+        <div v-if="form.service_type != '6'">
           <q-item-label>Service Type</q-item-label>
           <q-select
             v-model="form.service_fee_id"
@@ -62,7 +62,9 @@
             :rules="[(val) => !!val || 'Please select a service type']"
           />
         </div>
-
+        <div v-if="form.service_type == '6'" class="hidden">
+          {{ (form.service_fee_id = 2) }}
+        </div>
         <!-- Venue Type -->
         <div class="q-mb-md">
           <q-item-label>Venue Type</q-item-label>

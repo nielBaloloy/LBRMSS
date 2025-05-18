@@ -4,7 +4,7 @@
       <q-toolbar>
         <q-btn dense flat round icon="menu" @click="toggleLeftDrawer" />
 
-        <q-toolbar-title> LBRMSS-Dashboard </q-toolbar-title>
+        <q-toolbar-title> Account </q-toolbar-title>
         <div class="account">
           <q-avatar>
             <img src="src/assets/quasar-logo-vertical.svg" />
@@ -104,8 +104,8 @@
 
     <q-page-container>
       <q-page class="q-pa-lg">
-        <q-banner inline-actions class="text-black bg-white q-pa-lg">
-          Account Setup
+        <q-banner inline-actions class="text-black bg-grey-2 q-pa-lg">
+          <label class="text-h6">Account Setup</label>
           <template v-slot:action>
             <q-btn
               flat
@@ -119,11 +119,16 @@
           </template>
         </q-banner>
         <div class="container q-pt-md">
-          <accountTable :columns="columns" :rowsData="account" />
+          <accountTable
+            :columns="columns"
+            :rowsData="account"
+            @edit="edit"
+            @delete="deleteAccount"
+          />
         </div>
       </q-page>
       <q-dialog v-model="accountdialog">
-        <q-card style="width: 800px" class="q-pa-lg rounded-borders shadow-2">
+        <q-card style="width: 900px" class="q-pa-lg rounded-borders shadow-2">
           <!-- Header -->
           <q-card-section class="row items-center q-pb-none">
             <div class="text-h6">Create Accounts</div>
@@ -139,60 +144,101 @@
                 User Information
               </div>
 
-              <!-- 3 Columns per Row -->
-              <div class="row q-col-gutter-md">
-                <q-input
-                  v-model="accountForm.fname"
-                  label="First Name"
-                  outlined
-                  dense
-                  class="col-4"
-                />
-                <q-input
-                  v-model="accountForm.mname"
-                  label="Middle Name"
-                  outlined
-                  dense
-                  class="col-4"
-                />
-                <q-input
-                  v-model="accountForm.lnamme"
-                  label="Last Name"
-                  outlined
-                  dense
-                  class="col-4"
-                />
+              <div class="text-subtitle1 text-primary q-mt-lg q-mb-sm">
+                Profile Image & Basic Info
+              </div>
 
-                <q-input
-                  v-model="accountForm.suffix_name"
-                  label="Suffix"
-                  outlined
-                  dense
-                  class="col-4"
-                />
-                <q-input
-                  v-model="accountForm.contact"
-                  label="Contact"
-                  outlined
-                  dense
-                  class="col-4"
-                />
-                <q-input
-                  v-model="accountForm.username"
-                  label="Username"
-                  outlined
-                  dense
-                  class="col-4"
-                />
+              <div class="row q-col-gutter-md q-pa-md">
+                <!-- Left Side: Image -->
+                <div class="col-4">
+                  <!-- Image Preview -->
+                  <q-img
+                    v-if="accountForm.imageUrl"
+                    :src="accountForm.imageUrl"
+                    :ratio="1"
+                    class="rounded-borders"
+                    style="max-width: 150px; border: 1px solid #ccc"
+                  />
+                  <div
+                    v-else
+                    style="
+                      max-width: 150px;
+                      height: 150px;
+                      border: 1px dashed #ccc;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <span class="text-caption text-grey">No preview</span>
+                  </div>
+
+                  <!-- File Uploader Below Image -->
+                  <q-file
+                    v-model="accountForm.image"
+                    label="Upload Image"
+                    accept="image/*"
+                    outlined
+                    clearable
+                    dense
+                    @update:model-value="previewImage"
+                    class="q-mt-sm"
+                  />
+                </div>
+
+                <!-- Right Side: Inputs -->
+                <div class="col-8 row q-col-gutter-md">
+                  <q-input
+                    v-model="accountForm.fname"
+                    label="First Name"
+                    outlined
+                    dense
+                    class="col-6"
+                  />
+                  <q-input
+                    v-model="accountForm.mname"
+                    label="Middle Name"
+                    outlined
+                    dense
+                    class="col-6"
+                  />
+                  <q-input
+                    v-model="accountForm.lnamme"
+                    label="Last Name"
+                    outlined
+                    dense
+                    class="col-6"
+                  />
+                  <q-input
+                    v-model="accountForm.suffix_name"
+                    label="Suffix"
+                    outlined
+                    dense
+                    class="col-6"
+                  />
+                  <q-input
+                    v-model="accountForm.contact"
+                    label="Contact"
+                    outlined
+                    dense
+                    class="col-12"
+                  />
+                </div>
               </div>
 
               <!-- Section Title -->
               <div class="text-subtitle1 text-primary q-mt-lg q-mb-sm">
                 Credentials
               </div>
-
+              <q-input
+                v-model="accountForm.username"
+                label="Username"
+                outlined
+                dense
+                class="col-4"
+              />
               <!-- Password Fields (2 columns) -->
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-md q-pa-md">
                 <q-input
                   v-model="accountForm.password"
                   label="Password"
@@ -214,7 +260,9 @@
                   @update:model-value="validatePasswords"
                 />
               </div>
-              <ul class="q-mt-sm">
+              <div class="text-subtitle1 text-primary">User Information</div>
+
+              <ul class="">
                 <li :style="{ color: rules.uppercase ? 'green' : 'black' }">
                   Contains uppercase letter
                 </li>
@@ -231,17 +279,20 @@
               </div>
 
               <!-- Position and Status -->
-              <div class="row q-col-gutter-md">
+              <div class="row q-col-gutter-md q-pa-md">
                 <q-select
                   v-model="accountForm.posid"
                   :options="positions"
                   label="Position"
                   outlined
                   dense
+                  option-label="label"
+                  option-value="value"
                   emit-value
                   map-options
                   class="col-4"
                 />
+
                 <q-input
                   v-model="accountForm.posprefix"
                   label="Prefix"
@@ -315,6 +366,7 @@ import { menuData, menuData2 } from "src/data/menuData";
 import accountTable from "src/components/ServicesComponents/SSR_table_component_v2.vue";
 import { loadAccount, account } from "src/composables/account";
 import { api } from "src/boot/axios";
+import { baseUrl, imageBase } from "src/data/menuData";
 // ✅ Async function defined before setup()
 
 export default defineComponent({
@@ -341,6 +393,7 @@ export default defineComponent({
       posid: "",
       position: "",
       posprefix: "",
+      mode: 0,
     });
     const confirmPassword = ref("");
     const passwordMismatch = ref(false);
@@ -358,40 +411,97 @@ export default defineComponent({
       { label: "Bookkeeper", value: "4" },
     ];
     const saveAccount = () => {
-      const allRulesSatisfied =
-        rules.uppercase && rules.lowercase && rules.special;
-      if (!allRulesSatisfied) {
-        $q.notify({
-          type: "negative",
-          message: "Password does not meet all requirements.",
-        });
-        return; // prevent submission
-      }
+      $q.dialog({
+        title: "Account Confirmation",
+        message: "Information will be saved to database",
+        cancel: true,
+        persistent: true,
+      })
+        .onOk(() => {
+          if (accountForm.value.mode == "0") {
+            const allRulesSatisfied =
+              rules.uppercase && rules.lowercase && rules.special;
+            if (!allRulesSatisfied) {
+              $q.notify({
+                type: "negative",
+                message: "Password does not meet all requirements.",
+              });
+              return; // prevent submission
+            }
 
-      // Check if passwords match
-      if (passwordMismatch.value) {
-        $q.notify({
-          type: "negative",
-          message: "Passwords do not match.",
-        });
-        return; // prevent submission
-      }
+            // Check if passwords match
+            if (passwordMismatch.value) {
+              $q.notify({
+                type: "negative",
+                message: "Passwords do not match.",
+              });
+              return; // prevent submission
+            }
+            const formData = new FormData();
+            formData.append("fname", accountForm.value.fname);
+            formData.append("mname", accountForm.value.mname);
+            formData.append("lname", accountForm.value.lnamme);
+            formData.append("suffix_name", accountForm.value.suffix_name);
+            formData.append("contact", accountForm.value.contact);
+            formData.append("username", accountForm.value.username);
+            formData.append("password", accountForm.value.password);
+            formData.append("posid", accountForm.value.posid);
+            formData.append("posprefix", accountForm.value.posprefix);
+            formData.append("status", accountForm.value.status);
 
-      // If both are valid, proceed
-      console.log("Form data:", accountForm.value);
-      api
-        .post("Signup.php", { account: accountForm.value })
-        .then((response) => {
-          console.log(response);
-          loadAccount();
-          accountdialog.value = false;
+            if (accountForm.value.image) {
+              formData.append("image", accountForm.value.image);
+            }
+
+            // If both are valid, proceed
+            console.log("Form data:", accountForm.value);
+
+            api
+              .post("Signup.php", formData, {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              })
+              .then((response) => {
+                console.log(response.data);
+                $q.notify({
+                  type: "success",
+                  message: "Account Created Successfully",
+                });
+                loadAccount();
+                accountdialog.value = false;
+              })
+              .catch((error) => {
+                console.error(error);
+                $q.notify({
+                  type: "negative",
+                  message: "Network Error",
+                });
+              });
+          } else {
+            api
+              .put("Signup.php", { account: accountForm.value })
+              .then((response) => {
+                console.log(response);
+                loadAccount();
+                accountdialog.value = false;
+                $q.notify({
+                  type: "success",
+                  message: "Account has Updated",
+                });
+              })
+              .catch((error) => {
+                reject(error);
+                $q.notify({
+                  type: "negative",
+                  message: "Network Error",
+                });
+              });
+          }
         })
-        .catch((error) => {
-          reject(error);
-          $q.notify({
-            type: "negative",
-            message: "Network Error",
-          });
+
+        .onCancel(() => {
+          console.log(">>>> Cancel");
         });
     };
     const leftDrawerOpen = ref(false);
@@ -456,8 +566,7 @@ export default defineComponent({
         name: "Status",
         label: "Status",
         field: "status",
-        sortable: true,
-        sort: (a, b) => parseInt(a, 10) - parseInt(b, 10),
+        align: "center",
       },
       {
         name: "accountAction",
@@ -483,7 +592,63 @@ export default defineComponent({
       rules.lowercase = /[a-z]/.test(pwd);
       rules.special = /[!@#$%^&*(),.?":{}|<>]/.test(pwd);
     }
+    function edit(row) {
+      accountForm.value = {
+        pid: row.all.pid,
+        fname: row.all.fname,
+        mname: row.all.mname,
+        lnamme: row.all.lname, // typo retained if intentional
+        suffix_name: row.all.suffix,
+        contact: row.all.contact,
+        status: row.all.isActive,
+        username: row.all.Username,
+        password: row.all.Password,
+        posid: row.all.pos_id.toString(), // ✅ correctly bind the position ID
+        position: "",
+        posprefix: "",
+        mode: 1,
+        image: null, // <-- holds uploaded image File
+        imageUrl: imageBase + row.all.photo, // <-- holds preview URL
+      };
+      accountdialog.value = true;
+      console.log(row.all);
+    }
+    function deleteAccount(row) {
+      api
+        .delete("Signup.php", { data: { delete: row.pid } })
+        .then((response) => {
+          console.log(response);
+          loadAccount();
+          accountdialog.value = false;
+          $q.notify({
+            type: "negative",
+            message: "Network Error",
+          });
+        })
+        .catch((error) => {
+          reject(error);
+          $q.notify({
+            type: "negative",
+            message: "Network Error",
+          });
+        });
+    }
+    function previewImage(file) {
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          accountForm.value.imageUrl = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      } else {
+        accountForm.value.imageUrl = "";
+      }
+    }
+
     return {
+      previewImage,
+      deleteAccount,
+      edit,
       rules,
       validatePasswordRules,
       passwordMismatch,

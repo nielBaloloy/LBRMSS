@@ -3,7 +3,7 @@
 $host = 'localhost';
 $username = 'root';
 $password = ''; // Your MySQL password
-$database = 'restore'; // Target database name
+$database = 'lbrmss_db'; // Target database name
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['sql_file'])) {
     $file = $_FILES['sql_file']['tmp_name'];
